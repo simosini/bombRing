@@ -34,10 +34,17 @@ public class Players {
 		this.usersMap = userMap;
 	}
 
-	public synchronized void add(Player p) {
+	public synchronized void addPlayer(Player p) {
 
 		usersMap.put(p.getId(), p);
 
+	}
+	
+	public synchronized void deletePlayer(Player p) {
+		
+		Player player = usersMap.remove(p.getId());
+		if (player == null) // the key does not exist
+			throw new IllegalArgumentException("The player given does not exist!");		
 	}
 
 	public synchronized Player getByName(String name) {
@@ -50,11 +57,12 @@ public class Players {
 
 		return null;
 	}
-
+	
+	// no sync cause is a helper function always called from within game copies
 	public void addAll(List<Player> list) {
 
 		for (Player p : list) {
-			this.add(p);
+			this.addPlayer(p);
 		}
 
 	}

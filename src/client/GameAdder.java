@@ -19,17 +19,18 @@ import com.vdurmont.emoji.EmojiManager;
 
 import restConverter.Game;
 import restConverter.Player;
-import restConverter.Players;
 
 public class GameAdder {
 
 	private static final String BASE_URI = "http://localhost:8080/restConverter/rest/players/";
 	private final String r1 = "addgame";
 	private final String r2 = "getgames";
-	//private final String r3 = "getgame/";
+	// private final String r3 = "getgame/";
 	private final String r4 = "addplayer/";
+	private final String r5 = "deleteplayer/";
 	private Player player;
 	private Game currentGame;
+	
 
 	public static void main(String[] args) {
 
@@ -98,6 +99,8 @@ public class GameAdder {
 				System.out.println("This is the list of current active games:");
 				try {
 					ga.getGames();
+					System.out.println("This is the list of all players:");
+					ga.getAllPlayers();
 				} catch (RuntimeException e) {
 					System.out.println(e.getMessage());
 				} catch (Exception e) {
@@ -172,18 +175,18 @@ public class GameAdder {
 						"Failed: " + response.getStatus() + ". Reason: " + response.getEntity(String.class));
 			}
 
-			Players players = response.getEntity(Players.class);
-			System.out.println(players + "\n");
+			final ObjectMapper mapper = new ObjectMapper();
+			List<Player> players = mapper.readValue(response.getEntity(String.class),
+					new TypeReference<List<Player>>() {
+					});
+			players.forEach(el -> System.out.println(el.getNickname()));
 
-		} 
-		catch (RuntimeException re){
+		} catch (RuntimeException re) {
 			System.out.println(re.getMessage());
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		
 	}
 
 	private static void playGame(GameAdder ga, BufferedReader br) {
@@ -194,6 +197,8 @@ public class GameAdder {
 						+ ga.getGame().getName());
 				System.out.println("Insert a move: ");
 				System.out.println("Moving " + br.readLine());
+				ga.deletePlayerFromGame(ga.getGame().getName(), ga.getPlayer());
+				System.out.println("Leaving the game!");
 			} catch (IOException ie) {
 				ie.printStackTrace();
 			}
@@ -229,31 +234,48 @@ public class GameAdder {
 
 		return g;
 	}
-
-	/*private void getGame(String name) {
+	
+	private void deletePlayerFromGame(String gameName, Player player) {
+		
 		try {
-			Client client = Client.create();
-			WebResource wr = client.resource(BASE_URI).path(r3).path(name);
-			ClientResponse response = wr.accept("application/json").get(ClientResponse.class);
+			ClientConfig clientConfig = new DefaultClientConfig();
+			clientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
+			Client client = Client.create(clientConfig);
+
+			WebResource wr1 = client.resource(BASE_URI).path(r5).path(gameName);
+			// DELETE method
+			ClientResponse response = wr1.accept("application/json").type("application/json").delete(ClientResponse.class,
+					player);
+
 			if (response.getStatus() != 200) {
-				throw new RuntimeException(
-						"Failed : " + response.getStatusInfo() + ". Reason: " + response.getEntity(String.class));
+				throw new RuntimeException("Failed: Conflict" + ". Reason: " + response.getEntity(String.class));
 			}
-			final ObjectMapper mapper = new ObjectMapper();
-			String s = response.getEntity(String.class);
-			Game game = mapper.readValue(s, Game.class);
-			System.out.println("Side length : " + game.getSideLength());
-			System.out.println(s);
 
-		} 
-		catch (RuntimeException re) {
+		} catch (RuntimeException re) {
 			System.out.println(re.getMessage());
-		}
-		catch (IOException jsonex){
-			jsonex.printStackTrace();
-		 }
 
-	}*/
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/*
+	 * private void getGame(String name) { try { Client client =
+	 * Client.create(); WebResource wr =
+	 * client.resource(BASE_URI).path(r3).path(name); ClientResponse response =
+	 * wr.accept("application/json").get(ClientResponse.class); if
+	 * (response.getStatus() != 200) { throw new RuntimeException( "Failed : " +
+	 * response.getStatusInfo() + ". Reason: " +
+	 * response.getEntity(String.class)); } final ObjectMapper mapper = new
+	 * ObjectMapper(); String s = response.getEntity(String.class); Game game =
+	 * mapper.readValue(s, Game.class); System.out.println("Side length : " +
+	 * game.getSideLength()); System.out.println(s);
+	 * 
+	 * } catch (RuntimeException re) { System.out.println(re.getMessage()); }
+	 * catch (IOException jsonex){ jsonex.printStackTrace(); }
+	 * 
+	 * }
+	 */
 
 	private void getGames() {
 		try {

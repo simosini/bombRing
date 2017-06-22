@@ -29,7 +29,7 @@ public class Game {
 	// this method is only called to initialize the newly created Game
 	private Players initList(Player p) {
 		Players players = new Players();
-		players.add(p);
+		players.addPlayer(p);
 		return players;
 	}
 
@@ -76,7 +76,12 @@ public class Game {
 	}
 
 	public synchronized void addPlayerToGame(Player p) {
-		players.add(p);
+		players.addPlayer(p);
+	}
+	
+	public synchronized void deletePlayerFromGame(Player p) {
+		players.deletePlayer(p);	
+		
 	}
 
 	public synchronized int retrievePlayersNumber() {
