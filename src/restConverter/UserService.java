@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -102,20 +101,21 @@ public class UserService {
 		else
 			throw new AppException("The game selected does not exist!");
 	}
-	
-	// delete a player from the selected game
-		@Path("/deleteplayer/{gameName}")
-		@DELETE
-		@Consumes("application/json")
-		public Response deletePlayer(@PathParam("gameName") String gameName, Player p) throws AppException {
-			
-			try {
-				Games.getInstance().deletePlayer(gameName, p);
-			} catch (NotFoundException e) {
-				throw new AppException(e.getMessage());
-			}
 
-			return Response.ok().entity("Player deleted correctly!").build();
+	// delete a player from the selected game. It does not delete a resource but
+	// just update it
+	@Path("/deleteplayer/{gameName}")
+	@PUT
+	@Consumes("application/json")
+	public Response deletePlayer(@PathParam("gameName") String gameName, Player p) throws AppException {
+
+		try {
+			Games.getInstance().deletePlayer(gameName, p);
+		} catch (NotFoundException e) {
+			throw new AppException(e.getMessage());
 		}
+
+		return Response.ok().entity("Player deleted correctly!").build();
+	}
 
 }

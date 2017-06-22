@@ -30,7 +30,6 @@ public class GameAdder {
 	private final String r5 = "deleteplayer/";
 	private Player player;
 	private Game currentGame;
-	
 
 	public static void main(String[] args) {
 
@@ -99,7 +98,6 @@ public class GameAdder {
 				System.out.println("This is the list of current active games:");
 				try {
 					ga.getGames();
-					System.out.println("This is the list of all players:");
 					ga.getAllPlayers();
 				} catch (RuntimeException e) {
 					System.out.println(e.getMessage());
@@ -179,7 +177,13 @@ public class GameAdder {
 			List<Player> players = mapper.readValue(response.getEntity(String.class),
 					new TypeReference<List<Player>>() {
 					});
-			players.forEach(el -> System.out.println(el.getNickname()));
+			if (players.size() != 0){
+				System.out.println("This is the list of all players:");
+				players.forEach(el -> System.out.println(el.getNickname()));
+			}
+			else
+				System.out.println("There are no active players\n");
+				
 
 		} catch (RuntimeException re) {
 			System.out.println(re.getMessage());
@@ -234,9 +238,9 @@ public class GameAdder {
 
 		return g;
 	}
-	
+
 	private void deletePlayerFromGame(String gameName, Player player) {
-		
+
 		try {
 			ClientConfig clientConfig = new DefaultClientConfig();
 			clientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
@@ -244,12 +248,13 @@ public class GameAdder {
 
 			WebResource wr1 = client.resource(BASE_URI).path(r5).path(gameName);
 			// DELETE method
-			ClientResponse response = wr1.accept("application/json").type("application/json").delete(ClientResponse.class,
+			ClientResponse response = wr1.accept("application/json").type("application/json").put(ClientResponse.class,
 					player);
 
 			if (response.getStatus() != 200) {
 				throw new RuntimeException("Failed: Conflict" + ". Reason: " + response.getEntity(String.class));
 			}
+			System.out.println(response.getEntity(String.class));
 
 		} catch (RuntimeException re) {
 			System.out.println(re.getMessage());

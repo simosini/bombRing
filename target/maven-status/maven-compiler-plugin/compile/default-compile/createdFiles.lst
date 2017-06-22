@@ -1,12 +1,13 @@
+exceptions/GenericException.class
+client/GameAdder.class
+restConverter/Player.class
+client/GameAdder$1.class
 exceptions/Throwed.class
 restConverter/Game.class
 restConverter/UserService.class
 exceptions/Try.class
-exceptions/GenericException.class
-client/GameAdder.class
+client/GameAdder$2.class
 restConverter/Games.class
 exceptions/AppException.class
 restConverter/Players.class
-restConverter/Player.class
-client/GameAdder$1.class
 exceptions/AppExceptionMapper.class
