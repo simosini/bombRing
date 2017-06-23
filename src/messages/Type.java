@@ -6,5 +6,6 @@ public enum Type {
 	DIE,
 	JOINRING,
 	EXITGAME,
-	BOMB	
+	BOMB,
+	TOKEN;
 }

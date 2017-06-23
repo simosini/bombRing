@@ -1,7 +1,10 @@
 package restConverter;
 
-public class Player {
+import java.io.Serializable;
 
+public class Player implements Serializable{
+
+	private static final long serialVersionUID = -6157801865035828060L;
 	private String name;
 	private String surname;
 	private String nickname;
