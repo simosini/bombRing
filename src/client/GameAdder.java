@@ -234,6 +234,9 @@ public class GameAdder {
 				System.out.println("Insert a move: ");
 				System.out.println("Moving " + br.readLine());
 				ga.deletePlayerFromGame(ga.getGame().getName(), ga.getPlayer());
+				ga.closeSrvSocket(ga.getSrvSocket());
+				br.close();
+				System.out.println("Server socket closed!");
 				System.out.println("Leaving the game!");
 			} catch (IOException ie) {
 				ie.printStackTrace();
