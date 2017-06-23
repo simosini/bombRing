@@ -3,6 +3,7 @@ package client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.ServerSocket;
 import java.util.List;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -30,6 +31,17 @@ public class GameAdder {
 	private final String r5 = "deleteplayer/";
 	private Player player;
 	private Game currentGame;
+	private ServerSocket srvSocket;
+	
+	public GameAdder() {
+		try{
+			this.setSrvSocket(new ServerSocket(0));
+		}
+		catch(IOException ie){
+			System.out.println("Error creating server socket");
+		}
+				
+	}
 
 	public static void main(String[] args) {
 
@@ -54,6 +66,23 @@ public class GameAdder {
 
 		return new Game(currentGame);
 	}
+	
+	private synchronized ServerSocket getSrvSocket() {
+		return srvSocket;
+	}
+
+	public void setSrvSocket(ServerSocket srvSocket) {
+		this.srvSocket = srvSocket;
+	}
+	
+	public void closeSrvSocket(ServerSocket srvSocket){
+		try{
+			srvSocket.close();
+		}
+		catch(IOException e){
+			System.out.println("Error closing socket!");
+		}
+	}
 
 	private static void printGameMenu(GameAdder ga) {
 
@@ -76,6 +105,7 @@ public class GameAdder {
 			p.setSurname(surname);
 			p.setNickname(nickname);
 			p.setId(p.hashCode());
+			p.setPort(ga.getSrvSocket().getLocalPort());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -147,6 +177,8 @@ public class GameAdder {
 
 			case 4:
 				System.out.println("Leaving the game. Goodbye!");
+				ga.closeSrvSocket(ga.getSrvSocket());
+				System.out.println("Server socket closed!");
 				exit = true;
 				break;
 
