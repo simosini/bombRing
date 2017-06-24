@@ -2,7 +2,7 @@ package messages;
 
 import java.io.Serializable;
 
-public class PositionMessage extends Message implements Serializable{
+public class PositionMessage extends InMessage implements Serializable{
 	
 	private static final long serialVersionUID = 6887926961459159988L;
 	private static final int POSITION_PRIORITY = 3;

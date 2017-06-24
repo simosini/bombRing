@@ -2,7 +2,7 @@ package messages;
 
 import java.io.Serializable;
 
-public class NackMessage extends Message implements Serializable {
+public class NackMessage extends InMessage implements Serializable {
 
 	private static final long serialVersionUID = -1036121250705826323L;
 	private static final int NACK_PRIORITY = 2;

@@ -2,7 +2,7 @@ package messages;
 
 import java.io.Serializable;
 
-public class VictoryMessage extends Message implements Serializable {
+public class VictoryMessage extends InMessage implements Serializable {
 
 	private static final long serialVersionUID = 4714778184603472137L;
 	private static final int VICTORY_PRIORITY = 0;

@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 import restConverter.Player;
 
-public class AddPlayerMessage extends Message implements Serializable {
+public class AddPlayerMessage extends InMessage implements Serializable {
 
 	private static final long serialVersionUID = 4448703639215851985L;
 	private static final int ADD_PRIORITY = 4;

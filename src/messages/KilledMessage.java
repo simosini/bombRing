@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import restConverter.Player;
 
-public class KilledMessage extends Message implements Serializable {
+public class KilledMessage extends InMessage implements Serializable {
 
 	private static final long serialVersionUID = 184832401348782267L;
 	private static final int KILLED_PRIORITY = 2;

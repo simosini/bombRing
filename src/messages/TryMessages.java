@@ -21,7 +21,7 @@ public class TryMessages {
 				Socket cli = srv.accept();
 				ObjectInputStream inStream = new ObjectInputStream(cli.getInputStream());
 	
-				Message msg = (Message) inStream.readObject();
+				InMessage msg = (InMessage) inStream.readObject();
 				msg.handleMessage();
 				cli.close();
 				srv.close();

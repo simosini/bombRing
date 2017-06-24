@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import restConverter.Player;
 
-public class JoinRingMessage extends Message implements Serializable {
+public class JoinRingMessage extends InMessage implements Serializable {
 
 	private static final long serialVersionUID = -7568751517974737661L;
 	private static final int JOIN_PRIORITY = 3;
