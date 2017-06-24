@@ -74,10 +74,14 @@ public class Players {
 	
 	@Override
 	public String toString(){
-		StringBuilder sb = new StringBuilder("This is the list of the current active players: \n");
-		Map<Integer, Player> pls = this.getUsersMap();
-		pls.forEach((k,v)-> sb.append(v.getNickname() + "\n"));
-		return sb.toString();
+		if (this.size() == 0)
+			return "There are no players at the moment";
+		else {
+			StringBuilder sb = new StringBuilder("This is the list of the current active players: \n");
+			Map<Integer, Player> pls = this.getUsersMap();
+			pls.forEach((k,v)-> sb.append(v.getNickname() + "\n"));
+			return sb.toString();
+		}
 	}
 
 }

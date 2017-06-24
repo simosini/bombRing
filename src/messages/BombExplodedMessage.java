@@ -2,14 +2,14 @@ package messages;
 
 import java.io.Serializable;
 
-public class BombMessage extends Message implements Serializable {
+public class BombExplodedMessage extends Message implements Serializable {
 
 	private static final long serialVersionUID = 493773639985449364L;
-	private static final int BOMB_PRIORITY = 2;
+	private static final int BOMB_EXPLODED_PRIORITY = 4;
 	private String color;
 
-	public BombMessage(String color) {
-		super(Type.BOMB, BOMB_PRIORITY);
+	public BombExplodedMessage(String color) {
+		super(Type.BOMB_EXPLODED, BOMB_EXPLODED_PRIORITY);
 		this.setColor(color);
 	}
 
@@ -29,7 +29,7 @@ public class BombMessage extends Message implements Serializable {
 
 	@Override
 	public String toString(){
-		return "This is a Bomb message";
+		return "This is a Bomb exploded message";
 	}
 
 }

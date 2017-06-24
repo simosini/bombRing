@@ -2,10 +2,15 @@ package messages;
 
 public enum Type {
 	ACK,
-	POSITION,
+	ADDPLAYER,
+	BOMB_EXPLODED,
+	BOMB_TOSSED,
 	DIE,
-	JOINRING,
 	EXITGAME,
-	BOMB,
-	TOKEN;
+	KILLED,
+	JOINRING,
+	NACK,
+	POSITION,	
+	TOKEN,	
+	VICTORY;
 }

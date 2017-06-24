@@ -26,21 +26,20 @@ public class GameAdder {
 	private static final String BASE_URI = "http://localhost:8080/restConverter/rest/players/";
 	private final String r1 = "addgame";
 	private final String r2 = "getgames";
-	// private final String r3 = "getgame/";
+	private final String r3 = "getgame/";
 	private final String r4 = "addplayer/";
 	private final String r5 = "deleteplayer/";
 	private Player player;
 	private Game currentGame;
 	private ServerSocket srvSocket;
-	
+
 	public GameAdder() {
-		try{
+		try {
 			this.setSrvSocket(new ServerSocket(0));
-		}
-		catch(IOException ie){
+		} catch (IOException ie) {
 			System.out.println("Error creating server socket");
 		}
-				
+
 	}
 
 	public static void main(String[] args) {
@@ -66,7 +65,7 @@ public class GameAdder {
 
 		return new Game(currentGame);
 	}
-	
+
 	private synchronized ServerSocket getSrvSocket() {
 		return srvSocket;
 	}
@@ -74,12 +73,11 @@ public class GameAdder {
 	public void setSrvSocket(ServerSocket srvSocket) {
 		this.srvSocket = srvSocket;
 	}
-	
-	public void closeSrvSocket(ServerSocket srvSocket){
-		try{
+
+	public void closeSrvSocket(ServerSocket srvSocket) {
+		try {
 			srvSocket.close();
-		}
-		catch(IOException e){
+		} catch (IOException e) {
 			System.out.println("Error closing socket!");
 		}
 	}
@@ -116,12 +114,12 @@ public class GameAdder {
 		boolean exit = false;
 		while (!exit) {
 			System.out.println("Please select one of the option below: \n" + "1. Show current games;\n"
-					+ "2. Create a new game;\n" + "3. Join a running game;\n" + "4. Exit;\n");
+					+ "2. Create a new game;\n" + "3. Join a running game;\n" + "4. Show game info;\n" + "5. Exit;\n");
 			try {
 				choice = Integer.parseInt(br.readLine());
 
 			} catch (IOException | NumberFormatException e) {
-				choice = 5;
+				choice = 6;
 			}
 			switch (choice) {
 			case 1:
@@ -174,8 +172,20 @@ public class GameAdder {
 				playGame(ga, br);
 				exit = true;
 				break;
-
+				
 			case 4:
+				try {
+					System.out.println("Enter game name: ");
+					String gameName = br.readLine();
+					ga.getGame(gameName);
+					break;
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+					break;
+				}
+
+			case 5:
 				System.out.println("Leaving the game. Goodbye!");
 				ga.closeSrvSocket(ga.getSrvSocket());
 				System.out.println("Server socket closed!");
@@ -209,13 +219,11 @@ public class GameAdder {
 			List<Player> players = mapper.readValue(response.getEntity(String.class),
 					new TypeReference<List<Player>>() {
 					});
-			if (players.size() != 0){
+			if (players.size() != 0) {
 				System.out.println("This is the list of all players:");
 				players.forEach(el -> System.out.println(el.getNickname()));
-			}
-			else
+			} else
 				System.out.println("There are no active players\n");
-				
 
 		} catch (RuntimeException re) {
 			System.out.println(re.getMessage());
@@ -299,23 +307,27 @@ public class GameAdder {
 		}
 	}
 
-	/*
-	 * private void getGame(String name) { try { Client client =
-	 * Client.create(); WebResource wr =
-	 * client.resource(BASE_URI).path(r3).path(name); ClientResponse response =
-	 * wr.accept("application/json").get(ClientResponse.class); if
-	 * (response.getStatus() != 200) { throw new RuntimeException( "Failed : " +
-	 * response.getStatusInfo() + ". Reason: " +
-	 * response.getEntity(String.class)); } final ObjectMapper mapper = new
-	 * ObjectMapper(); String s = response.getEntity(String.class); Game game =
-	 * mapper.readValue(s, Game.class); System.out.println("Side length : " +
-	 * game.getSideLength()); System.out.println(s);
-	 * 
-	 * } catch (RuntimeException re) { System.out.println(re.getMessage()); }
-	 * catch (IOException jsonex){ jsonex.printStackTrace(); }
-	 * 
-	 * }
-	 */
+	private void getGame(String name) {
+		try {
+			Client client = Client.create();
+			WebResource wr = client.resource(BASE_URI).path(r3).path(name);
+			ClientResponse response = wr.accept("application/json").get(ClientResponse.class);
+			if (response.getStatus() != 200) {
+				throw new RuntimeException(
+						"Failed : " + response.getStatusInfo() + ". Reason: " + response.getEntity(String.class));
+			}
+			final ObjectMapper mapper = new ObjectMapper();
+			String s = response.getEntity(String.class);
+			Game game = mapper.readValue(s, Game.class);
+			System.out.println(game + "\n");
+
+		} catch (RuntimeException re) {
+			System.out.println(re.getMessage());
+		} catch (IOException jsonex) {
+			jsonex.printStackTrace();
+		}
+
+	}
 
 	private void getGames() {
 		try {
@@ -334,7 +346,7 @@ public class GameAdder {
 				System.out.println("There are no active games at the moment!");
 			else {
 				for (Game g : games) {
-					System.out.println(g);
+					System.out.println("Name : " + g.getName());
 				}
 				System.out.println();
 			}
