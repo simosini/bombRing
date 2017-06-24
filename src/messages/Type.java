@@ -8,10 +8,11 @@ public enum Type {
 	DEAD,
 	DIE,	
 	EXITGAME,
+	GAME_ENDED,
 	KILLED,
 	JOINRING,
 	NACK,
 	POSITION,	
 	TOKEN,	
-	VICTORY;
+	VICTORY;	
 }

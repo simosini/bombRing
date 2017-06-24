@@ -1,13 +1,8 @@
 package messages;
 
-/**
- * This message is broadcasted */
-
-import java.io.Serializable;
-
 import restConverter.Player;
 
-public class DeadMessage extends InMessage implements Serializable {
+public class DeadMessage extends Message {
 
 	private static final long serialVersionUID = -1902910439389667349L;
 	private static final int DEAD_PRIORITY = 3;

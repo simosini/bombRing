@@ -1,8 +1,6 @@
 package messages;
 
-import java.io.Serializable;
-
-public class ExitMessage extends InMessage implements Serializable {
+public class ExitMessage extends Message {
 	
 	private static final long serialVersionUID = -5807158110067786776L;
 	private static final int EXIT_PRIORITY = 4;

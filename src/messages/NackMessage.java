@@ -1,8 +1,12 @@
 package messages;
 
-import java.io.Serializable;
+/**
+ * This message is sent to inform a player willing to join the game
+ * that should ask someone else cause the current player is either
+ * dead or leaving the game
+ */
 
-public class NackMessage extends InMessage implements Serializable {
+public class NackMessage extends Message {
 
 	private static final long serialVersionUID = -1036121250705826323L;
 	private static final int NACK_PRIORITY = 2;

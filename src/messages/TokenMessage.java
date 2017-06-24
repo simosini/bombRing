@@ -1,8 +1,6 @@
 package messages;
 
-import java.io.Serializable;
-
-public class TokenMessage extends InMessage implements Serializable {
+public class TokenMessage extends Message {
 	
 	private static final long serialVersionUID = -2487582210405295762L;
 	private static final int TOKEN_PRIORITY = 1;

@@ -1,8 +1,6 @@
 package messages;
 
-import java.io.Serializable;
-
-public class AckMessage extends InMessage implements Serializable{
+public class AckMessage extends Message {
 	
 	private static final long serialVersionUID = -2461861844306614558L;
 	private static final int ACK_PRIORITY = 2;

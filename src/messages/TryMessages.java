@@ -21,7 +21,7 @@ public class TryMessages {
 				Socket cli = srv.accept();
 				ObjectInputStream inStream = new ObjectInputStream(cli.getInputStream());
 	
-				InMessage msg = (InMessage) inStream.readObject();
+				Message msg = (Message) inStream.readObject();
 				msg.handleMessage();
 				cli.close();
 				srv.close();
@@ -37,7 +37,7 @@ public class TryMessages {
 		
 		else {
 
-			Message m1 = new PositionMessage(1, 1);
+			Message m1 = new VictoryMessage();
 			tr.communicate(m1);
 		}
 			

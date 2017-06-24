@@ -1,16 +1,8 @@
 package messages;
 
-/** 
- * This message is sent to update the map of players.
- * Basically the player who receives a message to join the game,
- * before accepting his request, must make sure that every other player 
- * have updated his players map. */
-
-import java.io.Serializable;
-
 import restConverter.Player;
 
-public class AddPlayerMessage extends InMessage implements Serializable {
+public class AddPlayerMessage extends Message {
 
 	private static final long serialVersionUID = 4448703639215851985L;
 	private static final int ADD_PRIORITY = 4;
