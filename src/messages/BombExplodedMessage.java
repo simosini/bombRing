@@ -1,9 +1,12 @@
 package messages;
 
+import java.net.Socket;
+import java.util.PriorityQueue;
+
 public class BombExplodedMessage extends Message {
 
 	private static final long serialVersionUID = 493773639985449364L;
-	private static final int BOMB_EXPLODED_PRIORITY = 4;
+	private static final int BOMB_EXPLODED_PRIORITY = 2;
 	private String color;
 
 	public BombExplodedMessage(String color) {
@@ -20,7 +23,7 @@ public class BombExplodedMessage extends Message {
 	}
 	
 	@Override
-	public void handleMessage() {
+	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue) {
 		System.out.println(this.toString());
 
 	}

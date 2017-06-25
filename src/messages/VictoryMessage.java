@@ -1,9 +1,12 @@
 package messages;
 
+import java.net.Socket;
+import java.util.PriorityQueue;
+
 public class VictoryMessage extends Message {
 
 	private static final long serialVersionUID = 4714778184603472137L;
-	private static final int VICTORY_PRIORITY = 0;
+	private static final int VICTORY_PRIORITY = 2;
 	
 	public VictoryMessage() {
 		super(Type.VICTORY, VICTORY_PRIORITY);
@@ -11,7 +14,7 @@ public class VictoryMessage extends Message {
 	}
 
 	@Override
-	public void handleMessage() {
+	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue) {
 		System.out.println(this.toString());
 	}
 	

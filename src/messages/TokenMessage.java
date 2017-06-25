@@ -1,16 +1,19 @@
 package messages;
 
+import java.net.Socket;
+import java.util.PriorityQueue;
+
 public class TokenMessage extends Message {
 	
 	private static final long serialVersionUID = -2487582210405295762L;
-	private static final int TOKEN_PRIORITY = 1;
+	private static final int TOKEN_PRIORITY = 5;
 	
 	public TokenMessage() {
 		super(Type.TOKEN, TOKEN_PRIORITY);
 	}
 	
 	@Override
-	public void handleMessage(){
+	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue){
 		System.out.println(this.toString());
 	}
 	

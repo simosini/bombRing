@@ -7,7 +7,7 @@ import java.util.TreeMap;
 
 public class Players {
 
-	private Map<Integer, Player> usersMap;
+	private TreeMap<Integer, Player> usersMap;
 
 	public Players() {
 
@@ -24,12 +24,12 @@ public class Players {
 
 	}
 
-	public synchronized Map<Integer, Player> getUsersMap() {
+	public synchronized TreeMap<Integer, Player> getUsersMap() {
 
 		return new TreeMap<>(usersMap);
 	}
 
-	public synchronized void setUsersMap(Map<Integer, Player> userMap) {
+	public synchronized void setUsersMap(TreeMap<Integer, Player> userMap) {
 
 		this.usersMap = userMap;
 	}

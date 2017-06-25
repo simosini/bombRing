@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.util.List;
+import java.util.TreeMap;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
@@ -57,11 +58,11 @@ public class GameAdder {
 		return new Player(player);
 	}
 
-	private void setGame(Game g) {
+	private void setCurrentGame(Game g) {
 		this.currentGame = g;
 	}
 
-	private synchronized Game getGame() {
+	private synchronized Game getCurrentGame() {
 
 		return new Game(currentGame);
 	}
@@ -145,8 +146,8 @@ public class GameAdder {
 					Game currentGame = ga.addGame(new Game(name, length, points, ga.getPlayer()));
 					if (currentGame == null)
 						break;
-					ga.setGame(currentGame);
-					playGame(ga, br);
+					ga.setCurrentGame(currentGame);
+					//playGame(ga, br);
 					exit = true;
 
 				} catch (IOException | NumberFormatException e) {
@@ -168,7 +169,7 @@ public class GameAdder {
 					break;
 				}
 				System.out.println("Player added correctly!");
-				ga.setGame(currentGame);
+				ga.setCurrentGame(currentGame);
 				playGame(ga, br);
 				exit = true;
 				break;
@@ -235,13 +236,15 @@ public class GameAdder {
 
 	private static void playGame(GameAdder ga, BufferedReader br) {
 
-		if (ga.getGame().getName() != null) {
+		if (ga.getCurrentGame().getName() != null) {
 			try {
+				
 				System.out.println("\nHi " + ga.getPlayer().getNickname() + "! You are currently playing in game "
-						+ ga.getGame().getName());
+						+ ga.getCurrentGame().getName() + " and those are current active players: "); 
+				ga.JoinRingProcedure();
 				System.out.println("Insert a move: ");
 				System.out.println("Moving " + br.readLine());
-				ga.deletePlayerFromGame(ga.getGame().getName(), ga.getPlayer());
+				ga.deletePlayerFromGame(ga.getCurrentGame().getName(), ga.getPlayer());
 				ga.closeSrvSocket(ga.getSrvSocket());
 				br.close();
 				System.out.println("Server socket closed!");
@@ -383,6 +386,36 @@ public class GameAdder {
 
 		return addedGame;
 
+	}
+	
+	private void JoinRingProcedure(){
+		
+		Player myself = this.getPlayer();
+		TreeMap<Integer, Player> gamePlayers = this.getCurrentGame().getPlayers().getUsersMap();
+		Player nextPeer = this.getNextPeer(myself, gamePlayers);
+		//if (nextPeer == null)
+			//cannot be added to the game so exit to the previous menu
+		// now send a message to his server socket
+	}
+
+	private Player getNextPeer(Player myself, TreeMap<Integer, Player> gamePlayers) {
+		
+		if(gamePlayers.size() > 1){
+			Integer nextPlayerKey = findNextPlayerKey(myself.getId(), gamePlayers);
+			return gamePlayers.get(nextPlayerKey);
+		}
+		else {
+			return null; // no more players to ask, only me in the map
+			
+		}
+	}
+
+	private Integer findNextPlayerKey(Integer key, TreeMap<Integer, Player> gamePlayers) {
+		Integer nextKey = null;
+		if ((nextKey = gamePlayers.higherKey(key)) == null)
+			return gamePlayers.firstKey();
+		else
+			return nextKey;		
 	}
 
 }

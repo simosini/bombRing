@@ -1,11 +1,14 @@
 package messages;
 
+import java.net.Socket;
+import java.util.PriorityQueue;
+
 import restConverter.Player;
 
 public class JoinRingMessage extends Message {
 
 	private static final long serialVersionUID = -7568751517974737661L;
-	private static final int JOIN_PRIORITY = 3;
+	private static final int JOIN_PRIORITY = 5;
 	private Player player; /** the player to add to the ring */
 
 	public JoinRingMessage(Player p) {
@@ -22,7 +25,7 @@ public class JoinRingMessage extends Message {
 	}
 
 	@Override
-	public void handleMessage() {
+	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue) {
 		System.out.println(this.toString());
 
 	}

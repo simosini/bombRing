@@ -1,9 +1,12 @@
 package messages;
 
+import java.net.Socket;
+import java.util.PriorityQueue;
+
 public class ExitMessage extends Message {
 	
 	private static final long serialVersionUID = -5807158110067786776L;
-	private static final int EXIT_PRIORITY = 4;
+	private static final int EXIT_PRIORITY = 2;
 	private String playerName;
 
 	public ExitMessage(String playerName) {
@@ -20,7 +23,7 @@ public class ExitMessage extends Message {
 	}
 
 	@Override
-	public void handleMessage() {
+	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue) {
 		System.out.println(this.toString());
 
 	}

@@ -1,11 +1,14 @@
 package messages;
 
+import java.net.Socket;
+import java.util.PriorityQueue;
+
 import restConverter.Player;
 
 public class KilledMessage extends Message {
 
 	private static final long serialVersionUID = 184832401348782267L;
-	private static final int KILLED_PRIORITY = 2;
+	private static final int KILLED_PRIORITY = 5;
 	private Player killedPlayer;
 
 	public KilledMessage(Player p) {
@@ -25,7 +28,7 @@ public class KilledMessage extends Message {
 	}
 
 	@Override
-	public void handleMessage() {
+	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue) {
 		System.out.println(this.toString());
 	}
 	

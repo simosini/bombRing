@@ -1,9 +1,12 @@
 package messages;
 
+import java.net.Socket;
+import java.util.PriorityQueue;
+
 public class PositionMessage extends Message {
 	
 	private static final long serialVersionUID = 6887926961459159988L;
-	private static final int POSITION_PRIORITY = 3;
+	private static final int POSITION_PRIORITY = 4;
 	private int row;
 	private int col;
 
@@ -31,8 +34,12 @@ public class PositionMessage extends Message {
 	}
 	
 	@Override
-	public void handleMessage() {
+	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue) {
 		System.out.println(this.toString());
+		/** access to outQueue must be sync. something like:
+		 * synchronized(outQueue)
+		 * 	  outQueue.add(newly created packet)
+		 * the same must be made for the std input thread */
 	}
 	
 	@Override

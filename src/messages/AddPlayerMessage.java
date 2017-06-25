@@ -1,11 +1,14 @@
 package messages;
 
+import java.net.Socket;
+import java.util.PriorityQueue;
+
 import restConverter.Player;
 
 public class AddPlayerMessage extends Message {
 
 	private static final long serialVersionUID = 4448703639215851985L;
-	private static final int ADD_PRIORITY = 4;
+	private static final int ADD_PRIORITY = 3;
 	private Player playerToAdd;
 
 	public AddPlayerMessage(Player p) {
@@ -22,7 +25,7 @@ public class AddPlayerMessage extends Message {
 	}
 	
 	@Override
-	public void handleMessage() {
+	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue) {
 		System.out.println(this.toString());
 
 	}

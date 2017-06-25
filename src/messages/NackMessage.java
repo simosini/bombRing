@@ -1,5 +1,8 @@
 package messages;
 
+import java.net.Socket;
+import java.util.PriorityQueue;
+
 /**
  * This message is sent to inform a player willing to join the game
  * that should ask someone else cause the current player is either
@@ -9,7 +12,7 @@ package messages;
 public class NackMessage extends Message {
 
 	private static final long serialVersionUID = -1036121250705826323L;
-	private static final int NACK_PRIORITY = 2;
+	private static final int NACK_PRIORITY = 5;
 	
 
 	public NackMessage() {
@@ -18,7 +21,7 @@ public class NackMessage extends Message {
 	}
 
 	@Override
-	public void handleMessage() {
+	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue) {
 		System.out.println(this.toString());
 
 	}
