@@ -148,6 +148,7 @@ public class GameAdder {
 						break;
 					ga.setCurrentGame(currentGame);
 					//playGame(ga, br);
+					ga.closeSrvSocket(ga.getSrvSocket());
 					exit = true;
 
 				} catch (IOException | NumberFormatException e) {
@@ -244,6 +245,7 @@ public class GameAdder {
 				ga.JoinRingProcedure();
 				System.out.println("Insert a move: ");
 				System.out.println("Moving " + br.readLine());
+				// this yields a game
 				ga.deletePlayerFromGame(ga.getCurrentGame().getName(), ga.getPlayer());
 				ga.closeSrvSocket(ga.getSrvSocket());
 				br.close();

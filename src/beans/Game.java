@@ -9,7 +9,13 @@ public class Game {
 	private int scoreNeeded;
 	private Players players; /** players list of the game*/
 
-	public Game() {
+	public Game() {}
+	
+	public Game(String name, int length, int score) {
+		this.setName(name);
+		this.setSideLength(length);
+		this.setScore(score);
+		this.setPlayers(new Players());
 	}
 
 	public Game(String name, int length, int score, Player p) {

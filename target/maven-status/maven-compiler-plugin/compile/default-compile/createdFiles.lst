@@ -6,6 +6,7 @@ messages/KilledMessage.class
 messages/Message.class
 peer/Cell.class
 threads/MessageHandlerThread.class
+peer/RingExample.class
 peer/Peer$2.class
 messages/BombExplodedMessage.class
 beans/Provas.class
@@ -40,6 +41,7 @@ messages/PositionMessage.class
 beans/Players.class
 peer/Peer.class
 messages/ExitMessage.class
+peer/RingExample$HandleToken.class
 client/GameAdder.class
 messages/Packets.class
 services/UserService.class

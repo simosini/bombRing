@@ -68,7 +68,6 @@ public class UserService {
 		return Response.ok().entity(Games.getInstance().getByName(name)).build();
 	}
 
-
 	// yields games list
 	@Path("/getgames")
 	@GET
@@ -79,7 +78,6 @@ public class UserService {
 
 	}
 
-	
 	// add a game to the list
 	@Path("/addgame")
 	@POST
@@ -95,7 +93,6 @@ public class UserService {
 		return Response.ok().entity(Games.getInstance().getByName(g.getName())).build();
 	}
 
-	
 	// yield the game specified by the name if exists
 	@Path("/getgame/{name}")
 	@GET
@@ -108,7 +105,6 @@ public class UserService {
 			throw new AppException("The game selected does not exist!");
 	}
 
-	
 	// delete a player from the selected game. It does not delete a resource but
 	// just update it
 	@Path("/deleteplayer/{gameName}")
