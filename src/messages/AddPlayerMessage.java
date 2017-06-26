@@ -3,7 +3,7 @@ package messages;
 import java.net.Socket;
 import java.util.PriorityQueue;
 
-import restConverter.Player;
+import beans.Player;
 
 public class AddPlayerMessage extends Message {
 

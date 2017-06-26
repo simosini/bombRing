@@ -19,12 +19,12 @@ import com.sun.jersey.api.json.JSONConfiguration;
 import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiManager;
 
-import restConverter.Game;
-import restConverter.Player;
+import beans.Game;
+import beans.Player;
 
 public class GameAdder {
 
-	private static final String BASE_URI = "http://localhost:8080/restConverter/rest/players/";
+	private static final String BASE_URI = "http://localhost:8080/restConverter/rest/services/";
 	private final String r1 = "addgame";
 	private final String r2 = "getgames";
 	private final String r3 = "getgame/";
@@ -335,7 +335,7 @@ public class GameAdder {
 	private void getGames() {
 		try {
 			Client client = Client.create();
-			WebResource wr = client.resource(BASE_URI + r2);
+			WebResource wr = client.resource(BASE_URI).path(r2);
 			ClientResponse response = wr.accept("application/json").get(ClientResponse.class);
 			if (response.getStatus() != 200) {
 				throw new RuntimeException(

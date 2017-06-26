@@ -26,6 +26,7 @@ public class MessageHandlerThread implements Runnable {
 
 	private Queue<Packets> inQueue;
 	private PriorityQueue<Packets> outQueue;
+	private volatile boolean stop = false; // to stop the thread when the game is finished
 
 	public MessageHandlerThread(Queue<Packets> inQueue) {
 		this.setInQueue(inQueue);
@@ -46,10 +47,18 @@ public class MessageHandlerThread implements Runnable {
 	public void setOutQueue(PriorityQueue<Packets> queue) {
 		this.outQueue = queue;
 	}
+	
+	public synchronized void stopThread(boolean b){
+		this.stop = b;
+	}
+	
+	public synchronized boolean getState(){
+		return this.stop;
+	}
 
 	@Override
 	public void run() {
-		while (true) {
+		while (!this.getState()) {
 			synchronized (inQueue) {
 				/*
 				 * try { all comments for debugging purpose only
