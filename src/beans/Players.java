@@ -18,20 +18,20 @@ public class Players {
 		this.setUsersMap(players.getUsersMap());
 	}
 
-	public synchronized List<Player> retrievePlayersList() {
-		// yields a copy to guarantee synchronization
-		return new ArrayList<>(getUsersMap().values());
-
-	}
-
 	public synchronized TreeMap<Integer, Player> getUsersMap() {
-
+		// returns a copy
 		return new TreeMap<>(usersMap);
 	}
 
 	public synchronized void setUsersMap(TreeMap<Integer, Player> userMap) {
 
 		this.usersMap = userMap;
+	}
+	
+	public synchronized List<Player> retrievePlayersList() {
+		// yields a copy to guarantee synchronization
+		return new ArrayList<>(getUsersMap().values());
+
 	}
 
 	public synchronized void addPlayer(Player p) {
@@ -47,7 +47,7 @@ public class Players {
 			throw new IllegalArgumentException("The player given does not exist!");		
 	}
 
-	public synchronized Player getByName(String name) {
+	public Player getByName(String name) {
 
 		List<Player> usersCopy = retrievePlayersList();
 
@@ -67,9 +67,11 @@ public class Players {
 
 	}
 
-	public synchronized int size() {
+	public int size() {
+		synchronized (this.usersMap) {
+			return this.usersMap.size();
+		}
 		
-		return this.usersMap.size();
 	}
 	
 	@Override

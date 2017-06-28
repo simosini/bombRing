@@ -1,5 +1,7 @@
 package threads;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.Queue;
 
@@ -18,13 +20,11 @@ public class ReceivedMessagesHandlerThread implements Runnable {
 	private Queue<Packets> queue; /** where to put new packets */
 	private Thread handler; /** needed to check it's waiting */
 	private Socket sender;
-	private Message incomingMessage;
 	
-	public ReceivedMessagesHandlerThread(Queue<Packets> q, Thread t, Socket s, Message m){
+	public ReceivedMessagesHandlerThread(Queue<Packets> q, Thread t, Socket s){
 		this.setQueue(q);
 		this.setHandler(t);
 		this.setSender(s);
-		this.setIncomingMessage(m);
 	}
 	
 	public Queue<Packets> getQueue(){
@@ -51,19 +51,23 @@ public class ReceivedMessagesHandlerThread implements Runnable {
 		this.sender = sender;
 	}
 
-	public Message getIncomingMessage() {
-		return incomingMessage;
-	}
-
-	public void setIncomingMessage(Message incomingMessage) {
-		this.incomingMessage = incomingMessage;
-	}
-
 	@Override
 	public void run() {
+		Message message = null;
+		Socket sender = this.getSender();
+		try {			
+			ObjectInputStream reader = new ObjectInputStream(sender.getInputStream());
+			message = (Message) reader.readObject();
+		}
+		catch (IOException e){
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
 		synchronized(queue){
 			while(getHandler().getState() != Thread.State.WAITING){
-				//System.out.println("The producer is busy. I wait ");
+				//System.out.println("The handler is busy. I wait ");
 				try {
 					queue.wait();
 				} catch (InterruptedException e) {
@@ -71,7 +75,7 @@ public class ReceivedMessagesHandlerThread implements Runnable {
 				}
 			}
 			/** Handler is now ready to be notified */
-			Packets packet = new Packets(this.getIncomingMessage(), this.getSender());
+			Packets packet = new Packets(message, sender);
 			queue.add(packet);
 			//System.out.println("Produced " + packet);
 			/** might not be the handler but it's not a problem */

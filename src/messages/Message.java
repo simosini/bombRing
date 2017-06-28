@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.util.PriorityQueue;
 
+import peer.Peer;
+
 /** 
  * Abstract generic class for messages.
  * Every message has a specific code and a priority associated 
@@ -51,8 +53,10 @@ public abstract class Message implements Serializable {
 		this.isInput = flag;
 		
 	}
-	
-	public abstract void handleMessage(Socket sender, PriorityQueue<Packets> outQueue);
+
+	public abstract void handleMessage(Socket sender, 
+									   PriorityQueue<Packets> outQueue, 
+									   Peer peer);
 
 	
 }

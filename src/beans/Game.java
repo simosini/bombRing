@@ -24,7 +24,8 @@ public class Game {
 		this.setScore(score);
 		this.setPlayers(initList(p));
 	}
-
+	
+	/** create a copy of the given game */
 	public Game(Game game) {
 		this.setName(game.getName());
 		this.setSideLength(game.getSideLength());
@@ -32,14 +33,14 @@ public class Game {
 		this.setPlayers(game.getPlayers());
 	}
 
-	// this method is only called to initialize the newly created Game
+	/** this method is only called to initialize the newly created Game */
 	private Players initList(Player p) {
 		Players players = new Players();
 		players.addPlayer(p);
 		return players;
 	}
 
-	// setters and getters
+	/** setters and getters: get returns a copy when needed */
 	
 	public void setName(String name) {
 		this.name = name;
@@ -74,14 +75,17 @@ public class Game {
 		return new Players(players);
 
 	}
+	
+	/** helper methods */
 
-	// retrieve players of a game as a list
+	/** retrieve players of a game as a list */
 	public synchronized List<Player> retrieveGamePlayers() {
-
+		// return a copy 
 		return getPlayers().retrievePlayersList();
 	}
 
 	public synchronized void addPlayerToGame(Player p) {
+		
 		players.addPlayer(p);
 	}
 	

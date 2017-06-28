@@ -3,6 +3,8 @@ package messages;
 import java.net.Socket;
 import java.util.PriorityQueue;
 
+import peer.Peer;
+
 /**
  * This message is sent to inform a player willing to join the game
  * that should ask someone else cause the current player is either
@@ -21,7 +23,7 @@ public class NackMessage extends Message {
 	}
 
 	@Override
-	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue) {
+	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue, Peer peer) {
 		System.out.println(this.toString());
 
 	}

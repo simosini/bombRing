@@ -7,8 +7,18 @@ public class Cell {
 	}
 
 	protected int[] gridLocation = new int[2];
+	protected String zoneColor;
 
 	public Cell() {
+	}
+
+	public Cell(Cell currentCell) {
+		int[] location = currentCell.getPosition();
+		this.setPosition(location[0], location[1]);
+	}
+
+	public Cell(int row, int col) {
+		this.setPosition(row, col);
 	}
 
 	public synchronized void setPosition(int i, int j) {
@@ -20,12 +30,19 @@ public class Cell {
 		return gridLocation;
 	}
 
+	public String getZoneColor() {
+		return zoneColor;
+	}
+
+	public void setZoneColor(String zoneColor) {
+		this.zoneColor = zoneColor;
+	}
+
 	public int[] move(DIR d) {
 		int[] currentPosition = this.getPosition();
 		if (d != null) {
 			int[] movement = this.vector(d);
-			int newPosition[]={currentPosition[0] + movement[0], 
-							   currentPosition[1] + movement[1]};
+			int newPosition[] = { currentPosition[0] + movement[0], currentPosition[1] + movement[1] };
 			return newPosition;
 		}
 		return null;
@@ -44,9 +61,10 @@ public class Cell {
 		}
 		return null;
 	}
-	
+
 	@Override
-	public String toString(){
-		return "La tua posizione è " + this.gridLocation[0] + "," + this.gridLocation[1];
+	public String toString() {
+		return "You are in the " + this.getZoneColor() + " zone and your position is: " + this.gridLocation[0] + ","
+				+ this.gridLocation[1];
 	}
 }

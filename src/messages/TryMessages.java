@@ -22,7 +22,7 @@ public class TryMessages {
 				ObjectInputStream inStream = new ObjectInputStream(cli.getInputStream());
 	
 				Message msg = (Message) inStream.readObject();
-				msg.handleMessage(null, null);
+				msg.handleMessage(null, null, null);
 				cli.close();
 				srv.close();
 

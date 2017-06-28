@@ -1,5 +1,6 @@
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/beans/Games.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/peer/JoinTry.java
+/home/simosini/Desktop/DisSys/Lab/restConverter/src/threads/SendMessagesThread.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/messages/VictoryMessage.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/messages/NackMessage.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/beans/Game.java
@@ -9,6 +10,7 @@
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/threads/PriorityQExample.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/messages/GameEndedMessage.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/messages/DeadMessage.java
+/home/simosini/Desktop/DisSys/Lab/restConverter/src/threads/ServerSocketHandler.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/messages/AddPlayerMessage.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/messages/ExitMessage.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/messages/AckMessage.java
@@ -24,10 +26,12 @@
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/peer/Uri.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/beans/Players.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/peer/RingExample.java
+/home/simosini/Desktop/DisSys/Lab/restConverter/src/client/GameMain.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/exceptions/Try.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/peer/Ring.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/beans/Provas.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/messages/Message.java
+/home/simosini/Desktop/DisSys/Lab/restConverter/src/client/Provare.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/messages/PositionMessage.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/peer/Cell.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/beans/TrySinchro.java
@@ -38,4 +42,5 @@
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/messages/TryMessages.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/threads/UserInputHandlerThread.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/messages/BombTossedMessage.java
+/home/simosini/Desktop/DisSys/Lab/restConverter/src/peer/Broadcast.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/exceptions/AppExceptionMapper.java

@@ -3,6 +3,8 @@ package messages;
 import java.net.Socket;
 import java.util.PriorityQueue;
 
+import peer.Peer;
+
 public class ExitMessage extends Message {
 	
 	private static final long serialVersionUID = -5807158110067786776L;
@@ -23,7 +25,7 @@ public class ExitMessage extends Message {
 	}
 
 	@Override
-	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue) {
+	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue, Peer peer) {
 		System.out.println(this.toString());
 
 	}

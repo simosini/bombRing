@@ -4,6 +4,7 @@ import java.net.Socket;
 import java.util.PriorityQueue;
 
 import beans.Player;
+import peer.Peer;
 
 public class AddPlayerMessage extends Message {
 
@@ -25,7 +26,7 @@ public class AddPlayerMessage extends Message {
 	}
 	
 	@Override
-	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue) {
+	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue, Peer peer) {
 		System.out.println(this.toString());
 
 	}

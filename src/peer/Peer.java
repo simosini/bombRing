@@ -1,9 +1,8 @@
 package peer;
 
-import java.net.ServerSocket;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.TreeMap;
 
 import javax.ws.rs.core.MediaType;
 
@@ -19,7 +18,6 @@ import com.sun.jersey.api.json.JSONConfiguration;
 
 import beans.Game;
 import beans.Player;
-import messages.Packets;
 
 public class Peer {
 
@@ -27,19 +25,24 @@ public class Peer {
 
 	private Game currentGame;
 	private Player currentPlayer;
-	private Queue<Packets> inQueue;
-	private PriorityQueue<Packets> outQueue;
-	private ServerSocket srvSocket;
 	private int currentScore;
 	private boolean isAlive;
 	private Cell currentPosition;
 
-	public Peer() {}
+	public Peer() {
+		initPeer();
+	}
+
+	private void initPeer() {
+		this.setAlive(false);
+		this.setCurrentScore(0);
+	}
 
 	/** getters and setters method */
 
 	public Game getCurrentGame() {
-		return currentGame;
+		// yields a copy
+		return new Game(this.currentGame);
 	}
 
 	public void setCurrentGame(Game currentGame) {
@@ -47,36 +50,14 @@ public class Peer {
 	}
 
 	public Player getCurrentPlayer() {
-		return currentPlayer;
+		// yields a copy
+		return new Player(this.currentPlayer);
 	}
 
 	public void setCurrentPlayer(Player currentPlayer) {
 		this.currentPlayer = currentPlayer;
 	}
 
-	public Queue<Packets> getInQueue() {
-		return inQueue;
-	}
-
-	public void setInQueue(Queue<Packets> inQueue) {
-		this.inQueue = inQueue;
-	}
-
-	public PriorityQueue<Packets> getOnutQueue() {
-		return outQueue;
-	}
-
-	public void setOnutQueue(PriorityQueue<Packets> onutQueue) {
-		this.outQueue = onutQueue;
-	}
-
-	public ServerSocket getSrvSocket() {
-		return srvSocket;
-	}
-
-	public void setSrvSocket(ServerSocket srvSocket) {
-		this.srvSocket = srvSocket;
-	}
 
 	public int getCurrentScore() {
 		return currentScore;
@@ -99,11 +80,34 @@ public class Peer {
 	 * sync using wait and notify. The same for setCurrentPosition
 	 */
 	public Cell getCurrentPosition() {
-		return currentPosition;
+		return this.currentPosition;
+	}
+	
+	public void setCurrentPosition(Cell position){
+		this.currentPosition = position;
 	}
 
-	public void setCurrentPosition(Cell currentPosition) {
-		this.currentPosition = currentPosition;
+	public void setNewPosition(int row, int col) {
+		this.currentPosition.setPosition(row, col);
+	}
+	/** yields a copy of the ports for the broadcast */
+	public List<Integer> extractPlayersPorts(){
+		TreeMap<Integer, Player> players = this.currentGame.getPlayers().getUsersMap();
+		players.remove(this.currentPlayer.getId());/** it's a copy I can do that */
+		List<Integer> ports = new ArrayList<>();
+		players.forEach((id,pl) -> ports.add(pl.getPort()));
+		return ports;
+		
+	}
+	
+	/** methods to add and delete a player. Work on actual object not a copy. 
+	 *  Those methods are only called by the handler */
+	public void addNewPlayer(Player p){
+		this.currentGame.addPlayerToGame(p);
+	}
+	
+	public void deletePlayer(Player p){
+		this.currentGame.deletePlayerFromGame(p);
 	}
 
 	/** client methods to interact with rest server */
@@ -203,7 +207,7 @@ public class Peer {
 	}
 	
 	// prints the list of all active players in the application
-	public void getAllPlayers() {
+	public void retrieveAllPlayers() {
 		try {
 			Client client = configureRestClient();
 			WebResource wr = client.resource(BASE_URI).path(Uri.GET_ALL_PLAYERS.getPath());
@@ -238,7 +242,7 @@ public class Peer {
 	}
 	
 	// prints the players of the game given if the game exists
-	public void getPlayers(String gameName) {
+	public void retrievePlayers(String gameName) {
 		try {
 			Client client = configureRestClient();
 			WebResource wr = client.resource(BASE_URI)
@@ -274,7 +278,7 @@ public class Peer {
 	}
 	
 	// prints the game details if the game exists
-	public void getGame(String gameName) {
+	public void retrieveGameInfo(String gameName) {
 		try {
 			Client client = configureRestClient();
 			WebResource wr = client.resource(BASE_URI)
@@ -304,7 +308,7 @@ public class Peer {
 	}
 	
 	// prints the names of all available games
-	public void getGames() {
+	public void retrieveGames() {
 		try {
 			Client client = configureRestClient();
 			WebResource wr = client.resource(BASE_URI)
