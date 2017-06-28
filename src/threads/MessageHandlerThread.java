@@ -90,7 +90,10 @@ public class MessageHandlerThread implements Runnable {
 				 * eventually notify the standard in thread. No token needed
 				 */
 				if (peer.getCurrentGame().getPlayers().size() == 1) {
-					Packets outPacket = outQueue.poll(); /** only first packet */
+					Packets outPacket = null;
+					synchronized (outQueue) {
+						outPacket = outQueue.poll(); /** only first packet */
+					}
 					if (outPacket != null) {
 						Message outMessage = outPacket.getMessage();
 						outMessage.handleMessage(outPacket.getSendingSocket(), this.getOutQueue(), this.getPeer());
@@ -105,11 +108,7 @@ public class MessageHandlerThread implements Runnable {
 				}
 
 				inQueue.notify();
-				/**
-				 * try { inQueue.wait(); } catch (InterruptedException e) {
-				 * e.printStackTrace(); }
-				 */
-
+				
 			}
 
 		}

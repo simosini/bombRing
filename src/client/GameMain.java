@@ -108,7 +108,7 @@ public class GameMain {
 					Cell newCell = new Cell(random.nextInt(length), random.nextInt(length));
 					newCell.setZoneColor("red");
 					peer.setCurrentPosition(newCell);
-					
+					peer.setAlive(true);
 					exit = true;
 
 				} catch (IOException | NumberFormatException e) {

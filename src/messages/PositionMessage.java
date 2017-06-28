@@ -1,6 +1,8 @@
 package messages;
 
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -8,7 +10,7 @@ import peer.Broadcast;
 import peer.Peer;
 
 public class PositionMessage extends Message {
-	
+
 	private static final long serialVersionUID = 6887926961459159988L;
 	private static final int POSITION_PRIORITY = 4;
 	private int row;
@@ -18,7 +20,7 @@ public class PositionMessage extends Message {
 		super(Type.POSITION, POSITION_PRIORITY);
 		this.setRow(row);
 		this.setCol(col);
-		
+
 	}
 
 	public int getRow() {
@@ -36,13 +38,33 @@ public class PositionMessage extends Message {
 	public void setCol(int col) {
 		this.col = col;
 	}
-	
+
 	@Override
 	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue, Peer peer) {
 		
 		try {
 			if (this.checkIsInput()){ /** it's an input packet */
-				/** does nothing for now */
+				/** check my position */
+				if(peer.isAlive() && Arrays.equals(peer.getCurrentPosition().getPosition(), new int[]{this.getRow(),this.getCol()})){
+					System.out.println("You have been killed!");
+					peer.setAlive(false);
+					/** send killed */
+					ObjectOutputStream out = new ObjectOutputStream(sender.getOutputStream());
+					out.writeObject(new KilledMessage(peer.getCurrentPlayer()));
+					out.close();
+					/** create dead message to put on the outQueue */
+					DeadMessage dm = new DeadMessage(peer.getCurrentPlayer());
+					dm.setInput(false);
+					Packets packet = new Packets(dm, null);
+					synchronized (outQueue) {
+						outQueue.add(packet);
+					}
+				}
+				else { /** just send ack */
+					ObjectOutputStream out = new ObjectOutputStream(sender.getOutputStream());
+					out.writeObject(new AckMessage());
+					out.close();
+				}
 			}
 			else { /** it's an output position packet */
 				System.out.println("Handling message. Type: " + this);
@@ -65,11 +87,9 @@ public class PositionMessage extends Message {
 			System.out.println(e.getMessage());
 		}
 	}
-	
-	
 
 	@Override
-	public String toString(){
+	public String toString() {
 		return "This is a position message";
 	}
 

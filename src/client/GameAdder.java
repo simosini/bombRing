@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.util.List;
-import java.util.TreeMap;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
@@ -242,7 +241,7 @@ public class GameAdder {
 				
 				System.out.println("\nHi " + ga.getPlayer().getNickname() + "! You are currently playing in game "
 						+ ga.getCurrentGame().getName() + " and those are current active players: "); 
-				ga.JoinRingProcedure();
+				//ga.JoinRingProcedure();
 				System.out.println("Insert a move: ");
 				System.out.println("Moving " + br.readLine());
 				// this yields a game
@@ -390,7 +389,7 @@ public class GameAdder {
 
 	}
 	
-	private void JoinRingProcedure(){
+	/*private void JoinRingProcedure(){
 		
 		Player myself = this.getPlayer();
 		TreeMap<Integer, Player> gamePlayers = this.getCurrentGame().getPlayers().getUsersMap();
@@ -418,6 +417,6 @@ public class GameAdder {
 			return gamePlayers.firstKey();
 		else
 			return nextKey;		
-	}
+	}*/
 
 }

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
+import messages.ExitMessage;
 import messages.Message;
 import messages.Packets;
 import messages.PositionMessage;
@@ -107,7 +108,7 @@ public class UserInputHandlerThread implements Runnable {
 			System.out.println(currentPos);
 
 			System.out.println("Select a move:\n" + "U - move up;\n" + "D - move down;\n" + "L - move left;\n"
-					+ "R - move right;\n" + "B - toss a bomb if available;\n");
+					+ "R - move right;\n" + "B - toss a bomb if available;\nE - exit game;\n");
 			String choice = this.userInput.readLine();
 			switch (choice.toLowerCase()) {
 			case "u":
@@ -156,7 +157,15 @@ public class UserInputHandlerThread implements Runnable {
 
 			/*
 			 * case "b": takes first bomb from the queue break;
-			 */
+			 */ 
+			 case "e": 
+				 
+				 ExitMessage em = new ExitMessage(null);
+				 em.setInput(false);
+				 System.out.println("Waiting to close the game...done!");
+				 // return new Packets(em, null);
+				 System.exit(0); //later will be changed
+		
 
 			default:
 				System.out.println("Choice not valid! Please try again!");
