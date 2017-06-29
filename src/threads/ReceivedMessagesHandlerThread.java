@@ -17,22 +17,22 @@ import messages.Packets;
 
 public class ReceivedMessagesHandlerThread implements Runnable {
 
-	private Queue<Packets> queue; /** where to put new packets */
+	private Queue<Packets> inQueue; /** where to put new packets */
 	private Thread handler; /** needed to check it's waiting */
 	private Socket sender;
 	
 	public ReceivedMessagesHandlerThread(Queue<Packets> q, Thread t, Socket s){
-		this.setQueue(q);
+		this.setInQueue(q);
 		this.setHandler(t);
 		this.setSender(s);
 	}
 	
-	public Queue<Packets> getQueue(){
-		return this.queue;
+	public Queue<Packets> getInQueue(){
+		return this.inQueue;
 	}
 	
-	public void setQueue(Queue<Packets> q) {
-		this.queue = q;		
+	public void setInQueue(Queue<Packets> q) {
+		this.inQueue = q;		
 	}
 
 	public Thread getHandler(){
@@ -58,6 +58,8 @@ public class ReceivedMessagesHandlerThread implements Runnable {
 		try {			
 			ObjectInputStream reader = new ObjectInputStream(sender.getInputStream());
 			message = (Message) reader.readObject();
+			System.out.println("Recieved :" + message);
+			
 		}
 		catch (IOException e){
 			e.printStackTrace();
@@ -65,21 +67,25 @@ public class ReceivedMessagesHandlerThread implements Runnable {
 			e.printStackTrace();
 		}
 		
-		synchronized(queue){
+		synchronized(inQueue){
+			System.out.println("State :");
 			while(getHandler().getState() != Thread.State.WAITING){
-				//System.out.println("The handler is busy. I wait ");
+				System.out.println("The handler is busy. I wait ");
 				try {
-					queue.wait();
+					inQueue.wait();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 			/** Handler is now ready to be notified */
+			System.out.println("Creating packet!");
 			Packets packet = new Packets(message, sender);
-			queue.add(packet);
+			inQueue.add(packet);
 			//System.out.println("Produced " + packet);
 			/** might not be the handler but it's not a problem */
-			queue.notify();
+			System.out.println("Notifying handler");
+			inQueue.notify();
+			System.out.println("Notified");
 		}			
 	}
 

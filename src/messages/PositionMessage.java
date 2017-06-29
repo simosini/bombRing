@@ -49,16 +49,19 @@ public class PositionMessage extends Message {
 					System.out.println("You have been killed!");
 					peer.setAlive(false);
 					/** send killed */
+					System.out.println("sending killed message");
 					ObjectOutputStream out = new ObjectOutputStream(sender.getOutputStream());
 					out.writeObject(new KilledMessage(peer.getCurrentPlayer()));
 					out.close();
 					/** create dead message to put on the outQueue */
+					System.out.println("crreating dead message");
 					DeadMessage dm = new DeadMessage(peer.getCurrentPlayer());
 					dm.setInput(false);
 					Packets packet = new Packets(dm, null);
 					synchronized (outQueue) {
 						outQueue.add(packet);
 					}
+					System.out.println("Dead packet added to the outQueue");
 				}
 				else { /** just send ack */
 					ObjectOutputStream out = new ObjectOutputStream(sender.getOutputStream());

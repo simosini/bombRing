@@ -83,28 +83,35 @@ public class MessageHandlerThread implements Runnable {
 						e.printStackTrace();
 					}
 					/** check if the player is the only one in the game */
+					System.out.println("Im awake");
 					if (peer.getCurrentGame().getPlayers().size() == 1) break;
 				}
 				/**
 				 * if you are alone take first message on the outQueue and
 				 * eventually notify the standard in thread. No token needed
 				 */
-				if (peer.getCurrentGame().getPlayers().size() == 1) {
+				if (peer.getCurrentGame().getPlayers().size() == 1 && !outQueue.isEmpty()) {
 					Packets outPacket = null;
+					
 					synchronized (outQueue) {
+						System.out.println("retrieving packet from outq");
 						outPacket = outQueue.poll(); /** only first packet */
 					}
 					if (outPacket != null) {
+						System.out.println("Starting handling");
 						Message outMessage = outPacket.getMessage();
 						outMessage.handleMessage(outPacket.getSendingSocket(), this.getOutQueue(), this.getPeer());
 
 					}
+					else
+						System.out.println("No packet to retrieve!");
 				}
 				/** consumes all items before releasing the lock on queue */
 				while (!inQueue.isEmpty()) {
+					System.out.println("Consuming inQueue");
 					Packets inPacket = inQueue.remove();
 					Message inMessage = inPacket.getMessage();
-					inMessage.handleMessage(inPacket.getSendingSocket(), this.getOutQueue(), null);
+					inMessage.handleMessage(inPacket.getSendingSocket(), this.getOutQueue(), this.getPeer());
 				}
 
 				inQueue.notify();

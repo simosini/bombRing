@@ -1,14 +1,16 @@
 package client;
 
-import beans.Game;
-import beans.Player;
-import peer.Cell;
-import peer.Peer;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
+import messages.PositionMessage;
 
 public class Provare {
 
-	public static void main(String[] args) {
-		Peer peer = new Peer();
+	public static void main(String[] args) throws IOException, ClassNotFoundException{
+		/*Peer peer = new Peer();
 		Player p = new Player("simo", "sini", "simosini", 100);
 		Cell cell =  new Cell();
 		cell.setPosition(3, 5);
@@ -22,7 +24,17 @@ public class Provare {
 		System.out.println(peer.getCurrentGame());
 		peer.deletePlayer(p);
 		System.out.println(peer.getCurrentGame());
-		System.out.println(peer.getCurrentPosition().getZoneColor());
+		System.out.println(peer.getCurrentPosition().getZoneColor());*/
+		PositionMessage pm = new PositionMessage(4, 4);
+		Socket s = new Socket("localhost", 34627);
+		System.out.println("Connected to server");
+		ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+		out.writeObject(pm);
+		System.out.println("Message sent");
+		ObjectInputStream in = new ObjectInputStream(s.getInputStream());
+		System.out.println("Reading answer");
+		System.out.println(in.readObject());
+		s.close();
 	}
 
 }
