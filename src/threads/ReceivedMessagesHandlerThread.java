@@ -3,10 +3,10 @@ package threads;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
-import java.util.Queue;
 
 import messages.Message;
 import messages.Packets;
+import singletons.InQueue;
 
 /** 
  * This handler takes care of the messages received on the server Socket.
@@ -17,23 +17,15 @@ import messages.Packets;
 
 public class ReceivedMessagesHandlerThread implements Runnable {
 
-	private Queue<Packets> inQueue; /** where to put new packets */
 	private Thread handler; /** needed to check it's waiting */
 	private Socket sender;
 	
-	public ReceivedMessagesHandlerThread(Queue<Packets> q, Thread t, Socket s){
-		this.setInQueue(q);
+	public ReceivedMessagesHandlerThread(Thread t, Socket s){
+		
 		this.setHandler(t);
 		this.setSender(s);
 	}
 	
-	public Queue<Packets> getInQueue(){
-		return this.inQueue;
-	}
-	
-	public void setInQueue(Queue<Packets> q) {
-		this.inQueue = q;		
-	}
 
 	public Thread getHandler(){
 		return this.handler;
@@ -53,6 +45,7 @@ public class ReceivedMessagesHandlerThread implements Runnable {
 
 	@Override
 	public void run() {
+		InQueue inQueue = InQueue.INSTANCE;
 		Message message = null;
 		Socket sender = this.getSender();
 		try {			

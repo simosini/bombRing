@@ -10,7 +10,7 @@ public class Games {
 	private List<Game> gamesList;
 	private static Games instance; // singleton
 
-	public Games() {
+	private Games() {
 		setGamesList(new ArrayList<>());
 	}
 
@@ -32,7 +32,7 @@ public class Games {
 		this.gamesList = gameslist;
 	}
 
-	// cannot return a copy cause need to change the original list
+	// cannot work on a copy cause need to change the original list
 	public synchronized void addGame(Game g) {
 
 		for (Game game : this.getGamesList())

@@ -1,9 +1,6 @@
 package messages;
 
 import java.net.Socket;
-import java.util.PriorityQueue;
-
-import peer.Peer;
 
 public class BombExplodedMessage extends Message {
 
@@ -25,7 +22,7 @@ public class BombExplodedMessage extends Message {
 	}
 	
 	@Override
-	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue, Peer peer) {
+	public void handleMessage(Socket sender) {
 		System.out.println(this.toString());
 
 	}

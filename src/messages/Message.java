@@ -2,9 +2,6 @@ package messages;
 
 import java.io.Serializable;
 import java.net.Socket;
-import java.util.PriorityQueue;
-
-import peer.Peer;
 
 /** 
  * Abstract generic class for messages.
@@ -54,9 +51,7 @@ public abstract class Message implements Serializable {
 		
 	}
 
-	public abstract void handleMessage(Socket sender, 
-									   PriorityQueue<Packets> outQueue, 
-									   Peer peer);
+	public abstract void handleMessage(Socket sender);
 
 	
 }

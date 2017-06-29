@@ -4,9 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Queue;
 import java.util.Random;
 
 import com.vdurmont.emoji.Emoji;
@@ -14,55 +11,50 @@ import com.vdurmont.emoji.EmojiManager;
 
 import beans.Game;
 import beans.Player;
-import messages.Packets;
 import peer.Cell;
-import peer.Peer;
+import services.ServiceRequester;
+import singletons.Peer;
 import threads.MessageHandlerThread;
 import threads.ServerSocketHandler;
 import threads.UserInputHandlerThread;
 
-/** this is the  main of the game: everything starts here */
+/** this is the main of the game: everything starts here */
 public class GameMain {
 
 	public static void main(String[] args) {
 		try {
-			/** init basic structures and socket for the game */  
-			Queue<Packets> inQueue = new LinkedList<>();
-			PriorityQueue<Packets> outQueue = new PriorityQueue<>();
+			/** init basic structures and socket for the game */
 			ServerSocket srvSocket = new ServerSocket(0);
-			Peer peer = new Peer(); /** will contain all game info */
-			
+			ServiceRequester service = new ServiceRequester();
+
 			BufferedReader readInput = new BufferedReader(new InputStreamReader(System.in));
-			
+
 			Player newPlayer = getPlayerInfo(readInput);
 			newPlayer.setPort(srvSocket.getLocalPort());
-			peer.setCurrentPlayer(newPlayer);
-			
+			Peer.INSTANCE.addPlayer(newPlayer);
+			//System.out.println(Peer.INSTANCE.getCurrentPlayer());
+
 			/** start server communication */
-			printGameMenu(peer, readInput);
-			
-			
+			printGameMenu(readInput, service);
+
 			/** start threads */
-			Thread handler = new Thread(new MessageHandlerThread(inQueue, outQueue, peer)); 
+			MessageHandlerThread mht = new MessageHandlerThread();
+			Thread handler = new Thread(mht);
 			handler.start();
-			new Thread(new ServerSocketHandler(srvSocket, inQueue, handler)).start();
-			
-			
+			new Thread(new ServerSocketHandler(srvSocket, handler)).start();
+
 			/** the game is now started */
-			new Thread(new UserInputHandlerThread(outQueue, readInput, inQueue, peer.getCurrentPosition(), peer.getCurrentGame().getSideLength())).start();
-			
-			
-			
-			
-		}
-		catch(Exception e){
+			new Thread(
+					new UserInputHandlerThread(readInput)).start();
+
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 
 	}
-	
+
 	/** Handle the first menu before entering a game */
-	private static void printGameMenu(Peer peer, BufferedReader br) {
+	private static void printGameMenu(BufferedReader br, ServiceRequester service) {
 		int choice = 0;
 		boolean exit = false;
 		while (!exit) {
@@ -78,8 +70,7 @@ public class GameMain {
 			case 1:
 				System.out.println("This is the list of current active games:");
 				try {
-					peer.retrieveGames();
-					peer.retrieveAllPlayers();
+					service.retrieveGames();
 				} catch (RuntimeException e) {
 					System.out.println(e.getMessage());
 				} catch (Exception e) {
@@ -97,19 +88,26 @@ public class GameMain {
 					int length = Integer.parseInt(br.readLine());
 					System.out.println("Select the number of points to win: ");
 					int points = Integer.parseInt(br.readLine());
-					currentGame = peer.addGame(new Game(name, length, points, peer.getCurrentPlayer()));
-					if (currentGame == null)
+					
+					currentGame = service
+							.addGame(new Game(name, length, points, Peer.INSTANCE.getCurrentPlayer()));
+					if (currentGame == null) {
+						System.out.println("Error creating game");
 						break;
+					}
+
 					System.out.println("Game added correctly on the server!");
-					System.out.println("Waiting to be connected to it...");
-					peer.setCurrentGame(currentGame);
+					System.out.print("Waiting to be connected to it...");
+					
+					Peer.INSTANCE.setCurrentGame(currentGame);
 					/** choose a random position */
 					Random random = new Random();
 					Cell newCell = new Cell(random.nextInt(length), random.nextInt(length));
 					newCell.setZoneColor("red");
-					peer.setCurrentPosition(newCell);
-					peer.setAlive(true);
+					Peer.INSTANCE.setCurrentPosition(newCell);
+					Peer.INSTANCE.setAlive(true);
 					exit = true;
+					System.out.println("Done");
 
 				} catch (IOException | NumberFormatException e) {
 					System.out.println("Please insert correct values!");
@@ -122,7 +120,7 @@ public class GameMain {
 					System.out.println("Enter game name: ");
 					String gameName = br.readLine();
 
-					currentGame = peer.addPlayerToGame(gameName, peer.getCurrentPlayer());
+					currentGame = service.addPlayerToGame(gameName, Peer.INSTANCE.getCurrentPlayer());
 					if (currentGame == null)
 						break;
 				} catch (Exception e) {
@@ -131,18 +129,18 @@ public class GameMain {
 				}
 				System.out.println("Player added correctly to the game on the server!");
 				System.out.println("Waiting to be inserted to the ring...");
-				peer.setCurrentGame(currentGame);
-				
+				Peer.INSTANCE.setCurrentGame(currentGame);
+
 				exit = true;
 				break;
-				
+
 			case 4:
 				try {
 					System.out.println("Enter game name: ");
 					String gameName = br.readLine();
-					peer.retrieveGameInfo(gameName);
+					service.retrieveGameInfo(gameName);
 					break;
-					
+
 				} catch (Exception e) {
 					e.printStackTrace();
 					break;
@@ -158,10 +156,9 @@ public class GameMain {
 				break;
 			}
 		}
-		
 
 	}
-		
+
 	/** retrieve player's info */
 	private static Player getPlayerInfo(BufferedReader br) {
 		Emoji emoji = EmojiManager.getForAlias("bomb");
@@ -169,7 +166,7 @@ public class GameMain {
 				+ emoji.getUnicode());
 
 		Player p = new Player();
-		
+
 		try {
 			System.out.println("Please insert your name");
 			String name = br.readLine();
@@ -181,13 +178,12 @@ public class GameMain {
 			p.setSurname(surname);
 			p.setNickname(nickname);
 			p.setId(p.hashCode());
-		} 
-		catch (IOException e) {
+		} catch (IOException e) {
 			System.out.println("Error retrieving player info");
 		}
 
 		return p;
-		
+
 	}
 
 }

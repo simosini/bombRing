@@ -1,11 +1,10 @@
 package threads;
 
-import java.util.PriorityQueue;
-import java.util.Queue;
-
 import messages.Message;
 import messages.Packets;
-import peer.Peer;
+import singletons.InQueue;
+import singletons.OutQueue;
+import singletons.Peer;
 
 /**
  * This thread (the handler) is in charge of handling incoming and outcoming
@@ -25,49 +24,25 @@ import peer.Peer;
 
 public class MessageHandlerThread implements Runnable {
 
-	private Queue<Packets> inQueue;
-	private PriorityQueue<Packets> outQueue;
-	private Peer peer;
 	private volatile boolean stop = false; // to stop the thread when the game
 											// is finished
 
-	public MessageHandlerThread(Queue<Packets> inQueue, PriorityQueue<Packets> outQueue, Peer peer) {
-		this.setInQueue(inQueue);
-		this.setOutQueue(outQueue);
-		this.setPeer(peer);
-	}
+	public MessageHandlerThread() { }
 
-	private void setInQueue(Queue<Packets> queue) {
-		this.inQueue = queue;
-	}
-
-	private PriorityQueue<Packets> getOutQueue() {
-		return this.outQueue;
-	}
-
-	private void setOutQueue(PriorityQueue<Packets> queue) {
-		this.outQueue = queue;
-	}
-
-	private Peer getPeer() {
-		return peer;
-	}
-
-	private void setPeer(Peer peer) {
-		this.peer = peer;
-	}
 
 	public synchronized void stopThread() {
 		this.stop = true;
 	}
 
-	private synchronized boolean getState() {
+	private synchronized boolean stop() {
 		return this.stop;
 	}
 
 	@Override
 	public void run() {
-		while (!this.getState()) {
+		InQueue inQueue = InQueue.INSTANCE;
+		OutQueue outQueue = OutQueue.INSTANCE;
+		while (!stop()) {
 			synchronized (inQueue) {
 				/*
 				 * try { all comments for debugging purpose only
@@ -84,13 +59,13 @@ public class MessageHandlerThread implements Runnable {
 					}
 					/** check if the player is the only one in the game */
 					System.out.println("Im awake");
-					if (peer.getCurrentGame().getPlayers().size() == 1) break;
+					if (Peer.INSTANCE.getCurrentGame().getPlayers().size() == 1) break;
 				}
 				/**
 				 * if you are alone take first message on the outQueue and
 				 * eventually notify the standard in thread. No token needed
 				 */
-				if (peer.getCurrentGame().getPlayers().size() == 1 && !outQueue.isEmpty()) {
+				if (Peer.INSTANCE.getCurrentGame().getPlayers().size() == 1 && !outQueue.isEmpty()) {
 					Packets outPacket = null;
 					
 					synchronized (outQueue) {
@@ -100,7 +75,7 @@ public class MessageHandlerThread implements Runnable {
 					if (outPacket != null) {
 						System.out.println("Starting handling");
 						Message outMessage = outPacket.getMessage();
-						outMessage.handleMessage(outPacket.getSendingSocket(), this.getOutQueue(), this.getPeer());
+						outMessage.handleMessage(outPacket.getSendingSocket());
 
 					}
 					else
@@ -109,9 +84,9 @@ public class MessageHandlerThread implements Runnable {
 				/** consumes all items before releasing the lock on queue */
 				while (!inQueue.isEmpty()) {
 					System.out.println("Consuming inQueue");
-					Packets inPacket = inQueue.remove();
+					Packets inPacket = inQueue.poll();
 					Message inMessage = inPacket.getMessage();
-					inMessage.handleMessage(inPacket.getSendingSocket(), this.getOutQueue(), this.getPeer());
+					inMessage.handleMessage(inPacket.getSendingSocket());
 				}
 
 				inQueue.notify();

@@ -1,9 +1,6 @@
 package messages;
 
 import java.net.Socket;
-import java.util.PriorityQueue;
-
-import peer.Peer;
 
 /**
  * This message is sent to inform a player willing to join the game
@@ -23,7 +20,7 @@ public class NackMessage extends Message {
 	}
 
 	@Override
-	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue, Peer peer) {
+	public void handleMessage(Socket sender) {
 		System.out.println(this.toString());
 
 	}

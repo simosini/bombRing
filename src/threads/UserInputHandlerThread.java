@@ -1,8 +1,6 @@
 package threads;
 
 import java.io.BufferedReader;
-import java.util.PriorityQueue;
-import java.util.Queue;
 
 import messages.ExitMessage;
 import messages.Message;
@@ -10,6 +8,9 @@ import messages.Packets;
 import messages.PositionMessage;
 import peer.Cell;
 import peer.Cell.DIR;
+import singletons.InQueue;
+import singletons.OutQueue;
+import singletons.Peer;
 
 /**
  * As the name says this thread handles move and bomb tossing requests from the
@@ -20,27 +21,12 @@ import peer.Cell.DIR;
 
 public class UserInputHandlerThread implements Runnable {
 
-	private Queue<Packets> inQueue; // to notify the handler if needed
-	private PriorityQueue<Packets> outQueue; // concurrent access
 	private BufferedReader userInput; // from the main thread
-	private Cell currentCell; // concurrent access with handler
-	private int gridDimension; // to check movement allowed
+	private final int gridDimension = Peer.INSTANCE.getCurrentGame().getSideLength();// to check movement allowed
 	// private Queue<Bomb> bombs;
 
-	public UserInputHandlerThread(PriorityQueue<Packets> q, BufferedReader br, Queue<Packets> inq, Cell c, int d) {
-		this.setOutQueue(q);
+	public UserInputHandlerThread(BufferedReader br) {
 		this.setUserInput(br);
-		this.setCurrentCell(c);
-		this.inQueue = inq;
-		this.gridDimension = d;
-	}
-
-	public PriorityQueue<Packets> getOutQueue() {
-		return outQueue;
-	}
-
-	public void setOutQueue(PriorityQueue<Packets> outQueue) {
-		this.outQueue = outQueue;
 	}
 
 	public BufferedReader getUserInput() {
@@ -51,24 +37,11 @@ public class UserInputHandlerThread implements Runnable {
 		this.userInput = userInput;
 	}
 
-	// no need to sync cause the handler access this value only if i'm waiting
-	public Cell getCurrentCell() {
-		// yields a copy
-		Cell copy = new Cell(currentCell);
-		copy.setZoneColor(currentCell.getZoneColor());
-		return copy;
-
-	}
-
-	// used only for initialization
-	// the position is set by the handler otherwise
-	public void setCurrentCell(Cell currentCell) {
-		this.currentCell = currentCell;
-
-	}
-
 	@Override
 	public void run() {
+		OutQueue outQueue = OutQueue.INSTANCE;
+		InQueue inQueue = InQueue.INSTANCE;
+		
 		while (true) {
 			try {
 				Packets nextPacket = this.getUserMove(); // can only be a bomb
@@ -104,7 +77,7 @@ public class UserInputHandlerThread implements Runnable {
 
 		try {
 			/** print current position */
-			Cell currentPos = this.getCurrentCell();
+			Cell currentPos = Peer.INSTANCE.getCurrentPosition();
 			System.out.println(currentPos);
 
 			System.out.println("Select a move:\n" + "U - move up;\n" + "D - move down;\n" + "L - move left;\n"
@@ -178,7 +151,7 @@ public class UserInputHandlerThread implements Runnable {
 	}
 
 	private boolean isMovementAllowed(DIR direction) {
-		int[] newPosition = this.getCurrentCell().move(direction);
+		int[] newPosition = Peer.INSTANCE.getCurrentPosition().move(direction);
 		if (newPosition[0] < 0 | newPosition[1] < 0 | newPosition[0] >= this.gridDimension
 				| newPosition[1] >= this.gridDimension)
 			return false;

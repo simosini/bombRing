@@ -1,8 +1,6 @@
-package peer;
+package services;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
 
 import javax.ws.rs.core.MediaType;
 
@@ -18,99 +16,14 @@ import com.sun.jersey.api.json.JSONConfiguration;
 
 import beans.Game;
 import beans.Player;
+import peer.Uri;
 
-public class Peer {
-
+public class ServiceRequester {
+	
 	private static final String BASE_URI = Uri.BASE_URI.getPath();
-
-	private Game currentGame;
-	private Player currentPlayer;
-	private int currentScore;
-	private boolean isAlive;
-	private Cell currentPosition;
-
-	public Peer() {
-		initPeer();
-	}
-
-	private void initPeer() {
-		this.setAlive(false);
-		this.setCurrentScore(0);
-	}
-
-	/** getters and setters method */
-
-	public Game getCurrentGame() {
-		// yields a copy
-		return new Game(this.currentGame);
-	}
-
-	public void setCurrentGame(Game currentGame) {
-		this.currentGame = currentGame;
-	}
-
-	public Player getCurrentPlayer() {
-		// yields a copy
-		return new Player(this.currentPlayer);
-	}
-
-	public void setCurrentPlayer(Player currentPlayer) {
-		this.currentPlayer = currentPlayer;
-	}
-
-
-	public int getCurrentScore() {
-		return currentScore;
-	}
-
-	public void setCurrentScore(int currentScore) {
-		this.currentScore = currentScore;
-	}
-
-	public boolean isAlive() {
-		return isAlive;
-	}
-
-	public void setAlive(boolean isAlive) {
-		this.isAlive = isAlive;
-	}
-
-	/**
-	 * no need to sync cause the only two threads that uses this are already
-	 * sync using wait and notify. The same for setCurrentPosition
-	 */
-	public Cell getCurrentPosition() {
-		return this.currentPosition;
-	}
 	
-	public void setCurrentPosition(Cell position){
-		this.currentPosition = position;
-	}
-
-	public void setNewPosition(int row, int col) {
-		this.currentPosition.setPosition(row, col);
-	}
-	/** yields a copy of the ports for the broadcast */
-	public List<Integer> extractPlayersPorts(){
-		TreeMap<Integer, Player> players = this.currentGame.getPlayers().getUsersMap();
-		players.remove(this.currentPlayer.getId());/** it's a copy I can do that */
-		List<Integer> ports = new ArrayList<>();
-		players.forEach((id,pl) -> ports.add(pl.getPort()));
-		return ports;
-		
-	}
-	
-	/** methods to add and delete a player. Work on actual object not a copy. 
-	 *  Those methods are only called by the handler */
-	public void addNewPlayer(Player p){
-		this.currentGame.addPlayerToGame(p);
-	}
-	
-	public void deletePlayer(Player p){
-		this.currentGame.deletePlayerFromGame(p);
-	}
-
-	/** client methods to interact with rest server */
+	public ServiceRequester(){}
+/** client methods to interact with rest server */
 	
 	// default client configuration
 	private Client configureRestClient() {

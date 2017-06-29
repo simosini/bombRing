@@ -1,10 +1,8 @@
 package messages;
 
 import java.net.Socket;
-import java.util.PriorityQueue;
 
 import beans.Player;
-import peer.Peer;
 
 public class KilledMessage extends Message {
 
@@ -29,7 +27,7 @@ public class KilledMessage extends Message {
 	}
 
 	@Override
-	public void handleMessage(Socket sender, PriorityQueue<Packets> outQueue, Peer peer) {
+	public void handleMessage(Socket sender) {
 		System.out.println(this.toString());
 	}
 	
