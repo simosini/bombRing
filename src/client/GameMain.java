@@ -3,7 +3,10 @@ package client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Random;
 
 import com.vdurmont.emoji.Emoji;
@@ -11,6 +14,10 @@ import com.vdurmont.emoji.EmojiManager;
 
 import beans.Game;
 import beans.Player;
+import beans.Players;
+import messages.JoinRingMessage;
+import messages.Message;
+import messages.NackMessage;
 import peer.Cell;
 import services.ServiceRequester;
 import singletons.Peer;
@@ -32,7 +39,6 @@ public class GameMain {
 			Player newPlayer = getPlayerInfo(readInput);
 			newPlayer.setPort(srvSocket.getLocalPort());
 			Peer.INSTANCE.addPlayer(newPlayer);
-			//System.out.println(Peer.INSTANCE.getCurrentPlayer());
 
 			/** start server communication */
 			printGameMenu(readInput, service);
@@ -116,9 +122,10 @@ public class GameMain {
 
 			case 3: /** save game returned by the server when you choose it */
 				Game currentGame = null;
+				String gameName = null;
 				try {
 					System.out.println("Enter game name: ");
-					String gameName = br.readLine();
+					gameName = br.readLine();
 
 					currentGame = service.addPlayerToGame(gameName, Peer.INSTANCE.getCurrentPlayer());
 					if (currentGame == null)
@@ -129,6 +136,12 @@ public class GameMain {
 				}
 				System.out.println("Player added correctly to the game on the server!");
 				System.out.println("Waiting to be inserted to the ring...");
+				startJoiningRingProcedure(currentGame);
+				if (!Peer.INSTANCE.isAlive()){ //not in the game
+					System.out.println("It was not possible to join the game");
+					service.deletePlayerFromGame(gameName, Peer.INSTANCE.getCurrentPlayer());
+					break;
+				}
 				Peer.INSTANCE.setCurrentGame(currentGame);
 
 				exit = true;
@@ -137,8 +150,8 @@ public class GameMain {
 			case 4:
 				try {
 					System.out.println("Enter game name: ");
-					String gameName = br.readLine();
-					service.retrieveGameInfo(gameName);
+					String gamename = br.readLine();
+					service.retrieveGameInfo(gamename);
 					break;
 
 				} catch (Exception e) {
@@ -157,6 +170,43 @@ public class GameMain {
 			}
 		}
 
+	}
+
+	private static void startJoiningRingProcedure(Game gameToAdd) {
+		try {
+			/**create message */
+			System.out.println("Creating addPlayer message");
+			Message joinRing = new JoinRingMessage(Peer.INSTANCE.getCurrentPlayer());
+			Players players = gameToAdd.getPlayers();
+			System.out.println("Players : " + players);
+			Player nextPeer = joinRing.getNextPeer(players);
+			System.out.println("This is next Peer: " + nextPeer);
+			while(nextPeer != null){
+				Socket cli = new Socket("localhost", nextPeer.getPort());
+				System.out.println("Connected correctly");
+				ObjectOutputStream out = new ObjectOutputStream(cli.getOutputStream());
+				out.writeObject(joinRing);
+				System.out.println("Message written");
+				ObjectInputStream in = new ObjectInputStream(cli.getInputStream());
+				Message m = (Message) in.readObject();
+				System.out.println("Answer received");
+				if(m instanceof NackMessage) { /** try another one */
+					System.out.println("Trying another peer to join the ring");
+					players.deletePlayer(nextPeer);					
+				}
+				else {/** i'm in the ring */
+					System.out.println("I'm in the ring");
+					Peer.INSTANCE.setAlive(true);
+					break;
+				}
+				cli.close();
+			}
+			
+		}
+		catch(IOException | ClassNotFoundException e){
+			System.out.println("Error joining the ring");
+		}
+		
 	}
 
 	/** retrieve player's info */

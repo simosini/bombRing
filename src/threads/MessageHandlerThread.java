@@ -3,23 +3,25 @@ package threads;
 import messages.Message;
 import messages.Packets;
 import singletons.InQueue;
-import singletons.OutQueue;
-import singletons.Peer;
 
 /**
- * This thread (the handler) is in charge of handling incoming and outcoming
- * messages. The protocol consists on the following rules: 1. the handler waits
- * on the in Queue until a message arrives. 2. When a message arrives a server
- * thread checks if the handler is available by verifying it's in waiting state,
- * if so put the message on the queue and notify the handler. Otherwise (means
- * the handler is working) it waits and will be awaken by the handler when it's
- * done. 3. In case of concurrent arrive of messages the handler will empty the
- * queue. Even though 99.99% of the time there will be only one message on the
- * queue. 4. The message is taken from the inQueue and processed. If the
- * handling is a simple operation such as ACK, the handler sends it and
- * terminates, otherwise it creates a new message to be put on the outQueue. 5.
- * Messages on the outQueue are processed only with the token and one at the
- * time according the to priority indicated.
+ * This thread (the handler) is in charge of moving incoming messages received
+ * on the server socket from the inQueue to the outQueue.
+ * The protocol consists on the following rules: 
+ * 1. the handler waits on the inQueue until a message arrives on the server. 
+ * 2. When a message arrives a server put it on the inQueue and notify the handler.
+ * 3. If the handler was not waiting on the queue is either because was putting 
+ * 	  a message on the other queue or was answering to simple messages. (see 4) 
+ * 	  The notify won't have any effect but this is not a problem
+ * 	  because the handler when is done on the outQueue or with sending messages
+ *    always checks the inQueue is empty before calling wait().
+ * 4. The message is taken from the inQueue and if the
+ *    handling is a simple operation such as ACK, the handler sends it and
+ *    waits, otherwise it creates a new message to be put on the outQueue. 
+ * 5. If the message is the Token then the handler notifies the thread in charge of
+ * 	  handling the outQueue. Notice that this notification always has success cause
+ * 	  the Token can only arrive when the Thread is in wait cause when is running means
+ * 	  he has the token so it cannot arrive on the server socket.
  */
 
 public class MessageHandlerThread implements Runnable {
@@ -41,17 +43,12 @@ public class MessageHandlerThread implements Runnable {
 	@Override
 	public void run() {
 		InQueue inQueue = InQueue.INSTANCE;
-		OutQueue outQueue = OutQueue.INSTANCE;
+	
 		while (!stop()) {
 			synchronized (inQueue) {
-				/*
-				 * try { all comments for debugging purpose only
-				 * Thread.sleep(2000); } catch (InterruptedException e) {
-				 * e.printStackTrace(); }
-				 */
 				
 				while (inQueue.isEmpty()) {
-					// System.out.println("The queue is empty. Waiting!");
+					System.out.println("The queue is empty. Waiting!");
 					try {
 						inQueue.wait();
 					} catch (InterruptedException e) {
@@ -59,38 +56,20 @@ public class MessageHandlerThread implements Runnable {
 					}
 					/** check if the player is the only one in the game */
 					System.out.println("Im awake");
-					if (Peer.INSTANCE.getCurrentGame().getPlayers().size() == 1) break;
 				}
-				/**
-				 * if you are alone take first message on the outQueue and
-				 * eventually notify the standard in thread. No token needed
-				 */
-				if (Peer.INSTANCE.getCurrentGame().getPlayers().size() == 1 && !outQueue.isEmpty()) {
-					Packets outPacket = null;
-					
-					synchronized (outQueue) {
-						System.out.println("retrieving packet from outq");
-						outPacket = outQueue.poll(); /** only first packet */
-					}
-					if (outPacket != null) {
-						System.out.println("Starting handling");
-						Message outMessage = outPacket.getMessage();
-						outMessage.handleMessage(outPacket.getSendingSocket());
-
-					}
-					else
-						System.out.println("No packet to retrieve!");
-				}
-				/** consumes all items before releasing the lock on queue */
+				
+				/** consumes all items before releasing the lock on inQueue */
 				while (!inQueue.isEmpty()) {
 					System.out.println("Consuming inQueue");
 					Packets inPacket = inQueue.poll();
 					Message inMessage = inPacket.getMessage();
-					inMessage.handleMessage(inPacket.getSendingSocket());
+					System.out.println("-----HANDLING-----");
+					System.out.println(inMessage);
+					/** handling could be an ack or a new msg to put on the outQ 
+					 *  in most of the cases will be the token */
+					inMessage.handleInMessage(inPacket.getSendingSocket());
 				}
-
-				inQueue.notify();
-				
+				System.out.println("No more msg in the inQueue, releasing lock");
 			}
 
 		}

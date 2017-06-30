@@ -27,7 +27,7 @@ public class KilledMessage extends Message {
 	}
 
 	@Override
-	public void handleMessage(Socket sender) {
+	public void handleInMessage(Socket sender) {
 		System.out.println(this.toString());
 	}
 	

@@ -40,67 +40,63 @@ public class PositionMessage extends Message {
 		this.col = col;
 	}
 
-	@Override
-	public void handleMessage(Socket sender) {
-		
+	
+
+	public void handleOutMessage() {
 		try {
-			if (this.checkIsInput()) /** it's an input packet */
-				handleInMessage(sender);
+			OutQueue outQueue = OutQueue.INSTANCE;
+			System.out.println("Handling message. Type: " + this);
+			List<Integer> userPorts = Peer.INSTANCE.extractPlayersPorts();
+			System.out.println("retrieved user ports");
+			this.setInput(true); /** becomes an in packet for the receiver */
 			
-			else  /** it's an output position packet */
-				handleOutMessage();
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-		}
-	}
-
-	private void handleOutMessage() {
-		OutQueue outQueue = OutQueue.INSTANCE;
-		System.out.println("Handling message. Type: " + this);
-		List<Integer> userPorts = Peer.INSTANCE.extractPlayersPorts();
-		System.out.println("retrieved user ports");
-		this.setInput(true); /** becomes an in packet for the receiver */
-		
-		if (userPorts.size() != 0) /** check i'm not alone */
-			new Broadcast(userPorts, this).broadcastMessage();
-		
-		System.out.println("Broadcast done");
-		/** needs the position to set the new one */
-		System.out.println("Next position: " + this.getRow() + " " + this.getCol());
-		Peer.INSTANCE.setNewPosition(this.getRow(), this.getCol());
-		System.out.println("Notifying stdin");
-		synchronized (outQueue) {
-			outQueue.notify();
-		}
-	}
-
-	private void handleInMessage(Socket sender) throws IOException {
-		/** check my position */
-		Peer peer = Peer.INSTANCE;
-		OutQueue outQueue = OutQueue.INSTANCE;
-		if(peer.isAlive() && Arrays.equals(peer.getCurrentPosition().getPosition(), new int[]{this.getRow(),this.getCol()})){
-			System.out.println("You have been killed!");
-			peer.setAlive(false); // i'm dead
-			/** send killed */
-			System.out.println("sending killed message");
-			ObjectOutputStream out = new ObjectOutputStream(sender.getOutputStream());
-			out.writeObject(new KilledMessage(peer.getCurrentPlayer()));
-			out.close();
-			/** create dead message to put on the outQueue */
-			System.out.println("crreating dead message");
-			DeadMessage dm = new DeadMessage(peer.getCurrentPlayer());
-			dm.setInput(false);
-			Packets packet = new Packets(dm, null);
+			if (userPorts.size() != 0) /** check i'm not alone */
+				new Broadcast(userPorts, this).broadcastMessage();
+			
+			System.out.println("Broadcast done");
+			/** needs the position to set the new one */
+			System.out.println("Next position: " + this.getRow() + " " + this.getCol());
+			Peer.INSTANCE.setNewPosition(this.getRow(), this.getCol());
+			System.out.println("Notifying stdin");
 			synchronized (outQueue) {
-				outQueue.add(packet);
+				outQueue.notify();
 			}
-			System.out.println("Dead packet added to the outQueue");
+		} catch (Exception e){
+			System.out.println("Error with outgoing position message");
 		}
-		else { /** just send ack */
-			ObjectOutputStream out = new ObjectOutputStream(sender.getOutputStream());
-			out.writeObject(new AckMessage());
-			out.close();
+	}
+	
+	@Override
+	public void handleInMessage(Socket sender) {
+		try {
+			/** check my position */
+			Peer peer = Peer.INSTANCE;
+			OutQueue outQueue = OutQueue.INSTANCE;
+			if(peer.isAlive() && Arrays.equals(peer.getCurrentPosition().getPosition(), new int[]{this.getRow(),this.getCol()})){
+				System.out.println("You have been killed!");
+				peer.setAlive(false); // i'm dead
+				/** send killed */
+				System.out.println("sending killed message");
+				ObjectOutputStream out = new ObjectOutputStream(sender.getOutputStream());
+				out.writeObject(new KilledMessage(peer.getCurrentPlayer()));
+				/** create dead message to put on the outQueue */
+				System.out.println("crreating dead message");
+				DeadMessage dm = new DeadMessage(peer.getCurrentPlayer());
+				dm.setInput(false);
+				Packets packet = new Packets(dm, null);
+				synchronized (outQueue) {
+					outQueue.add(packet);
+				}
+				System.out.println("Dead packet added to the outQueue");
+			}
+			else { /** just send ack */
+				ObjectOutputStream out = new ObjectOutputStream(sender.getOutputStream());
+				out.writeObject(new AckMessage());
+			} 
+			
+		}
+		catch (IOException e){
+			System.out.println("Error with incoming position message");
 		}
 	}
 

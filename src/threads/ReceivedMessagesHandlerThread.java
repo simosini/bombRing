@@ -10,36 +10,26 @@ import singletons.InQueue;
 
 /** 
  * This handler takes care of the messages received on the server Socket.
- * It's started by the server and creates a packet to put on the in Queue.
- * In order to do that must make sure the MessageHandler is ready to process
- * it otherwise waits until it's ready. It does not handle any message.
+ * It's started by the server and creates a packet to put on the inQueue.
+ * It stays alive and connected with the same client.
+ * It does not handle any message just put them on the inQueue and notify 
+ * the handler.
  * */
 
 public class ReceivedMessagesHandlerThread implements Runnable {
 
-	private Thread handler; /** needed to check it's waiting */
 	private Socket sender;
 	
-	public ReceivedMessagesHandlerThread(Thread t, Socket s){
-		
-		this.setHandler(t);
+	public ReceivedMessagesHandlerThread(Socket s){
+	
 		this.setSender(s);
 	}
 	
-
-	public Thread getHandler(){
-		return this.handler;
-	}
-	
-	public void setHandler(Thread t){
-		this.handler = t;
-	}
-	
-	public Socket getSender() {
+	private Socket getSender() {
 		return sender;
 	}
 
-	public void setSender(Socket sender) {
+	private void setSender(Socket sender) {
 		this.sender = sender;
 	}
 
@@ -47,39 +37,40 @@ public class ReceivedMessagesHandlerThread implements Runnable {
 	public void run() {
 		InQueue inQueue = InQueue.INSTANCE;
 		Message message = null;
-		Socket sender = this.getSender();
-		try {			
-			ObjectInputStream reader = new ObjectInputStream(sender.getInputStream());
-			message = (Message) reader.readObject();
-			System.out.println("Recieved :" + message);
-			
-		}
-		catch (IOException e){
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+		ObjectInputStream reader = null;
+
+		try {
+			reader = new ObjectInputStream(this.getSender().getInputStream());
+			while(true){			
+				
+				message = (Message) reader.readObject();
+				System.out.println("Received :" + message);
+				synchronized(inQueue){
+					
+					System.out.println("Creating packet!");
+					Packets packet = new Packets(message, sender);
+					inQueue.add(packet);
+					System.out.println("Packet added correctly to inQueue");
+					System.out.println("Notifying handler");
+					inQueue.notify();
+					System.out.println("Notified");
+				}	
+				
+			}
+		} catch (IOException e){
+			System.out.println("Client closed connection. Socket closed");
+		} catch (ClassNotFoundException ce) {
+			System.out.println("Error reading message");
+		} finally {
+			try{
+				sender.close();
+			} catch(IOException ie){
+				ie.printStackTrace();
+			}
 		}
 		
-		synchronized(inQueue){
-			System.out.println("State :");
-			while(getHandler().getState() != Thread.State.WAITING){
-				System.out.println("The handler is busy. I wait ");
-				try {
-					inQueue.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			/** Handler is now ready to be notified */
-			System.out.println("Creating packet!");
-			Packets packet = new Packets(message, sender);
-			inQueue.add(packet);
-			//System.out.println("Produced " + packet);
-			/** might not be the handler but it's not a problem */
-			System.out.println("Notifying handler");
-			inQueue.notify();
-			System.out.println("Notified");
-		}			
+		
+				
 	}
 
 }

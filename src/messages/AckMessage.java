@@ -12,8 +12,9 @@ public class AckMessage extends Message {
 	}
 	
 	@Override
-	public void handleMessage(Socket sender){
-		System.out.println(this.toString());
+	public void handleInMessage(Socket sender){
+		/** this message is never put on the outQueue so do nothing */
+		System.out.println("Ack message received");
 	}
 	
 	@Override

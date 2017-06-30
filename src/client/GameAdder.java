@@ -389,7 +389,7 @@ public class GameAdder {
 
 	}
 	
-	/*private void JoinRingProcedure(){
+	/*public void JoinRingProcedure(){
 		
 		Player myself = this.getPlayer();
 		TreeMap<Integer, Player> gamePlayers = this.getCurrentGame().getPlayers().getUsersMap();

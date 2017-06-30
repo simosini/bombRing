@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import messages.Message;
-import threads.SendMessagesThread;
+import threads.SendMessageThread;
 
 public class Broadcast {
 	
@@ -34,7 +34,7 @@ public class Broadcast {
 	
 	public void broadcastMessage() {
 		List<Thread> threads = new ArrayList<>();
-		this.getPorts().forEach(port -> threads.add(new Thread(new SendMessagesThread(port, this.getMsgToSend()))));
+		this.getPorts().forEach(port -> threads.add(new Thread(new SendMessageThread(port, this.getMsgToSend()))));
 		threads.forEach(t -> t.start());
 		threads.forEach(t -> {
 			try {

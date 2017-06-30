@@ -2,6 +2,7 @@ package threads;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 /** 
  * This thread is in charge of handling the server socket.
@@ -27,9 +28,10 @@ public class ServerSocketHandler implements Runnable {
 	public void run() {
 		while(true){
 			try {
-				ReceivedMessagesHandlerThread rmht = 
-						new ReceivedMessagesHandlerThread(handler, srvSocket.accept());
-				new Thread(rmht).start();
+				Socket sender = srvSocket.accept();	
+				System.out.println("Received message from: " + sender.getPort());
+				new Thread(new ReceivedMessagesHandlerThread(handler, sender)).start();
+				System.out.println("ReceivMessHandlThread started!");
 			
 			} catch (IOException e) {
 				System.out.println("The server socket has been correctly closed!");

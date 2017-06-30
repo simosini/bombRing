@@ -26,7 +26,7 @@ public class Provare {
 		System.out.println(peer.getCurrentGame());
 		System.out.println(peer.getCurrentPosition().getZoneColor());*/
 		PositionMessage pm = new PositionMessage(4, 4);
-		Socket s = new Socket("localhost", 40275);
+		Socket s = new Socket("localhost", 37693);
 		System.out.println("Connected to server");
 		ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
 		out.writeObject(pm);
