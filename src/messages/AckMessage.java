@@ -1,6 +1,6 @@
 package messages;
 
-import java.net.Socket;
+import peer.ConnectionData;
 
 public class AckMessage extends Message {
 	
@@ -12,9 +12,23 @@ public class AckMessage extends Message {
 	}
 	
 	@Override
-	public void handleInMessage(Socket sender){
+	public boolean handleInMessage(ConnectionData cd){
 		/** this message is never put on the outQueue so do nothing */
 		System.out.println("Ack message received");
+		return true;
+	}
+	
+	@Override
+	public boolean handleOutMessage(ConnectionData clientConnection) {
+		try {
+			clientConnection.getOutputStream().writeObject(this);
+			System.out.println("Ack sent");
+		}
+		catch(Exception e){
+			System.out.println("Error sending out Ack");
+			return false;
+		}
+		return true;
 	}
 	
 	@Override

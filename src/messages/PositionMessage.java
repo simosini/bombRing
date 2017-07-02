@@ -1,12 +1,11 @@
 package messages;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
 
+import beans.Player;
 import peer.Broadcast;
+import peer.ConnectionData;
 import singletons.OutQueue;
 import singletons.Peer;
 
@@ -41,22 +40,30 @@ public class PositionMessage extends Message {
 	}
 
 	
-
-	public void handleOutMessage() {
+	@Override
+	public boolean handleOutMessage(ConnectionData cd) {
 		try {
 			OutQueue outQueue = OutQueue.INSTANCE;
 			System.out.println("Handling message. Type: " + this);
-			List<Integer> userPorts = Peer.INSTANCE.extractPlayersPorts();
-			System.out.println("retrieved user ports");
+			
+			/** retrieve connections for the broadcast */
+			List<ConnectionData> clientConnections = Peer.INSTANCE.getClientConnectionsList();
+			System.out.println("retrieved user sockets");
 			this.setInput(true); /** becomes an in packet for the receiver */
 			
-			if (userPorts.size() != 0) /** check i'm not alone */
-				new Broadcast(userPorts, this).broadcastMessage();
+			/** broadcast message */
+			if (clientConnections.size() != 0) /** check i'm not alone */
+				new Broadcast(clientConnections, this).broadcastMessage();
 			
 			System.out.println("Broadcast done");
+			
 			/** needs the position to set the new one */
 			System.out.println("Next position: " + this.getRow() + " " + this.getCol());
+			
+			/** set new position */
 			Peer.INSTANCE.setNewPosition(this.getRow(), this.getCol());
+			
+			/** notify the stdin i've finished handling the message */
 			System.out.println("Notifying stdin");
 			synchronized (outQueue) {
 				outQueue.notify();
@@ -67,37 +74,43 @@ public class PositionMessage extends Message {
 	}
 	
 	@Override
-	public void handleInMessage(Socket sender) {
+	public boolean handleInMessage(ConnectionData cd) {
 		try {
-			/** check my position */
 			Peer peer = Peer.INSTANCE;
 			OutQueue outQueue = OutQueue.INSTANCE;
+			
+			/** check my position */			
 			if(peer.isAlive() && Arrays.equals(peer.getCurrentPosition().getPosition(), new int[]{this.getRow(),this.getCol()})){
-				System.out.println("You have been killed!");
-				peer.setAlive(false); // i'm dead
-				/** send killed */
-				System.out.println("sending killed message");
-				ObjectOutputStream out = new ObjectOutputStream(sender.getOutputStream());
-				out.writeObject(new KilledMessage(peer.getCurrentPlayer()));
-				/** create dead message to put on the outQueue */
-				System.out.println("crreating dead message");
-				DeadMessage dm = new DeadMessage(peer.getCurrentPlayer());
+				
+				/** build killed message and call handler */
+				Player myself = peer.getCurrentPlayer();
+				KilledMessage km = new KilledMessage(myself);
+				km.handleOutMessage(cd);
+				
+				
+				/** create dead message */
+				System.out.println("creating dead message");
+				DeadMessage dm = new DeadMessage(myself);
 				dm.setInput(false);
 				Packets packet = new Packets(dm, null);
+				
+				/** put message on the outQueue */
 				synchronized (outQueue) {
 					outQueue.add(packet);
 				}
 				System.out.println("Dead packet added to the outQueue");
 			}
 			else { /** just send ack */
-				ObjectOutputStream out = new ObjectOutputStream(sender.getOutputStream());
-				out.writeObject(new AckMessage());
+				new AckMessage().handleOutMessage(cd);
+				
 			} 
 			
 		}
-		catch (IOException e){
+		catch (Exception e){
 			System.out.println("Error with incoming position message");
+			return false;
 		}
+		return true;
 	}
 
 	@Override

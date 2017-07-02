@@ -8,20 +8,20 @@ import threads.SendMessageThread;
 
 public class Broadcast {
 	
-	private List<Integer> ports;
+	private List<ConnectionData> clientConnections;
 	private Message msgToSend;
 	
-	public Broadcast(List<Integer> ports, Message m) {
-		this.setPorts(new ArrayList<>(ports));
+	public Broadcast(List<ConnectionData> clientConnections, Message m) {
+		this.setClientConnections(new ArrayList<>(clientConnections));
 		this.setMsgToSend(m);
 	}
 
-	public List<Integer> getPorts() {
-		return ports;
+	public List<ConnectionData> getClientConnections() {
+		return this.clientConnections;
 	}
 
-	public void setPorts(List<Integer> ports) {
-		this.ports = ports;
+	public void setClientConnections(List<ConnectionData> clientConnections) {
+		this.clientConnections = clientConnections;
 	}
 
 	public Message getMsgToSend() {

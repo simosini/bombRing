@@ -1,8 +1,8 @@
 package messages;
 
-import java.net.Socket;
-
 import beans.Player;
+import peer.ConnectionData;
+import singletons.Peer;
 
 public class KilledMessage extends Message {
 
@@ -27,8 +27,35 @@ public class KilledMessage extends Message {
 	}
 
 	@Override
-	public void handleInMessage(Socket sender) {
-		System.out.println(this.toString());
+	public boolean handleInMessage(ConnectionData cd) {
+		try {
+			Peer peer = Peer.INSTANCE;
+			/** add points if i'm alive and check victory */
+			if (peer.isAlive()){
+				peer.setCurrentScore(peer.getCurrentScore() + 1);
+				/****** need to check victory but avoid other thread to increment score***/
+				
+			}
+		}
+	}
+	
+	/** I send back that i'm dead */
+	@Override
+	public boolean handleOutMessage(ConnectionData cd){
+		try {
+			System.out.println("You have been killed!");
+			Peer.INSTANCE.setAlive(false); // i'm dead
+		
+			/** send killed */
+			System.out.println("sending killed message");
+			cd.getOutputStream().writeObject(this);
+			
+		}
+		catch(Exception e){
+			System.out.println("Error handling killedMessage out");
+			return false;
+		}
+		return true;
 	}
 	
 	@Override

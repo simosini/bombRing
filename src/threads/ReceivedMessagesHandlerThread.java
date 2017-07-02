@@ -2,10 +2,12 @@ package threads;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import messages.Message;
 import messages.Packets;
+import peer.ConnectionData;
 import singletons.InQueue;
 
 /** 
@@ -18,19 +20,17 @@ import singletons.InQueue;
 
 public class ReceivedMessagesHandlerThread implements Runnable {
 
-	private Socket sender;
+	private ConnectionData clientConnection;
 	
-	public ReceivedMessagesHandlerThread(Socket s){
+	public ReceivedMessagesHandlerThread(Socket s) throws IOException{
 	
-		this.setSender(s);
+		ObjectInputStream inputStream = new ObjectInputStream(s.getInputStream());
+		ObjectOutputStream outputStream = new ObjectOutputStream(s.getOutputStream());
+		this.clientConnection = new ConnectionData(s, outputStream, inputStream);
 	}
 	
-	private Socket getSender() {
-		return sender;
-	}
-
-	private void setSender(Socket sender) {
-		this.sender = sender;
+	private ConnectionData getConnectionData() {
+		return this.clientConnection;
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class ReceivedMessagesHandlerThread implements Runnable {
 		ObjectInputStream reader = null;
 
 		try {
-			reader = new ObjectInputStream(this.getSender().getInputStream());
+			reader = this.getConnectionData().getInputStream();
 			while(true){			
 				
 				message = (Message) reader.readObject();
@@ -48,7 +48,7 @@ public class ReceivedMessagesHandlerThread implements Runnable {
 				synchronized(inQueue){
 					
 					System.out.println("Creating packet!");
-					Packets packet = new Packets(message, sender);
+					Packets packet = new Packets(message, this.getConnectionData());
 					inQueue.add(packet);
 					System.out.println("Packet added correctly to inQueue");
 					System.out.println("Notifying handler");
@@ -58,12 +58,14 @@ public class ReceivedMessagesHandlerThread implements Runnable {
 				
 			}
 		} catch (IOException e){
-			System.out.println("Client closed connection. Socket closed");
+			System.out.println("Client closed connection. Closing current socket...");
 		} catch (ClassNotFoundException ce) {
 			System.out.println("Error reading message");
 		} finally {
+			Socket s = null;
 			try{
-				sender.close();
+				if ((s = this.getConnectionData().getClientSocket()) != null)
+					s.close();
 			} catch(IOException ie){
 				ie.printStackTrace();
 			}

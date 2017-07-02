@@ -12,11 +12,9 @@ import java.net.Socket;
 public class ServerSocketHandler implements Runnable {
 	
 	private ServerSocket srvSocket;
-	private Thread handler;
 
-	public ServerSocketHandler(ServerSocket server, Thread t) {
+	public ServerSocketHandler(ServerSocket server) {
 		this.setSrvSocket(server);
-		this.handler = t;
 	}
 
 	public void setSrvSocket(ServerSocket server) {
@@ -26,17 +24,18 @@ public class ServerSocketHandler implements Runnable {
 
 	@Override
 	public void run() {
-		while(true){
-			try {
+		try {	
+			while(true){
 				Socket sender = srvSocket.accept();	
 				System.out.println("Received message from: " + sender.getPort());
-				new Thread(new ReceivedMessagesHandlerThread(handler, sender)).start();
+				new Thread(new ReceivedMessagesHandlerThread(sender)).start();
 				System.out.println("ReceivMessHandlThread started!");
 			
-			} catch (IOException e) {
-				System.out.println("The server socket has been correctly closed!");
-				System.exit(-1);
-			}
+			} 
+		}
+		catch (IOException e) {
+			System.out.println("The server socket has been correctly closed!");
+			
 		}
 
 	}

@@ -1,6 +1,7 @@
 package beans;
 
 import java.util.List;
+import java.util.TreeMap;
 
 public class Game {
 
@@ -109,6 +110,11 @@ public class Game {
 		sb.append("Score to win: " + this.getScoreNeeded() + "\n");
 		sb.append("Number of players: " + this.retrievePlayersNumber());
 		return sb.toString();
+	}
+
+	public void setUserMap(TreeMap<Integer, Player> map) {
+		this.players.setUsersMap(map);
+		
 	}
 
 }

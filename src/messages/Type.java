@@ -11,6 +11,7 @@ public enum Type {
 	GAME_ENDED,
 	KILLED,
 	JOINRING,
+	MAP_UPDATE,
 	NACK,
 	POSITION,	
 	TOKEN,	

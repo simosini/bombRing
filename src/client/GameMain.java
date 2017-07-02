@@ -3,10 +3,7 @@ package client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.Random;
 
 import com.vdurmont.emoji.Emoji;
@@ -14,12 +11,11 @@ import com.vdurmont.emoji.EmojiManager;
 
 import beans.Game;
 import beans.Player;
-import beans.Players;
 import messages.JoinRingMessage;
 import messages.Message;
-import messages.NackMessage;
 import peer.Cell;
 import services.ServiceRequester;
+import singletons.OutQueue;
 import singletons.Peer;
 import threads.MessageHandlerThread;
 import threads.ServerSocketHandler;
@@ -47,7 +43,7 @@ public class GameMain {
 			MessageHandlerThread mht = new MessageHandlerThread();
 			Thread handler = new Thread(mht);
 			handler.start();
-			new Thread(new ServerSocketHandler(srvSocket, handler)).start();
+			new Thread(new ServerSocketHandler(srvSocket)).start();
 
 			/** the game is now started */
 			new Thread(
@@ -88,6 +84,7 @@ public class GameMain {
 				;
 				try {
 					Game currentGame = null;
+					Peer peer = Peer.INSTANCE;
 					System.out.println("Select a name for the game: ");
 					String name = br.readLine();
 					System.out.println("Select the length for the grid: ");
@@ -96,7 +93,7 @@ public class GameMain {
 					int points = Integer.parseInt(br.readLine());
 					
 					currentGame = service
-							.addGame(new Game(name, length, points, Peer.INSTANCE.getCurrentPlayer()));
+							.addGame(new Game(name, length, points, peer.getCurrentPlayer()));
 					if (currentGame == null) {
 						System.out.println("Error creating game");
 						break;
@@ -105,13 +102,13 @@ public class GameMain {
 					System.out.println("Game added correctly on the server!");
 					System.out.print("Waiting to be connected to it...");
 					
-					Peer.INSTANCE.setCurrentGame(currentGame);
+					peer.setCurrentGame(currentGame);
 					/** choose a random position */
 					Random random = new Random();
 					Cell newCell = new Cell(random.nextInt(length), random.nextInt(length));
 					newCell.setZoneColor("red");
-					Peer.INSTANCE.setCurrentPosition(newCell);
-					Peer.INSTANCE.setAlive(true);
+					peer.setCurrentPosition(newCell);
+					peer.setAlive(true);
 					exit = true;
 					System.out.println("Done");
 
@@ -123,11 +120,12 @@ public class GameMain {
 			case 3: /** save game returned by the server when you choose it */
 				Game currentGame = null;
 				String gameName = null;
+				Peer peer = Peer.INSTANCE;
 				try {
 					System.out.println("Enter game name: ");
 					gameName = br.readLine();
 
-					currentGame = service.addPlayerToGame(gameName, Peer.INSTANCE.getCurrentPlayer());
+					currentGame = service.addPlayerToGame(gameName, peer.getCurrentPlayer());
 					if (currentGame == null)
 						break;
 				} catch (Exception e) {
@@ -136,15 +134,22 @@ public class GameMain {
 				}
 				System.out.println("Player added correctly to the game on the server!");
 				System.out.println("Waiting to be inserted to the ring...");
-				startJoiningRingProcedure(currentGame);
-				if (!Peer.INSTANCE.isAlive()){ //not in the game
-					System.out.println("It was not possible to join the game");
-					service.deletePlayerFromGame(gameName, Peer.INSTANCE.getCurrentPlayer());
-					break;
+				if(startJoiningRingProcedure(currentGame)){
+					/** choose a random position */
+					Random random = new Random();
+					Cell newCell = new Cell(random.nextInt(currentGame.getSideLength()), random.nextInt(currentGame.getSideLength()));
+					newCell.setZoneColor("red");
+					peer.setCurrentPosition(newCell);
+					peer.setAlive(true);
+					peer.setCurrentGame(currentGame);
+					exit = true;
+					
 				}
-				Peer.INSTANCE.setCurrentGame(currentGame);
-
-				exit = true;
+				else {
+					/** delete me from the map */
+					service.deletePlayerFromGame(gameName, peer.getCurrentPlayer());
+				}
+				
 				break;
 
 			case 4:
@@ -172,42 +177,25 @@ public class GameMain {
 
 	}
 
-	private static void startJoiningRingProcedure(Game gameToAdd) {
+	private static boolean startJoiningRingProcedure(Game gameToAdd) {
 		try {
-			/**create message */
-			System.out.println("Creating addPlayer message");
-			Message joinRing = new JoinRingMessage(Peer.INSTANCE.getCurrentPlayer());
-			Players players = gameToAdd.getPlayers();
-			System.out.println("Players : " + players);
-			Player nextPeer = joinRing.getNextPeer(players);
-			System.out.println("This is next Peer: " + nextPeer);
-			while(nextPeer != null){
-				Socket cli = new Socket("localhost", nextPeer.getPort());
-				System.out.println("Connected correctly");
-				ObjectOutputStream out = new ObjectOutputStream(cli.getOutputStream());
-				out.writeObject(joinRing);
-				System.out.println("Message written");
-				ObjectInputStream in = new ObjectInputStream(cli.getInputStream());
-				Message m = (Message) in.readObject();
-				System.out.println("Answer received");
-				if(m instanceof NackMessage) { /** try another one */
-					System.out.println("Trying another peer to join the ring");
-					players.deletePlayer(nextPeer);					
-				}
-				else {/** i'm in the ring */
-					System.out.println("I'm in the ring");
-					Peer.INSTANCE.setAlive(true);
-					break;
-				}
-				cli.close();
+			OutQueue outQueue = OutQueue.INSTANCE;
+			Peer peer = Peer.INSTANCE;
+			/** create message and handle it */
+			System.out.println("Creating JoinRing message");
+			Message joinRing = new JoinRingMessage(peer.getCurrentPlayer());
+			/** needed to avoid Token message overlapping */
+			synchronized (outQueue) {
+				return joinRing.handleOutMessage(null);
+				
 			}
-			
+
+		}catch(Exception e){
+			System.out.println("Error joining ring!");
 		}
-		catch(IOException | ClassNotFoundException e){
-			System.out.println("Error joining the ring");
-		}
-		
+		return false;
 	}
+		
 
 	/** retrieve player's info */
 	private static Player getPlayerInfo(BufferedReader br) {

@@ -1,12 +1,13 @@
 package messages;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
-import java.util.TreeMap;
 
 import beans.Player;
-import beans.Players;
-import singletons.Peer;
+import peer.ConnectionData;
 
 /**
  * Abstract generic class for messages. Every message has a specific code and a
@@ -55,29 +56,22 @@ public abstract class Message implements Serializable {
 		this.isInput = flag;
 
 	}
-
-	public Player getNextPeer(Players players) {
-		Peer peer = Peer.INSTANCE;
-		TreeMap<Integer, Player> gamePlayers = players.getUsersMap(); //it's a copy
-		if (gamePlayers.size() > 1) {
-			Integer nextPlayerKey = findNextPlayerKey(peer.getCurrentPlayer().getId(), gamePlayers);
-			return gamePlayers.get(nextPlayerKey);
-		} else {
-			return null; // no more players, only me in the map
-
+	
+	public ConnectionData connectToPlayer(Player p) {
+		try {
+			Socket s = new Socket("localhost", p.getPort());
+			ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(s.getInputStream());
+			return new ConnectionData(s, out, in);
+		} catch (IOException e){
+			System.out.println("Error connecting to other player");
+			return null;
+			
 		}
 	}
-
-	private Integer findNextPlayerKey(Integer key, TreeMap<Integer, Player> gamePlayers) {
-		Integer nextKey = null;
-		if ((nextKey = gamePlayers.higherKey(key)) == null)
-			return gamePlayers.firstKey();
-		else
-			return nextKey;
-	}
-
-	public abstract void handleInMessage(Socket sender);
+	/** true means the message has been handled correctly */
+	public abstract boolean handleInMessage(ConnectionData clientConnection);
 	
-	public abstract void handleOutMessage(Socket sender);
+	public abstract boolean handleOutMessage(ConnectionData clientConnection);
 
 }

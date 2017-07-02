@@ -67,7 +67,10 @@ public class MessageHandlerThread implements Runnable {
 					System.out.println(inMessage);
 					/** handling could be an ack or a new msg to put on the outQ 
 					 *  in most of the cases will be the token */
-					inMessage.handleInMessage(inPacket.getSendingSocket());
+					if (!inMessage.handleInMessage(inPacket.getSendingClient())){
+						System.out.println("Something went wrong handling messages. Exiting the game!");
+						System.exit(1);
+					}
 				}
 				System.out.println("No more msg in the inQueue, releasing lock");
 			}

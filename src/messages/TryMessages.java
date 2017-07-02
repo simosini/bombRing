@@ -5,6 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.TreeMap;
+
+import beans.Player;
 
 public class TryMessages {
 
@@ -21,8 +24,8 @@ public class TryMessages {
 				Socket cli = srv.accept();
 				ObjectInputStream inStream = new ObjectInputStream(cli.getInputStream());
 	
-				Message msg = (Message) inStream.readObject();
-				msg.handleInMessage(null);
+				TreeMap<Integer, Player> players = (TreeMap<Integer, Player>) inStream.readObject();
+				System.out.println(players);
 				cli.close();
 				srv.close();
 
@@ -37,20 +40,22 @@ public class TryMessages {
 		
 		else {
 
-			Message m1 = new VictoryMessage();
-			tr.communicate(m1);
+			TreeMap<Integer, Player> pl = new TreeMap<>();
+			Player p =  new Player("a","a","a",3);
+			pl.put(p.getId(), p);
+			tr.communicate(pl);
 		}
 			
 
 	}
 
-	public void communicate(Message m) {
+	public void communicate(TreeMap<Integer, Player> pl) {
 
 		try {
 			Socket socket = new Socket("localhost", PORT);
 			ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-			System.out.println("Object to be written = " + m);
-			outputStream.writeObject(m);
+			System.out.println("Object to be written = " + pl);
+			outputStream.writeObject(pl);
 			socket.close();
 
 		} catch (IOException e) {

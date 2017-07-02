@@ -1,13 +1,15 @@
 package singletons;
 
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 import beans.Game;
 import beans.Player;
+import beans.Players;
 import peer.Cell;
+import peer.ConnectionData;
 
 public enum Peer {
 
@@ -18,7 +20,7 @@ public enum Peer {
 	private int currentScore = 0;
 	private boolean isAlive = false;
 	private Cell currentPosition;
-	private HashMap<String, Socket> clientSocket;
+	private HashMap<Integer, ConnectionData> clientConnections;
 
 	private Peer() {}
 
@@ -82,6 +84,10 @@ public enum Peer {
 		
 	}
 	
+	public synchronized void updateMapPlayers(TreeMap<Integer, Player> map){
+		this.currentGame.setUserMap(map);
+	}
+	
 	/** methods to add and delete a player. Work on actual object not a copy. 
 	 *  Those methods are only called by the handler */
 	public void addNewPlayer(Player p){
@@ -91,24 +97,24 @@ public enum Peer {
 		
 	}
 	
-	public synchronized void addSocket(String playerName, Socket s){
-		this.clientSocket.put(playerName, s);
+	public synchronized void addConnectedSocket(Integer playerId, ConnectionData data){
+		this.clientConnections.put(playerId, data);
 	}
 	
-	public synchronized void deleteSocket(String playerName){
-		if (this.clientSocket.containsKey(playerName)){
-			this.clientSocket.remove(playerName);
+	public synchronized void deleteConnectedSocket(Integer playerId){
+		if (this.clientConnections.containsKey(playerId)){
+			this.clientConnections.remove(playerId);
 		}
 	}
 	
-	public synchronized void setClientSockets(HashMap<String, Socket> map){
-		this.clientSocket.clear();
-		this.clientSocket = map;
+	public synchronized void setClientConnections(HashMap<Integer, ConnectionData> map){
+		this.clientConnections.clear();
+		this.clientConnections = map;
 	}
 	
-	public synchronized List<Socket> getSocketList(){
+	public synchronized List<ConnectionData> getClientConnectionsList(){
 		//it's a copy
-		return new ArrayList<Socket>(this.clientSocket.values());
+		return new ArrayList<ConnectionData>(this.clientConnections.values());
 	}
 	
 	public synchronized void deletePlayer(Player p){
@@ -120,6 +126,30 @@ public enum Peer {
 	public int getNumberOfPlayers(){
 		
 		return this.getCurrentGame().retrievePlayersNumber();
+	}
+	
+	public Player getNextPeer(Players players) {
+		TreeMap<Integer, Player> gamePlayers = players.getUsersMap(); //it's a copy
+		if (gamePlayers.size() > 1) {
+			Integer nextPlayerKey = findNextPlayerKey(this.getCurrentPlayer().getId(), gamePlayers);
+			return gamePlayers.get(nextPlayerKey);
+		} else {
+			return null; // no more players, only me in the map
+
+		}
+	}
+
+	private Integer findNextPlayerKey(Integer key, TreeMap<Integer, Player> gamePlayers) {
+		Integer nextKey = null;
+		if ((nextKey = gamePlayers.higherKey(key)) == null)
+			return gamePlayers.firstKey();
+		else
+			return nextKey;
+	}
+
+	public synchronized TreeMap<Integer, Player> getUserMap() {
+		// yield a copy of the current userMap
+		return this.getCurrentGame().getPlayers().getUsersMap();
 	}
 
 }

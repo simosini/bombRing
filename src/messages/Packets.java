@@ -1,6 +1,6 @@
 package messages;
 
-import java.net.Socket;
+import peer.ConnectionData;
 
 /**
  * a packet is a message with the client socket that sent it.
@@ -9,19 +9,19 @@ import java.net.Socket;
 public class Packets implements Comparable<Packets>{
 	
 	private Message message;
-	private Socket sendingSocket;
+	private ConnectionData sendingClient; /** the client to which answer */
 	
-	public Packets(Message m, Socket s){
+	public Packets(Message m, ConnectionData cd){
 		this.setMessage(m);
-		this.setSendingSocket(s);
+		this.setSendingClient(cd);
 	}
 
-	public Socket getSendingSocket() {
-		return sendingSocket;
+	public ConnectionData getSendingClient() {
+		return this.sendingClient;
 	}
 
-	public void setSendingSocket(Socket sendingSocket) {
-		this.sendingSocket = sendingSocket;
+	public void setSendingClient(ConnectionData sender) {
+		this.sendingClient = sender;
 	}
 
 	public Message getMessage() {
