@@ -3,26 +3,26 @@ package threads;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
 
 import messages.Message;
+import peer.ConnectionData;
 
 public class SendMessageThread implements Runnable {
 	
-	private int port; /** port number to connect to*/
+	private ConnectionData clientConnection; /** port number to connect to*/
 	private Message msgToSend;
 	
-	public SendMessageThread(int port, Message m) {
-		this.setPort(port);
+	public SendMessageThread(ConnectionData cd, Message m) {
+		this.setClientConnection(cd);
 		this.setMsgToSend(m);
 	}
 
-	public int getPort() {
-		return port;
+	public ConnectionData getClientConnection() {
+		return this.clientConnection;
 	}
 
-	public void setPort(int port) {
-		this.port = port;
+	public void setClientConnection(ConnectionData cd) {
+		this.clientConnection = cd;
 	}
 
 	public Message getMsgToSend() {
@@ -36,17 +36,17 @@ public class SendMessageThread implements Runnable {
 	@Override
 	public void run() {
 		try  {
-			Socket cli = new Socket("localhost", this.getPort());
-			ObjectOutputStream out = new ObjectOutputStream(cli.getOutputStream());
-			ObjectInputStream in = new ObjectInputStream(cli.getInputStream());
+			/** retrieve streams */
+			ObjectOutputStream out = this.getClientConnection().getOutputStream();
+			ObjectInputStream in = this.getClientConnection().getInputStream();
+			
 			/** send message */
 			out.writeObject(this.getMsgToSend());
 			/** wait for ack */
 			Message response = (Message) in.readObject();
 			
-			response.handleInMessage(cli);
-			/** System.out.println(response);*/
-			cli.close();
+			response.handleInMessage(this.getClientConnection());
+			
 		}
 		catch (IOException | ClassNotFoundException e){
 			System.out.println("Error communicating with other player's server sockets");

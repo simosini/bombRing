@@ -36,8 +36,20 @@ public class MapUpdateMessage extends Message {
 
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
-		// TODO Auto-generated method stub
-		return false;
+		/** send the new player the updated map */
+		try {
+			clientConnection.getOutputStream().writeObject(this);
+		} catch (Exception e){
+			System.out.println("Error sending updated map to client");
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public String toString(){
+		return "This is an updateMap message";
+		
 	}
 
 }

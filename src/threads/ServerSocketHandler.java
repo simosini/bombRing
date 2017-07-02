@@ -28,7 +28,7 @@ public class ServerSocketHandler implements Runnable {
 			while(true){
 				Socket sender = srvSocket.accept();	
 				System.out.println("Received message from: " + sender.getPort());
-				new Thread(new ReceivedMessagesHandlerThread(sender)).start();
+				new Thread(new IncomingMessageHandlerThread(sender)).start();
 				System.out.println("ReceivMessHandlThread started!");
 			
 			} 

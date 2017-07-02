@@ -108,7 +108,8 @@ public enum Peer {
 	}
 	
 	public synchronized void setClientConnections(HashMap<Integer, ConnectionData> map){
-		this.clientConnections.clear();
+		if (this.clientConnections != null)
+			this.clientConnections.clear();
 		this.clientConnections = map;
 	}
 	
@@ -150,6 +151,15 @@ public enum Peer {
 	public synchronized TreeMap<Integer, Player> getUserMap() {
 		// yield a copy of the current userMap
 		return this.getCurrentGame().getPlayers().getUsersMap();
+	}
+
+	public synchronized void incrementCurrentScore() {
+		this.currentScore++;
+		
+	}
+
+	public ConnectionData getClientConnectionById(int id) {
+		return this.clientConnections.get(id);
 	}
 
 }

@@ -60,8 +60,11 @@ public abstract class Message implements Serializable {
 	public ConnectionData connectToPlayer(Player p) {
 		try {
 			Socket s = new Socket("localhost", p.getPort());
-			ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
-			ObjectInputStream in = new ObjectInputStream(s.getInputStream());
+			System.out.println("Connection established to port " + p.getPort());
+			final ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+			System.out.println("out stream done");
+			final ObjectInputStream in = new ObjectInputStream(s.getInputStream());
+			System.out.println("Streams done!");
 			return new ConnectionData(s, out, in);
 		} catch (IOException e){
 			System.out.println("Error connecting to other player");

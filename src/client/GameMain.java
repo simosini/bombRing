@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
+import java.util.HashMap;
 import java.util.Random;
 
 import com.vdurmont.emoji.Emoji;
@@ -87,8 +88,11 @@ public class GameMain {
 					Peer peer = Peer.INSTANCE;
 					System.out.println("Select a name for the game: ");
 					String name = br.readLine();
-					System.out.println("Select the length for the grid: ");
-					int length = Integer.parseInt(br.readLine());
+					int length;
+					do {
+						System.out.println("Select the length for the grid: ");
+						length = Integer.parseInt(br.readLine());  
+					} while(length%2 != 0);
 					System.out.println("Select the number of points to win: ");
 					int points = Integer.parseInt(br.readLine());
 					
@@ -106,9 +110,9 @@ public class GameMain {
 					/** choose a random position */
 					Random random = new Random();
 					Cell newCell = new Cell(random.nextInt(length), random.nextInt(length));
-					newCell.setZoneColor("red");
 					peer.setCurrentPosition(newCell);
 					peer.setAlive(true);
+					peer.setClientConnections(new HashMap<>());
 					exit = true;
 					System.out.println("Done");
 
@@ -134,14 +138,15 @@ public class GameMain {
 				}
 				System.out.println("Player added correctly to the game on the server!");
 				System.out.println("Waiting to be inserted to the ring...");
-				if(startJoiningRingProcedure(currentGame)){
+				peer.setCurrentGame(currentGame);
+				if(startJoiningRingProcedure()){
 					/** choose a random position */
 					Random random = new Random();
 					Cell newCell = new Cell(random.nextInt(currentGame.getSideLength()), random.nextInt(currentGame.getSideLength()));
-					newCell.setZoneColor("red");
 					peer.setCurrentPosition(newCell);
 					peer.setAlive(true);
-					peer.setCurrentGame(currentGame);
+					
+					peer.setClientConnections(new HashMap<>());
 					exit = true;
 					
 				}
@@ -177,13 +182,14 @@ public class GameMain {
 
 	}
 
-	private static boolean startJoiningRingProcedure(Game gameToAdd) {
+	private static boolean startJoiningRingProcedure() {
 		try {
 			OutQueue outQueue = OutQueue.INSTANCE;
 			Peer peer = Peer.INSTANCE;
 			/** create message and handle it */
 			System.out.println("Creating JoinRing message");
 			Message joinRing = new JoinRingMessage(peer.getCurrentPlayer());
+			System.out.println(joinRing);
 			/** needed to avoid Token message overlapping */
 			synchronized (outQueue) {
 				return joinRing.handleOutMessage(null);

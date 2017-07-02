@@ -2,6 +2,7 @@ package messages;
 
 import beans.Player;
 import peer.ConnectionData;
+import singletons.OutQueue;
 import singletons.Peer;
 
 public class KilledMessage extends Message {
@@ -29,14 +30,40 @@ public class KilledMessage extends Message {
 	@Override
 	public boolean handleInMessage(ConnectionData cd) {
 		try {
-			Peer peer = Peer.INSTANCE;
+			final Peer peer = Peer.INSTANCE;
+			final OutQueue outQueue = OutQueue.INSTANCE;
+			final int targetScore = peer.getCurrentGame().getScoreNeeded();
+			System.out.println("Score before: " + peer.getCurrentScore());
+			
+			/** remove player from the map */
+			peer.deletePlayer(this.getKilledPlayer());
+			
 			/** add points if i'm alive and check victory */
-			if (peer.isAlive()){
-				peer.setCurrentScore(peer.getCurrentScore() + 1);
-				/****** need to check victory but avoid other thread to increment score***/
-				
+			if (peer.isAlive() && peer.getCurrentScore() < targetScore){
+				/** set new score */
+				peer.incrementCurrentScore();
+				System.out.println("Score after: " + peer.getCurrentScore());
+				if (peer.getCurrentScore() == targetScore){
+					System.out.println("I won!");
+					/** game is finished set alive false */
+					peer.setAlive(false);
+					/** put the message on the outQueue */
+					Message victory = new VictoryMessage();
+					victory.setInput(false);
+					Packets newPacket = new Packets(victory, null);
+					synchronized (outQueue) {
+						outQueue.add(newPacket);
+					}
+					
+				}
+								
 			}
+			
+		} catch(Exception e) {
+			System.out.println("Error handling incoming killed message");
+			return false;
 		}
+		return true;
 	}
 	
 	/** I send back that i'm dead */

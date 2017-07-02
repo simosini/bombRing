@@ -1,6 +1,6 @@
 package messages;
 
-import java.net.Socket;
+import peer.ConnectionData;
 
 public class BombExplodedMessage extends Message {
 
@@ -20,16 +20,23 @@ public class BombExplodedMessage extends Message {
 	public void setColor(String color) {
 		this.color = color;
 	}
-	
-	@Override
-	public void handleInMessage(Socket sender) {
-		System.out.println(this.toString());
 
+	@Override
+	public boolean handleInMessage(ConnectionData clientConnection) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
+	@Override
+	public boolean handleOutMessage(ConnectionData clientConnection) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
 	@Override
 	public String toString(){
 		return "This is a Bomb exploded message";
 	}
+
 
 }

@@ -1,6 +1,6 @@
 package messages;
 
-import java.net.Socket;
+import peer.ConnectionData;
 
 /**
  * This message is sent to inform a player willing to join the game
@@ -18,11 +18,25 @@ public class NackMessage extends Message {
 		super(Type.NACK, NACK_PRIORITY);
 
 	}
+	
+	/** This can only be received by a new player willing to join the game */
+	@Override
+	public boolean handleInMessage(ConnectionData clientConnection) {
+		/** this message is never put on any queue so do nothing */
+		System.out.println("Nack message received");
+		return true;
+	}
 
 	@Override
-	public void handleInMessage(Socket sender) {
-		System.out.println(this.toString());
-
+	public boolean handleOutMessage(ConnectionData clientConnection) {
+		try {
+			clientConnection.getOutputStream().writeObject(this);
+		} catch (Exception e){
+			System.out.println("Error sending nack message");
+			return false;
+		}
+		return true;
+		
 	}
 	
 	@Override

@@ -1,11 +1,9 @@
 package client;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 
-import messages.PositionMessage;
+import beans.Game;
+import beans.Player;
 
 public class Provare {
 
@@ -24,7 +22,7 @@ public class Provare {
 		System.out.println(peer.getCurrentGame());
 		peer.deletePlayer(p);
 		System.out.println(peer.getCurrentGame());
-		System.out.println(peer.getCurrentPosition().getZoneColor());*/
+		System.out.println(peer.getCurrentPosition().getZoneColor());
 		PositionMessage pm = new PositionMessage(4, 4);
 		Socket s = new Socket("localhost", 37693);
 		System.out.println("Connected to server");
@@ -34,7 +32,12 @@ public class Provare {
 		ObjectInputStream in = new ObjectInputStream(s.getInputStream());
 		System.out.println("Reading answer");
 		System.out.println(in.readObject());
-		s.close();
+		s.close();*/
+		Game g = new Game("a",3,3);
+		Player p = new Player("c","c","c",22);
+		g.addPlayerToGame(p);
+		Game g1 = new Game(g);
+		System.out.println(g1);
 	}
 
 }

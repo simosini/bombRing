@@ -1,6 +1,6 @@
 package messages;
 
-import java.net.Socket;
+import peer.ConnectionData;
 
 public class VictoryMessage extends Message {
 
@@ -13,8 +13,14 @@ public class VictoryMessage extends Message {
 	}
 
 	@Override
-	public void handleInMessage(Socket sender) {
-		System.out.println(this.toString());
+	public boolean handleInMessage(ConnectionData cd) {
+		return true;
+	}
+	
+	@Override
+	public boolean handleOutMessage(ConnectionData clientConnection) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	@Override

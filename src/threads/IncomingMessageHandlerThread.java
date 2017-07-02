@@ -18,11 +18,11 @@ import singletons.InQueue;
  * the handler.
  * */
 
-public class ReceivedMessagesHandlerThread implements Runnable {
+public class IncomingMessageHandlerThread implements Runnable {
 
 	private ConnectionData clientConnection;
 	
-	public ReceivedMessagesHandlerThread(Socket s) throws IOException{
+	public IncomingMessageHandlerThread(Socket s) throws IOException{
 	
 		ObjectInputStream inputStream = new ObjectInputStream(s.getInputStream());
 		ObjectOutputStream outputStream = new ObjectOutputStream(s.getOutputStream());

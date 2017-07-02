@@ -1,12 +1,10 @@
 package messages;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.List;
 
 import beans.Player;
 import peer.Broadcast;
+import peer.ConnectionData;
 import singletons.Peer;
 
 public class AddPlayerMessage extends Message {
@@ -28,66 +26,85 @@ public class AddPlayerMessage extends Message {
 		this.playerToAdd = playerToAdd;
 	}
 	
-	@Override
-	public void handleInMessage(Socket sender) {
-		
-		try {
-			if (this.checkIsInput()) /** it's an input packet */
-				handleInMessage(sender);
-			
-			else  /** it's an output position packet */
-				handleOutMessage(sender);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-		}
-
-	}
 	
-	private void handleOutMessage(Socket sender) {
+	// remember not to send message to the requested peer
+	@Override
+	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
+			Peer peer = Peer.INSTANCE;
 			System.out.println("Handling message. Type: " + this);
-			List<Integer> userPorts = Peer.INSTANCE.extractPlayersPorts();
-			System.out.println("retrieved user ports");
-			this.setInput(true); /** becomes an in packet for the receiver */
 			
-			if (userPorts.size() != 0) /** check i'm not alone */
-				new Broadcast(userPorts, this).broadcastMessage();
-			
-			System.out.println("Broadcast done");
-			final ObjectOutputStream out = new ObjectOutputStream(sender.getOutputStream());
-			/** add the player to the map and send him back Ack if still alive */
-			if (Peer.INSTANCE.isAlive()){
-				Peer.INSTANCE.addNewPlayer(this.getPlayerToAdd());
-				System.out.println("Player added to the map");
-				out.writeObject(new AckMessage());
-				System.out.println("Ack Message sent");
+			/** if i'm still alive i.e. no bomb killed me in the meantime */
+			if (peer.isAlive()){
+				
+				/** retrieve connections to other serverSockets */
+				List<ConnectionData> otherPlayers  = peer.getClientConnectionsList();
+				System.out.println("retrieved user sockets");
+				this.setInput(true); /** becomes an in packet for the receiver */
+				
+				/** start broadcast */
+				if (otherPlayers.size() != 0) /** check i'm not alone */
+					new Broadcast(otherPlayers, this).broadcastMessage();
+				
+				System.out.println("Broadcast done");
+				
+				/** add the player to the map and connect to him */
+				peer.addNewPlayer(this.getPlayerToAdd());
+				System.out.println("Player added to the map!");
+				
+				ConnectionData cd = this.connectToPlayer(this.getPlayerToAdd());
+				if (cd ==null){
+					System.out.println("Leaving the game");
+					System.exit(1);
+				}
+				peer.addConnectedSocket(this.getPlayerToAdd().getId(), cd);
+				System.out.println("Connection added correctly");
+				
+				/** send MapUpdate Message */
+				
+				new MapUpdateMessage(peer.getUserMap()).handleOutMessage(clientConnection);
+				System.out.println("Updated map sent");
 			}
-			else{
+			
+			else {
+				/** send nack message */
 				System.out.println("I'm dead so sending nack");
-				out.writeObject(new Packets(new NackMessage(), null));
+				new NackMessage().handleOutMessage(clientConnection);
 			}
 			
 		}
-		catch (IOException e){
+		catch (Exception e){
 			System.out.println(e.getMessage());
+			return false;
 		}
+		return true;
 	}
 
-
-	private void handleInMessage(Socket sender) {
+	@Override
+	public boolean handleInMessage(ConnectionData clientConnection) {
 		try {
-			/** add the player and send ack */
+			/** add the player */
 			Peer.INSTANCE.addNewPlayer(this.getPlayerToAdd());
 			System.out.println("Player added to the map");
-			Packets newPacket = new Packets(new AckMessage(), null);
-			final ObjectOutputStream out = new ObjectOutputStream(sender.getOutputStream());
-			out.writeObject(newPacket);
+			
+			/** connect to him */
+			ConnectionData cd = this.connectToPlayer(this.getPlayerToAdd());
+			if (cd ==null){
+				System.out.println("Leaving the game");
+				System.exit(1);
+			}
+			Peer.INSTANCE.addConnectedSocket(this.getPlayerToAdd().getId(), cd);
+			System.out.println("Connection added correctly");
+			
+			/** send ack */
+			new AckMessage().handleOutMessage(clientConnection);
 			System.out.println("Ack Message sent");
 		}
-		catch (IOException e){
+		catch (Exception e){
 			System.out.println(e.getMessage());
+			return false;
 		}
+		return true;
 	}
 
 	@Override

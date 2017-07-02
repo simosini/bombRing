@@ -34,7 +34,7 @@ public class Broadcast {
 	
 	public void broadcastMessage() {
 		List<Thread> threads = new ArrayList<>();
-		this.getPorts().forEach(port -> threads.add(new Thread(new SendMessageThread(port, this.getMsgToSend()))));
+		this.getClientConnections().forEach(conn -> threads.add(new Thread(new SendMessageThread(conn, this.getMsgToSend()))));
 		threads.forEach(t -> t.start());
 		threads.forEach(t -> {
 			try {

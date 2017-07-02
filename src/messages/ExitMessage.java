@@ -1,6 +1,6 @@
 package messages;
 
-import java.net.Socket;
+import peer.ConnectionData;
 
 public class ExitMessage extends Message {
 	
@@ -10,15 +10,28 @@ public class ExitMessage extends Message {
 	public ExitMessage() {
 		super(Type.EXITGAME, EXIT_PRIORITY);
 	}
+	
+	@Override
+	public boolean handleInMessage(ConnectionData clientConnection) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 
 	@Override
-	public void handleInMessage(Socket sender) {
-		System.out.println(this.toString());
-
+	public boolean handleOutMessage(ConnectionData clientConnection) {
+		// TODO Auto-generated method stub
+		return false;
 	}
+
+	
 
 	@Override
 	public String toString(){
 		return "This is an Exit message";
 	}
+
+
+
+	
 }

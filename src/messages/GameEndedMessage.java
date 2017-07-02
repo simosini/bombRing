@@ -1,6 +1,6 @@
 package messages;
 
-import java.net.Socket;
+import peer.ConnectionData;
 
 public class GameEndedMessage extends Message {
 
@@ -13,9 +13,15 @@ public class GameEndedMessage extends Message {
 	}
 
 	@Override
-	public void handleInMessage(Socket sender) {
-		System.out.println(this.toString());
+	public boolean handleInMessage(ConnectionData clientConnection) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
+	@Override
+	public boolean handleOutMessage(ConnectionData clientConnection) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	@Override

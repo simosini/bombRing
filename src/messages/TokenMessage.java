@@ -1,13 +1,6 @@
 package messages;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-
-import beans.Player;
-import beans.Players;
-import singletons.OutQueue;
-import singletons.Peer;
+import peer.ConnectionData;
 
 public class TokenMessage extends Message {
 	
@@ -18,15 +11,14 @@ public class TokenMessage extends Message {
 		super(Type.TOKEN, TOKEN_PRIORITY);
 	}
 	
-	@Override
-	public void handleInMessage(Socket sender){
+	/*public void handleInMessage(Socket sender){
 		OutQueue outQueue = OutQueue.INSTANCE;
 		Packets outPacket = null;
-		/** when received check the queue, handle message and pass the token */
+		// when received check the queue, handle message and pass the token 
 		if(!outQueue.isEmpty()){
 			synchronized (outQueue) {
 				System.out.println("retrieving packet from outq");
-				outPacket = outQueue.poll(); /** only first packet */
+				outPacket = outQueue.poll(); // only first packet 
 			}
 			if (outPacket != null) {
 				System.out.println("Starting handling");
@@ -41,7 +33,7 @@ public class TokenMessage extends Message {
 		try {
 			Player nextPeer = null;
 			Players others = Peer.INSTANCE.getCurrentGame().getPlayers();
-			if ((nextPeer = this.getNextPeer(others)) != null){ /**i'm not alone */
+			if ((nextPeer = this.getNextPeer(others)) != null){ //i'm not alone
 				Socket cli = new Socket("localhost", nextPeer.getPort());
 				ObjectOutputStream out = new ObjectOutputStream(cli.getOutputStream());
 				out.writeObject(tokenMessage);
@@ -52,11 +44,25 @@ public class TokenMessage extends Message {
 		catch(IOException | InterruptedException e) {
 			System.out.println("Error passing token!");
 		}
+	}*/
+	
+	@Override
+	public boolean handleInMessage(ConnectionData clientConnection) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean handleOutMessage(ConnectionData clientConnection) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
 	public String toString(){
 		return "This is a Token message";
 	}
+
+	
 
 }

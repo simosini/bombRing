@@ -54,8 +54,10 @@ public class UserInputHandlerThread implements Runnable {
 						 * */
 						if (Peer.INSTANCE.getNumberOfPlayers() == 1) {
 							Thread t = new Thread(new OnePlayerHandlerThread(nextPacket));
+							System.out.println("One Player handler started");
 							t.start();
-							t.join();
+							t.join(); 
+							System.out.println("One player handler done");
 						}
 						else {
 							// handler will wake me up when is done with my packet
@@ -80,7 +82,8 @@ public class UserInputHandlerThread implements Runnable {
 		try {
 			/** print current position */
 			Cell currentPos = Peer.INSTANCE.getCurrentPosition();
-			System.out.println(currentPos);
+			String colorZone = this.computeZone(currentPos.getPosition());
+			System.out.println(colorZone + currentPos);
 
 			System.out.println("Select a move:\n" + "U - move up;\n" + "D - move down;\n" + "L - move left;\n"
 					+ "R - move right;\n" + "B - toss a bomb if available;\nE - exit game;\n");
@@ -150,6 +153,26 @@ public class UserInputHandlerThread implements Runnable {
 			throw new InterruptedException(e.getMessage());
 		}
 
+	}
+
+	private String computeZone(int[] pos) {
+		StringBuilder sb = new StringBuilder("You are in the ");
+		String color = null;
+		if (this.gridDimension / (pos[0] + 1) >= 2 && this.gridDimension / (pos[1] +1) >= 2){
+			color = "green";
+		}
+		else if (this.gridDimension / (pos[0] + 1) < 2 && this.gridDimension / (pos[1] +1) < 2){
+			color = "yellow";
+		}
+		else if (pos[0] > pos[1]){
+			color = "blue";
+		}
+		else
+			color = "red";
+		sb.append(color);
+		sb.append(" zone. ");
+		Peer.INSTANCE.getCurrentPosition().setColorZone(color);
+		return sb.toString();
 	}
 
 	private boolean isMovementAllowed(DIR direction) {

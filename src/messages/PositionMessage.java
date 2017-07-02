@@ -65,12 +65,17 @@ public class PositionMessage extends Message {
 			
 			/** notify the stdin i've finished handling the message */
 			System.out.println("Notifying stdin");
-			synchronized (outQueue) {
-				outQueue.notify();
+			if (Peer.INSTANCE.getNumberOfPlayers() > 1){
+				synchronized (outQueue) {
+					outQueue.notify();
+				}
 			}
+			System.out.println("Done notification");
 		} catch (Exception e){
 			System.out.println("Error with outgoing position message");
+			return false;
 		}
+		return true;
 	}
 	
 	@Override

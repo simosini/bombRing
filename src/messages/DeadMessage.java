@@ -1,8 +1,7 @@
 package messages;
 
-import java.net.Socket;
-
 import beans.Player;
+import peer.ConnectionData;
 
 public class DeadMessage extends Message {
 
@@ -22,12 +21,19 @@ public class DeadMessage extends Message {
 	public Player getCurrentPlayer(){
 		return this.currentPlayer;
 	}
+	
+	@Override
+	public boolean handleInMessage(ConnectionData clientConnection) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 	@Override
-	public void handleInMessage(Socket sender) {
-		System.out.println(this.toString());
-
+	public boolean handleOutMessage(ConnectionData clientConnection) {
+		// TODO Auto-generated method stub
+		return false;
 	}
+
 	
 	@Override
 	public String toString(){
