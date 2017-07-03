@@ -16,7 +16,6 @@ public class PositionMessage extends Message {
 	private int row;
 	private int col;
 	
-	public PositionMessage(){}
 
 	public PositionMessage(int row, int col) {
 		super(Type.POSITION, POSITION_PRIORITY);
@@ -66,17 +65,17 @@ public class PositionMessage extends Message {
 			/** set new position */
 			Peer.INSTANCE.setNewPosition(this.getRow(), this.getCol());
 			
-			/** notify the stdin i've finished handling the message */
-			
-			//if (Peer.INSTANCE.getNumberOfPlayers() > 1){
-			System.out.println("Notifying stdin");
-			synchronized (this) {
-				outQueue.notify();
+			/** notify the stdin i've finished handling the message */			
+			if (Peer.INSTANCE.getNumberOfPlayers() > 1){
+				System.out.println("Notifying stdin");
+				synchronized (outQueue) {
+					outQueue.notify();
+				}
 			}
-			//}
 			System.out.println("Done notification");
 		} catch (Exception e){
 			System.err.println("Error with outgoing position message");
+			e.printStackTrace();
 			return false;
 		}
 		return true;

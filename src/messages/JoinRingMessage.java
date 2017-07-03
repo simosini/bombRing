@@ -2,9 +2,6 @@ package messages;
 
 import java.util.TreeMap;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-
 import beans.Player;
 import beans.Players;
 import peer.ConnectionData;
@@ -29,7 +26,6 @@ public class JoinRingMessage extends Message {
 	private static final int JOIN_PRIORITY = 5;
 	private Player player; /** the player to add to the ring */
 
-	public JoinRingMessage(){}
 	
 	public JoinRingMessage(Player p) {
 		super(Type.JOINRING, JOIN_PRIORITY);
@@ -96,7 +92,7 @@ public class JoinRingMessage extends Message {
 				 * handler to do that cause i'm not sure yet the new player
 				 * will be added to the game. AddPlayer handler will add
 				 * the player and connect to him if everything go smooth */
-				Packets newPacket = new Packets(m,cd);
+				Packets newPacket = new Packets(m,clientConnection);
 				
 				synchronized (outQueue) {
 					outQueue.add(newPacket);
@@ -106,7 +102,7 @@ public class JoinRingMessage extends Message {
 			
 		}
 		catch(Exception e){
-			System.out.println("Error communicating with new adding player!");
+			System.err.println("Error communicating with new adding player!");
 			return false;
 		}
 		return true;
@@ -128,7 +124,7 @@ public class JoinRingMessage extends Message {
 			System.out.println("Start handling ---- " + this);
 			/** retrieve players list */
 			Peer peer = Peer.INSTANCE;
-			ObjectMapper mapper = new ObjectMapper();
+			
 
 			 /** it's a copy of the map given by the rest server */
 			Players players = peer.getCurrentGame().getPlayers();
@@ -151,13 +147,11 @@ public class JoinRingMessage extends Message {
 				else {
 					/** create message and send it */
 					System.out.println("sending message to port " + nextPeer.getPort());
-					String message = mapper.writeValueAsString(new JoinRingMessage(peer.getCurrentPlayer()));
-					cd.getOutputStream().writeBytes(message + "\n");
+					cd.getOutputStream().writeObject(new JoinRingMessage(peer.getCurrentPlayer()));
 					System.out.println("message sent!");
 					
 					/** wait for the answer */
-					Message m = mapper.readValue(cd.getInputStream().readLine(), new TypeReference<Message>() {
-					});
+					Message m = (Message) cd.getInputStream().readObject();
 					System.out.println("received answer :" + m);
 					
 					/** check answer: can only be mapUpdate or nack */
@@ -176,6 +170,7 @@ public class JoinRingMessage extends Message {
 						System.out.println("Connected to all players");
 						
 						/** new Player is in the game */
+						System.out.println("Im in the game!!!");
 						peer.setAlive(true);
 						return true;
 					}

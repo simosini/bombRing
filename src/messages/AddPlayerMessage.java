@@ -15,8 +15,6 @@ public class AddPlayerMessage extends Message {
 	private static final long serialVersionUID = 4448703639215851985L;
 	private static final int ADD_PRIORITY = 3;
 	private Player playerToAdd;
-	
-	public AddPlayerMessage(){}
 
 	public AddPlayerMessage(Player p) {
 		super(Type.ADDPLAYER, ADD_PRIORITY);

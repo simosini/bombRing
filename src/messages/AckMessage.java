@@ -1,7 +1,5 @@
 package messages;
 
-import org.codehaus.jackson.map.ObjectMapper;
-
 import peer.ConnectionData;
 
 public class AckMessage extends Message {
@@ -23,9 +21,7 @@ public class AckMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			ObjectMapper mapper = new ObjectMapper();
-			String message = mapper.writeValueAsString(this);
-			clientConnection.getOutputStream().writeBytes(message + "\n");
+			clientConnection.getOutputStream().writeObject(this);
 			System.out.println("Ack sent");
 		}
 		catch(Exception e){

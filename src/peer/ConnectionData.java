@@ -1,19 +1,20 @@
 package peer;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class ConnectionData {
 	
 	private Socket clientSocket = null;
-	private DataOutputStream out = null;
-	private BufferedReader in = null;
+	private ObjectOutputStream out = null;
+	private ObjectInputStream in = null;
 	
-	public ConnectionData(Socket s, DataOutputStream os, BufferedReader br) {
+	public ConnectionData(Socket s, ObjectOutputStream os, ObjectInputStream is) {
 		this.setClientSocket(s);
 		this.setOutputStream(os);
-		this.setInputStream(br);
+		this.setInputStream(is);
 	}
 
 	public Socket getClientSocket() {
@@ -24,19 +25,26 @@ public class ConnectionData {
 		this.clientSocket = clientSocket;
 	}
 
-	public DataOutputStream getOutputStream() {
+	public ObjectOutputStream getOutputStream() {
 		return out;
 	}
 
-	private void setOutputStream(DataOutputStream out) {
+	private void setOutputStream(ObjectOutputStream out) {
 		this.out = out;
 	}
 
-	public BufferedReader getInputStream() {
-		return in;
+	public ObjectInputStream getInputStream() {
+		if (this.in == null){
+			try {
+				in = new ObjectInputStream(this.clientSocket.getInputStream());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return this.in;
 	}
 
-	public void setInputStream(BufferedReader in) {
+	public void setInputStream(ObjectInputStream in) {
 		this.in = in;
 	}
 }

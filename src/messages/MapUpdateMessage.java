@@ -1,8 +1,7 @@
 package messages;
 
+import java.io.IOException;
 import java.util.TreeMap;
-
-import org.codehaus.jackson.map.ObjectMapper;
 
 import beans.Player;
 import peer.ConnectionData;
@@ -42,10 +41,8 @@ public class MapUpdateMessage extends Message {
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		/** send the new player the updated map */
 		try {
-			ObjectMapper mapper = new ObjectMapper();
-			String message = mapper.writeValueAsString(this);
-			clientConnection.getOutputStream().writeBytes(message + "\n");
-		} catch (Exception e){
+			clientConnection.getOutputStream().writeObject(this);
+		} catch (IOException e){
 			System.err.println("Error sending updated map to client");
 			return false;
 		}

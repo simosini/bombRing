@@ -1,9 +1,8 @@
 package messages;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 
@@ -63,9 +62,10 @@ public abstract class Message implements Serializable {
 			Socket s = new Socket("localhost", p.getPort());
 			System.out.println("Connection established to port " + s.getPort());
 			System.out.println("My port is " + s.getLocalPort());
-			final DataOutputStream out =  new DataOutputStream(s.getOutputStream());
+			ObjectOutputStream out =  new ObjectOutputStream(s.getOutputStream());
+			out.flush();
 			System.out.println("out stream done");
-			final BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+			ObjectInputStream in =  null;
 			System.out.println("Streams done!");
 			return new ConnectionData(s, out, in);
 		} catch (IOException e){

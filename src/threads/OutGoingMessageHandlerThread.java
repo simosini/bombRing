@@ -53,7 +53,7 @@ public class OutGoingMessageHandlerThread implements Runnable {
 			}
 			
 		} catch (Exception e){
-			System.out.println("Error handling outgoing message");
+			System.err.println("Error handling outgoing message");
 		}
 	}
 

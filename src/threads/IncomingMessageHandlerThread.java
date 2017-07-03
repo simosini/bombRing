@@ -1,13 +1,9 @@
 package threads;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 
 import messages.Message;
 import messages.Packets;
@@ -26,11 +22,20 @@ public class IncomingMessageHandlerThread implements Runnable {
 
 	private ConnectionData clientConnection;
 	
-	public IncomingMessageHandlerThread(Socket s) throws IOException{
+	public IncomingMessageHandlerThread(Socket s) {
 	
-		DataOutputStream outputStream = new DataOutputStream(s.getOutputStream());
-		BufferedReader inputStream = new BufferedReader(new InputStreamReader(s.getInputStream()));
-		this.clientConnection = new ConnectionData(s, outputStream, inputStream);
+		initStreams(s);
+	}
+
+	private void initStreams(Socket s) {
+		try {
+			ObjectOutputStream outputStream = new ObjectOutputStream(s.getOutputStream());
+			outputStream.flush();
+			ObjectInputStream inputStream = new ObjectInputStream(s.getInputStream());
+			this.clientConnection = new ConnectionData(s, outputStream, inputStream);
+		} catch(IOException e){
+			System.err.println("IncomingMessageThread Could not open streams");
+		}
 	}
 	
 	private ConnectionData getConnectionData() {
@@ -41,20 +46,19 @@ public class IncomingMessageHandlerThread implements Runnable {
 	public void run() {
 		InQueue inQueue = InQueue.INSTANCE;
 		Message message = null;
-		BufferedReader reader = null;
-		final ObjectMapper mapper = new ObjectMapper();
+		ObjectInputStream reader = null;
 
 		try {
 			reader = this.getConnectionData().getInputStream();
 			while(true){			
 				
-				message = mapper.readValue(reader.readLine(), new TypeReference<Message>() {
-				});
+				message = (Message) reader.readObject();
 				System.out.println("Received :" + message);
+				
+				System.out.println("Creating packet!");
+				Packets packet = new Packets(message, this.getConnectionData());
 				synchronized(inQueue){
 					
-					System.out.println("Creating packet!");
-					Packets packet = new Packets(message, this.getConnectionData());
 					inQueue.add(packet);
 					System.out.println("Packet added correctly to inQueue");
 					System.out.println("Notifying handler");
@@ -65,6 +69,8 @@ public class IncomingMessageHandlerThread implements Runnable {
 			}
 		} catch (IOException e){
 			System.out.println("Client closed connection. Closing current socket...");
+		} catch (ClassNotFoundException e) {
+			System.err.println("Error reading message from socket!");
 		} finally {
 			Socket s = null;
 			try{

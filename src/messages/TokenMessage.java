@@ -2,8 +2,6 @@ package messages;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.map.ObjectMapper;
-
 import peer.ConnectionData;
 import threads.OutGoingMessageHandlerThread;
 
@@ -39,11 +37,9 @@ public class TokenMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			ObjectMapper mapper = new ObjectMapper();
 			Thread.sleep(2000);
 			System.out.println("sending token to port " + clientConnection.getClientSocket().getPort());
-			String message = mapper.writeValueAsString(this);
-			clientConnection.getOutputStream().writeBytes(message + "\n");
+			clientConnection.getOutputStream().writeObject(this);
 		} catch (IOException | InterruptedException e){
 			System.err.println("Error sending out token");
 			return false;

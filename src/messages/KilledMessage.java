@@ -1,7 +1,5 @@
 package messages;
 
-import org.codehaus.jackson.map.ObjectMapper;
-
 import beans.Player;
 import peer.ConnectionData;
 import singletons.OutQueue;
@@ -40,11 +38,6 @@ public class KilledMessage extends Message {
 			final int targetScore = peer.getCurrentGame().getScoreNeeded();
 			System.out.println("Score before: " + peer.getCurrentScore());
 			
-			/** remove player from the map. NO will remove it later when i get the DeadMessage
-			peer.deletePlayer(this.getKilledPlayer());
-			System.out.println("Player deleted correctly");
-			*/
-			
 			/** add points if i'm alive and check victory */
 			if (peer.isAlive() && peer.getCurrentScore() < targetScore){
 				/** set new score */
@@ -80,14 +73,12 @@ public class KilledMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData cd){
 		try {
-			ObjectMapper mapper = new ObjectMapper();
 			System.out.println("You have been killed!");
 			Peer.INSTANCE.setAlive(false); // i'm dead
 		
 			/** send killed */
 			System.out.println("sending killed message");
-			String message = mapper.writeValueAsString(this);
-			cd.getOutputStream().writeBytes(message + "\n");
+			cd.getOutputStream().writeObject(this);
 			
 		}
 		catch(Exception e){
