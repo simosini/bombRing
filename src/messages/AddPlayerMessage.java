@@ -7,11 +7,16 @@ import peer.Broadcast;
 import peer.ConnectionData;
 import singletons.Peer;
 
+/** this Message is sent broadcast to all other players to 
+ *  inform them of a new player willing to join the game */
+
 public class AddPlayerMessage extends Message {
 
 	private static final long serialVersionUID = 4448703639215851985L;
 	private static final int ADD_PRIORITY = 3;
 	private Player playerToAdd;
+	
+	public AddPlayerMessage(){}
 
 	public AddPlayerMessage(Player p) {
 		super(Type.ADDPLAYER, ADD_PRIORITY);
@@ -27,7 +32,6 @@ public class AddPlayerMessage extends Message {
 	}
 	
 	
-	// remember not to send message to the requested peer
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
@@ -37,10 +41,10 @@ public class AddPlayerMessage extends Message {
 			/** if i'm still alive i.e. no bomb killed me in the meantime */
 			if (peer.isAlive()){
 				
-				/** retrieve connections to other serverSockets */
+				/** retrieve connections to other serverSockets. The new player is not here yet */
 				List<ConnectionData> otherPlayers  = peer.getClientConnectionsList();
 				System.out.println("retrieved user sockets");
-				this.setInput(true); /** becomes an in packet for the receiver */
+				this.setInput(true); /** becomes an in packet for the receivers */
 				
 				/** start broadcast */
 				if (otherPlayers.size() != 0) /** check i'm not alone */
@@ -54,14 +58,13 @@ public class AddPlayerMessage extends Message {
 				
 				ConnectionData cd = this.connectToPlayer(this.getPlayerToAdd());
 				if (cd ==null){
-					System.out.println("Leaving the game");
+					System.err.println("Error connecting to socket");
 					System.exit(1);
 				}
 				peer.addConnectedSocket(this.getPlayerToAdd().getId(), cd);
 				System.out.println("Connection added correctly");
 				
-				/** send MapUpdate Message */
-				
+				/** send MapUpdate Message */				
 				new MapUpdateMessage(peer.getUserMap()).handleOutMessage(clientConnection);
 				System.out.println("Updated map sent");
 			}
@@ -90,7 +93,7 @@ public class AddPlayerMessage extends Message {
 			/** connect to him */
 			ConnectionData cd = this.connectToPlayer(this.getPlayerToAdd());
 			if (cd ==null){
-				System.out.println("Leaving the game");
+				System.err.println("Error connecting to socket");
 				System.exit(1);
 			}
 			Peer.INSTANCE.addConnectedSocket(this.getPlayerToAdd().getId(), cd);
@@ -98,7 +101,6 @@ public class AddPlayerMessage extends Message {
 			
 			/** send ack */
 			new AckMessage().handleOutMessage(clientConnection);
-			System.out.println("Ack Message sent");
 		}
 		catch (Exception e){
 			System.out.println(e.getMessage());

@@ -63,6 +63,7 @@ public class UserInputHandlerThread implements Runnable {
 							// handler will wake me up when is done with my packet
 							outQueue.add(nextPacket);
 							System.out.println("User Thread put outQueue packet");
+							System.out.println("User thread waiting for handler");
 							outQueue.wait(); 
 							System.out.println("User thread packet handled!");
 						}
@@ -84,6 +85,7 @@ public class UserInputHandlerThread implements Runnable {
 			Cell currentPos = Peer.INSTANCE.getCurrentPosition();
 			String colorZone = this.computeZone(currentPos.getPosition());
 			System.out.println(colorZone + currentPos);
+			System.out.println("Your current score is: " + Peer.INSTANCE.getCurrentScore());
 
 			System.out.println("Select a move:\n" + "U - move up;\n" + "D - move down;\n" + "L - move left;\n"
 					+ "R - move right;\n" + "B - toss a bomb if available;\nE - exit game;\n");

@@ -12,12 +12,12 @@ import singletons.Peer;
  * from the outQueue and handle it. It can only be called by the MessageHandlerThread
  * whenever it receives a token */
 
-public class OutGoingMessageThread implements Runnable {
+public class OutGoingMessageHandlerThread implements Runnable {
 	
 	private TokenMessage token;
 	
 
-	public OutGoingMessageThread(TokenMessage token) {
+	public OutGoingMessageHandlerThread(TokenMessage token) {
 		this.setToken(token);
 	}
 
@@ -36,16 +36,22 @@ public class OutGoingMessageThread implements Runnable {
 			/** get first message out the outQueue and handle it */
 			synchronized (outQueue) {
 				if (!outQueue.isEmpty()){
+					
 					Packets packet = outQueue.poll();
+					System.out.println("OutGoingHandler got packet from outQueue");
 					packet.getMessage().handleOutMessage(packet.getSendingClient());
+					
 				}
 			}
-			/** Pass the token now */
+			
+			/** Pass the token now */			
 			Player nextPeer = Peer.INSTANCE.getNextPeer(Peer.INSTANCE.getCurrentGame().getPlayers());
 			if (nextPeer != null){ //it's null only if i'm alone in the game
 				ConnectionData peerConnection = Peer.INSTANCE.getClientConnectionById(nextPeer.getId());
-				peerConnection.getOutputStream().writeObject(this.getToken());
+				System.out.println("OutgoingHandler done, passing the token to port " + peerConnection.getClientSocket().getPort());
+				this.getToken().handleOutMessage(peerConnection);
 			}
+			
 		} catch (Exception e){
 			System.out.println("Error handling outgoing message");
 		}

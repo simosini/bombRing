@@ -139,6 +139,7 @@ public class GameMain {
 				System.out.println("Player added correctly to the game on the server!");
 				System.out.println("Waiting to be inserted to the ring...");
 				peer.setCurrentGame(currentGame);
+				peer.setClientConnections(new HashMap<>());
 				if(startJoiningRingProcedure()){
 					/** choose a random position */
 					Random random = new Random();
@@ -146,7 +147,7 @@ public class GameMain {
 					peer.setCurrentPosition(newCell);
 					peer.setAlive(true);
 					
-					peer.setClientConnections(new HashMap<>());
+					
 					exit = true;
 					
 				}

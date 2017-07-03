@@ -1,12 +1,14 @@
 package messages;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
 import peer.ConnectionData;
 
 public class AckMessage extends Message {
 	
 	private static final long serialVersionUID = -2461861844306614558L;
 	private static final int ACK_PRIORITY = 5;
-
+	
 	public AckMessage() {
 		super(Type.ACK, ACK_PRIORITY);
 	}
@@ -21,7 +23,9 @@ public class AckMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			clientConnection.getOutputStream().writeObject(this);
+			ObjectMapper mapper = new ObjectMapper();
+			String message = mapper.writeValueAsString(this);
+			clientConnection.getOutputStream().writeBytes(message + "\n");
 			System.out.println("Ack sent");
 		}
 		catch(Exception e){

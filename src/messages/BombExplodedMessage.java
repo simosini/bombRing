@@ -7,6 +7,8 @@ public class BombExplodedMessage extends Message {
 	private static final long serialVersionUID = 493773639985449364L;
 	private static final int BOMB_EXPLODED_PRIORITY = 2;
 	private String color;
+	
+	public BombExplodedMessage(){}
 
 	public BombExplodedMessage(String color) {
 		super(Type.BOMB_EXPLODED, BOMB_EXPLODED_PRIORITY);

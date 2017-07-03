@@ -15,6 +15,8 @@ public class PositionMessage extends Message {
 	private static final int POSITION_PRIORITY = 4;
 	private int row;
 	private int col;
+	
+	public PositionMessage(){}
 
 	public PositionMessage(int row, int col) {
 		super(Type.POSITION, POSITION_PRIORITY);
@@ -40,6 +42,7 @@ public class PositionMessage extends Message {
 	}
 
 	
+	/** send position in broadcast to all other players */
 	@Override
 	public boolean handleOutMessage(ConnectionData cd) {
 		try {
@@ -64,20 +67,22 @@ public class PositionMessage extends Message {
 			Peer.INSTANCE.setNewPosition(this.getRow(), this.getCol());
 			
 			/** notify the stdin i've finished handling the message */
+			
+			//if (Peer.INSTANCE.getNumberOfPlayers() > 1){
 			System.out.println("Notifying stdin");
-			if (Peer.INSTANCE.getNumberOfPlayers() > 1){
-				synchronized (outQueue) {
-					outQueue.notify();
-				}
+			synchronized (this) {
+				outQueue.notify();
 			}
+			//}
 			System.out.println("Done notification");
 		} catch (Exception e){
-			System.out.println("Error with outgoing position message");
+			System.err.println("Error with outgoing position message");
 			return false;
 		}
 		return true;
 	}
 	
+	/** check if i'm still alive */
 	@Override
 	public boolean handleInMessage(ConnectionData cd) {
 		try {
@@ -91,7 +96,6 @@ public class PositionMessage extends Message {
 				Player myself = peer.getCurrentPlayer();
 				KilledMessage km = new KilledMessage(myself);
 				km.handleOutMessage(cd);
-				
 				
 				/** create dead message */
 				System.out.println("creating dead message");
@@ -112,7 +116,7 @@ public class PositionMessage extends Message {
 			
 		}
 		catch (Exception e){
-			System.out.println("Error with incoming position message");
+			System.err.println("Error with incoming position message");
 			return false;
 		}
 		return true;

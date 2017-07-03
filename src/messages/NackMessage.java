@@ -1,5 +1,7 @@
 package messages;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
 import peer.ConnectionData;
 
 /**
@@ -30,9 +32,11 @@ public class NackMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			clientConnection.getOutputStream().writeObject(this);
+			ObjectMapper mapper = new ObjectMapper();
+			String message = mapper.writeValueAsString(this);
+			clientConnection.getOutputStream().writeBytes(message + "\n");
 		} catch (Exception e){
-			System.out.println("Error sending nack message");
+			System.err.println("Error sending nack message");
 			return false;
 		}
 		return true;

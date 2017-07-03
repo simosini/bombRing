@@ -1,5 +1,7 @@
 package messages;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
 import beans.Player;
 import peer.ConnectionData;
 import singletons.OutQueue;
@@ -10,6 +12,8 @@ public class KilledMessage extends Message {
 	private static final long serialVersionUID = 184832401348782267L;
 	private static final int KILLED_PRIORITY = 5;
 	private Player killedPlayer;
+	
+	public KilledMessage(){}
 
 	public KilledMessage(Player p) {
 		super(Type.KILLED, KILLED_PRIORITY);
@@ -26,7 +30,8 @@ public class KilledMessage extends Message {
 		this.killedPlayer = killedPlayer;
 
 	}
-
+	
+	/** I receive this if i killed someone else */
 	@Override
 	public boolean handleInMessage(ConnectionData cd) {
 		try {
@@ -35,18 +40,23 @@ public class KilledMessage extends Message {
 			final int targetScore = peer.getCurrentGame().getScoreNeeded();
 			System.out.println("Score before: " + peer.getCurrentScore());
 			
-			/** remove player from the map */
+			/** remove player from the map. NO will remove it later when i get the DeadMessage
 			peer.deletePlayer(this.getKilledPlayer());
+			System.out.println("Player deleted correctly");
+			*/
 			
 			/** add points if i'm alive and check victory */
 			if (peer.isAlive() && peer.getCurrentScore() < targetScore){
 				/** set new score */
 				peer.incrementCurrentScore();
 				System.out.println("Score after: " + peer.getCurrentScore());
+				
 				if (peer.getCurrentScore() == targetScore){
 					System.out.println("I won!");
+					
 					/** game is finished set alive false */
 					peer.setAlive(false);
+					
 					/** put the message on the outQueue */
 					Message victory = new VictoryMessage();
 					victory.setInput(false);
@@ -70,12 +80,14 @@ public class KilledMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData cd){
 		try {
+			ObjectMapper mapper = new ObjectMapper();
 			System.out.println("You have been killed!");
 			Peer.INSTANCE.setAlive(false); // i'm dead
 		
 			/** send killed */
 			System.out.println("sending killed message");
-			cd.getOutputStream().writeObject(this);
+			String message = mapper.writeValueAsString(this);
+			cd.getOutputStream().writeBytes(message + "\n");
 			
 		}
 		catch(Exception e){

@@ -1,9 +1,13 @@
 package threads;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
 import java.net.Socket;
+
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 
 import messages.Message;
 import messages.Packets;
@@ -24,8 +28,8 @@ public class IncomingMessageHandlerThread implements Runnable {
 	
 	public IncomingMessageHandlerThread(Socket s) throws IOException{
 	
-		ObjectInputStream inputStream = new ObjectInputStream(s.getInputStream());
-		ObjectOutputStream outputStream = new ObjectOutputStream(s.getOutputStream());
+		DataOutputStream outputStream = new DataOutputStream(s.getOutputStream());
+		BufferedReader inputStream = new BufferedReader(new InputStreamReader(s.getInputStream()));
 		this.clientConnection = new ConnectionData(s, outputStream, inputStream);
 	}
 	
@@ -37,13 +41,15 @@ public class IncomingMessageHandlerThread implements Runnable {
 	public void run() {
 		InQueue inQueue = InQueue.INSTANCE;
 		Message message = null;
-		ObjectInputStream reader = null;
+		BufferedReader reader = null;
+		final ObjectMapper mapper = new ObjectMapper();
 
 		try {
 			reader = this.getConnectionData().getInputStream();
 			while(true){			
 				
-				message = (Message) reader.readObject();
+				message = mapper.readValue(reader.readLine(), new TypeReference<Message>() {
+				});
 				System.out.println("Received :" + message);
 				synchronized(inQueue){
 					
@@ -59,8 +65,6 @@ public class IncomingMessageHandlerThread implements Runnable {
 			}
 		} catch (IOException e){
 			System.out.println("Client closed connection. Closing current socket...");
-		} catch (ClassNotFoundException ce) {
-			System.out.println("Error reading message");
 		} finally {
 			Socket s = null;
 			try{

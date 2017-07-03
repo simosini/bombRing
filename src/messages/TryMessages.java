@@ -1,31 +1,33 @@
 package messages;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.TreeMap;
 
-import beans.Player;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 
 public class TryMessages {
 
 	private static final int PORT = 4445;
 
+	
 	public static void main(String[] args) {
 		TryMessages tr = new TryMessages();
 		
 		if (Integer.parseInt(args[0]) == 0){
 			try {
-				
+				ObjectMapper mapper = new ObjectMapper();
 				ServerSocket srv = new ServerSocket(PORT);
 				System.out.println("Server started");
 				Socket cli = srv.accept();
-				ObjectInputStream inStream = new ObjectInputStream(cli.getInputStream());
+				BufferedReader inStream = new BufferedReader(new InputStreamReader(cli.getInputStream()));
 	
-				TreeMap<Integer, Player> players = (TreeMap<Integer, Player>) inStream.readObject();
-				System.out.println(players);
+				Message m = mapper.readValue(inStream.readLine(), new TypeReference<Message>() { });
+				System.out.println(m);
 				cli.close();
 				srv.close();
 
@@ -33,29 +35,26 @@ public class TryMessages {
 			catch (IOException e) {
 				e.printStackTrace();
 			} 
-			catch (ClassNotFoundException cn) {
-				cn.printStackTrace();
-			}
 		}
 		
 		else {
 
-			TreeMap<Integer, Player> pl = new TreeMap<>();
-			Player p =  new Player("a","a","a",3);
-			pl.put(p.getId(), p);
-			tr.communicate(pl);
+			AckMessage m = new AckMessage();
+			tr.communicate(m);
 		}
 			
 
 	}
 
-	public void communicate(TreeMap<Integer, Player> pl) {
+	public void communicate(Message m) {
 
 		try {
+			ObjectMapper mapper = new ObjectMapper();
 			Socket socket = new Socket("localhost", PORT);
-			ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-			System.out.println("Object to be written = " + pl);
-			outputStream.writeObject(pl);
+			DataOutputStream out  = new DataOutputStream(socket.getOutputStream());
+			System.out.println("Object to be written = " + m);
+			String message = mapper.writeValueAsString(m);
+			out.writeBytes(message + "\n");
 			socket.close();
 
 		} catch (IOException e) {
