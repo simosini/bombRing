@@ -37,7 +37,7 @@ public class TokenMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(5000);
 			System.out.println("sending token to port " + clientConnection.getClientSocket().getPort());
 			clientConnection.getOutputStream().writeObject(this);
 		} catch (IOException | InterruptedException e){

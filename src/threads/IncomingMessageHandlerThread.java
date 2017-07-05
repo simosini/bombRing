@@ -57,11 +57,10 @@ public class IncomingMessageHandlerThread implements Runnable {
 				
 				System.out.println("Creating packet!");
 				Packets packet = new Packets(message, this.getConnectionData());
-				synchronized(inQueue){
-					
-					inQueue.add(packet);
-					System.out.println("Packet added correctly to inQueue");
-					System.out.println("Notifying handler");
+				inQueue.add(packet);
+				System.out.println("Packet added correctly to inQueue");
+				System.out.println("Notifying handler");
+				synchronized(inQueue){					
 					inQueue.notify();
 					System.out.println("Notified");
 				}	

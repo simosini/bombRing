@@ -45,34 +45,37 @@ public class PositionMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData cd) {
 		try {
-			OutQueue outQueue = OutQueue.INSTANCE;
-			System.out.println("Handling message. Type: " + this);
-			
-			/** retrieve connections for the broadcast */
-			List<ConnectionData> clientConnections = Peer.INSTANCE.getClientConnectionsList();
-			System.out.println("retrieved user sockets");
-			this.setInput(true); /** becomes an in packet for the receiver */
-			
-			/** broadcast message */
-			if (clientConnections.size() != 0) /** check i'm not alone */
-				new Broadcast(clientConnections, this).broadcastMessage();
-			
-			System.out.println("Broadcast done");
-			
-			/** needs the position to set the new one */
-			System.out.println("Next position: " + this.getRow() + " " + this.getCol());
-			
-			/** set new position */
-			Peer.INSTANCE.setNewPosition(this.getRow(), this.getCol());
-			
-			/** notify the stdin i've finished handling the message */			
-			if (Peer.INSTANCE.getNumberOfPlayers() > 1){
-				System.out.println("Notifying stdin");
-				synchronized (outQueue) {
-					outQueue.notify();
+			/** if dead cannot move */
+			if (Peer.INSTANCE.isAlive()){
+				OutQueue outQueue = OutQueue.INSTANCE;
+				System.out.println("Handling message. Type: " + this);
+				
+				/** retrieve connections for the broadcast */
+				List<ConnectionData> clientConnections = Peer.INSTANCE.getClientConnectionsList();
+				System.out.println("retrieved user sockets");
+				this.setInput(true); /** becomes an in packet for the receiver */
+				
+				/** broadcast message */
+				if (clientConnections.size() != 0) /** check i'm not alone */
+					new Broadcast(clientConnections, this).broadcastMessage();
+				
+				System.out.println("Broadcast done");
+				
+				/** needs the position to set the new one */
+				System.out.println("Next position: " + this.getRow() + " " + this.getCol());
+				
+				/** set new position */
+				Peer.INSTANCE.setNewPosition(this.getRow(), this.getCol());
+				
+				/** notify the stdin i've finished handling the message */			
+				if (Peer.INSTANCE.getNumberOfPlayers() > 1){
+					System.out.println("Notifying stdin");
+					synchronized (outQueue) {
+						outQueue.notify();
+					}
 				}
+				System.out.println("Done notification");
 			}
-			System.out.println("Done notification");
 		} catch (Exception e){
 			System.err.println("Error with outgoing position message");
 			e.printStackTrace();

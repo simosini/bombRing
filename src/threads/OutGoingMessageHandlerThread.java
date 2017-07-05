@@ -34,16 +34,14 @@ public class OutGoingMessageHandlerThread implements Runnable {
 		OutQueue outQueue = OutQueue.INSTANCE;
 		try {
 			/** get first message out the outQueue and handle it */
-			synchronized (outQueue) {
-				if (!outQueue.isEmpty()){
+			if (!outQueue.isEmpty()){
 					
-					Packets packet = outQueue.poll();
-					System.out.println("OutGoingHandler got packet from outQueue");
-					packet.getMessage().handleOutMessage(packet.getSendingClient());
+				Packets packet = outQueue.poll();
+				System.out.println("OutGoingHandler got packet from outQueue");
+				packet.getMessage().handleOutMessage(packet.getSendingClient());
 					
-				}
 			}
-			
+		
 			/** Pass the token now */			
 			Player nextPeer = Peer.INSTANCE.getNextPeer(Peer.INSTANCE.getCurrentGame().getPlayers());
 			if (nextPeer != null){ //it's null only if i'm alone in the game

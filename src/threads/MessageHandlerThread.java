@@ -57,23 +57,24 @@ public class MessageHandlerThread implements Runnable {
 					/** check if the player is the only one in the game */
 					System.out.println("Im awake");
 				}
-				
-				/** consumes all items before releasing the lock on inQueue */
-				while (!inQueue.isEmpty()) {
-					System.out.println("Consuming inQueue");
-					Packets inPacket = inQueue.poll();
-					Message inMessage = inPacket.getMessage();
-					System.out.println("-----HANDLING-----");
-					System.out.println(inMessage);
-					/** handling could be an ack or a new msg to put on the outQ 
-					 *  in most of the cases will be the token */
-					if (!inMessage.handleInMessage(inPacket.getSendingClient())){
-						System.out.println("Something went wrong handling messages. Exiting the game!");
-						System.exit(1);
-					}
-				}
-				System.out.println("No more msg in the inQueue, releasing lock");
 			}
+				
+			/** consumes all items before releasing the lock on inQueue */
+			while (!inQueue.isEmpty()) {
+				System.out.println("Consuming inQueue");
+				Packets inPacket = inQueue.poll();
+				Message inMessage = inPacket.getMessage();
+				System.out.println("-----HANDLING-----");
+				System.out.println(inMessage);
+				/** handling could be an ack or a new msg to put on the outQ 
+				 *  in most of the cases will be the token */
+				if (!inMessage.handleInMessage(inPacket.getSendingClient())){
+					System.out.println("Something went wrong handling messages. Exiting the game!");
+					System.exit(1);
+				}
+			}
+			System.out.println("No more msg in the inQueue, releasing lock");
+			
 
 		}
 	}
