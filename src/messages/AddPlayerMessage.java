@@ -4,8 +4,10 @@ import java.util.List;
 
 import beans.Player;
 import peer.Broadcast;
+import peer.Cell;
 import peer.ConnectionData;
 import singletons.Peer;
+import singletons.PositionList;
 
 /** this Message is sent broadcast to all other players to 
  *  inform them of a new player willing to join the game */
@@ -29,7 +31,7 @@ public class AddPlayerMessage extends Message {
 		this.playerToAdd = playerToAdd;
 	}
 	
-	
+	/** broadcast to other players informing of a new user */
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
@@ -42,13 +44,21 @@ public class AddPlayerMessage extends Message {
 				/** retrieve connections to other serverSockets. The new player is not here yet */
 				List<ConnectionData> otherPlayers  = peer.getClientConnectionsList();
 				System.out.println("retrieved user sockets");
-				this.setInput(true); /** becomes an in packet for the receivers */
+								
+				/** clear PositionList and add current player*/
+				PositionList.ISTANCE.clearList();
+				PositionList.ISTANCE.addCell(Peer.INSTANCE.getCurrentPosition());
+				System.out.println("Initialized positions list");
 				
 				/** start broadcast */
 				if (otherPlayers.size() != 0) /** check i'm not alone */
 					new Broadcast(otherPlayers, this).broadcastMessage();
 				
 				System.out.println("Broadcast done");
+				
+				/** compute a free position to assign */
+				Cell newCell = PositionList.ISTANCE.computeNewPosition();
+				System.out.println("New position assigned: " + newCell);
 				
 				/** add the player to the map and connect to him */
 				peer.addNewPlayer(this.getPlayerToAdd());
@@ -63,7 +73,7 @@ public class AddPlayerMessage extends Message {
 				System.out.println("Connection added correctly");
 				
 				/** send MapUpdate Message */				
-				new MapUpdateMessage(peer.getUserMap()).handleOutMessage(clientConnection);
+				new MapUpdateMessage(peer.getUserMap(), newCell).handleOutMessage(clientConnection);
 				System.out.println("Updated map sent");
 			}
 			
