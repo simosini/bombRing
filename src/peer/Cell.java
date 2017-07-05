@@ -1,8 +1,11 @@
 package peer;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class Cell {
+public class Cell implements Serializable{
+
+	private static final long serialVersionUID = -454007840477943670L;
 
 	public enum DIR {
 		UP, DOWN, LEFT, RIGHT;

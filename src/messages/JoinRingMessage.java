@@ -4,9 +4,11 @@ import java.util.TreeMap;
 
 import beans.Player;
 import beans.Players;
+import peer.Cell;
 import peer.ConnectionData;
 import singletons.OutQueue;
 import singletons.Peer;
+import singletons.PositionList;
 
 /**
  * this packet is sent by a new player who wants to  be added to a current active game 
@@ -71,10 +73,17 @@ public class JoinRingMessage extends Message {
 				System.out.println("Adding player connection");	
 				peer.addConnectedSocket(this.getPlayer().getId(), cd);
 				
-				/** send a copy of the updated map */
+				/** send a copy of the updated map and position */
 				System.out.println("Player added correctly");
 				
-				new MapUpdateMessage(peer.getUserMap()).handleOutMessage(clientConnection);
+				/** clear list */
+				PositionList.ISTANCE.clearList();
+				
+				/** add my position*/
+				PositionList.ISTANCE.addCell(peer.getCurrentPosition());
+				
+				Cell newPosition = PositionList.ISTANCE.computeNewPosition();
+				new MapUpdateMessage(peer.getUserMap(), newPosition).handleOutMessage(clientConnection);
 				System.out.println("Map Message sent");
 				
 				/** start token (this happens only if i'm alone)*/
