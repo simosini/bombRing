@@ -1,5 +1,7 @@
 package peer;
 
+import java.util.Arrays;
+
 public class Cell {
 
 	public enum DIR {
@@ -60,6 +62,14 @@ public class Cell {
 			return new int[] { 0, -1 };
 		}
 		return null;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Cell) {
+			return Arrays.equals(this.getPosition(), ((Cell) obj).getPosition());
+		}
+		return false;
 	}
 
 	@Override
