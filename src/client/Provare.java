@@ -3,6 +3,7 @@ package client;
 import java.io.IOException;
 
 import beans.Game;
+import beans.Games;
 import beans.Player;
 
 public class Provare {
@@ -33,11 +34,19 @@ public class Provare {
 		System.out.println("Reading answer");
 		System.out.println(in.readObject());
 		s.close();*/
-		Game g = new Game("a",3,3);
-		Player p = new Player("c","c","c",22);
+		Games gs = Games.getInstance();
+		Game g = new Game("a",2,2);
+		Player p = new Player("a","a","a",2);
 		g.addPlayerToGame(p);
-		Game g1 = new Game(g);
-		System.out.println(g1);
+		gs.addGame(g);
+		System.out.println(gs.getGamesList());
+		System.out.println(g.retrievePlayersNumber());
+		gs.deletePlayer(g.getName(), p);
+		if (gs.getByName(g.getName()).retrievePlayersNumber() == 0)
+			gs.deleteGame(g.getName());
+		
+		System.out.println(gs.getGamesList());
+		
 	}
 
 }

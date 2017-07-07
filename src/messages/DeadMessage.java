@@ -2,37 +2,54 @@ package messages;
 
 import beans.Player;
 import peer.ConnectionData;
+import services.ExitProcedure;
+import singletons.Peer;
 
+
+/** This message indicates a dead player */
 public class DeadMessage extends Message {
 
 	private static final long serialVersionUID = -1902910439389667349L;
 	private static final int DEAD_PRIORITY = 2;
-	Player currentPlayer;
+	Player deadPlayer;
 
 
 	public DeadMessage(Player player) {
 		super(Type.DEAD, DEAD_PRIORITY);
-		this.setCurrentPlayer(player); 
+		this.setDeadPlayer(player); 
 	}
 	
-	public void setCurrentPlayer(Player p){
-		this.currentPlayer = p;
+	public void setDeadPlayer(Player p){
+		this.deadPlayer = p;
 	}
 	
-	public Player getCurrentPlayer(){
-		return this.currentPlayer;
+	public Player getDeadPlayer(){
+		return this.deadPlayer;
 	}
 	
+	/** This messages tells the receiver that another player has dead */
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			/** remove player from the map and from the ring */
+			Peer.INSTANCE.deletePlayer(this.getDeadPlayer());
+			
+			/** send ack to the dead player */
+			new AckMessage().handleOutMessage(clientConnection);
+		} catch (Exception e){
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
-
+	
+	/** exit game calling the exit procedure */
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			System.out.println("Starting exit procedure");
+			new ExitProcedure().startRegularProcedure(true);
+		}
 	}
 
 	

@@ -83,6 +83,7 @@ public class JoinRingMessage extends Message {
 				PositionList.ISTANCE.addCell(peer.getCurrentPosition());
 				
 				Cell newPosition = PositionList.ISTANCE.computeNewPosition();
+				System.out.println("This will be next position: " + newPosition);
 				new MapUpdateMessage(peer.getUserMap(), newPosition).handleOutMessage(clientConnection);
 				System.out.println("Map Message sent");
 				

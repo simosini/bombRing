@@ -1,15 +1,12 @@
 package singletons;
 
-import messages.AckMessage;
-import messages.Message;
-import messages.Packets;
-
 public class TrySingleton {
 
 	public static void main(String[] args) throws InterruptedException{
+		TrySingleton ts = new TrySingleton();
 		
-		Thread t1 = new Thread(new TrySingleton().new runner(1));
-		Thread t2 = new Thread(new TrySingleton().new runner(2));
+		Thread t1 = new Thread(ts.new runner(1));
+		Thread t2 = new Thread(ts.new runner(2));
 		t1.start();
 		Thread.sleep(1000);
 		t2.start();
@@ -25,7 +22,8 @@ public class TrySingleton {
 
 		@Override
 		public void run() {
-			OutQueue q = OutQueue.INSTANCE;
+			//OutQueue q = OutQueue.INSTANCE;
+			SingTry q = SingTry.getInstance();
 			System.out.println("Thread-" + side + " " + q.size());
 			if (side == 1){
 				try{
@@ -35,8 +33,9 @@ public class TrySingleton {
 					e.printStackTrace();
 				}
 			}
-			Message m = new AckMessage();
-			q.add(new Packets(m,null));
+			//Message m = new AckMessage();
+			//q.add(new Packets(m,null));
+			q.add(side);
 			System.out.println("Thread-" + side + " " + q.size());
 			
 		}

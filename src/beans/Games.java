@@ -99,5 +99,27 @@ public class Games {
 				}
 			}		
 	}
+	
+	public synchronized void deleteGame(String gameName) {
+		// need to check the game still exists
+		Game g = this.getByName(gameName);
+		if (g == null) // should never get here
+			throw new IllegalArgumentException(
+				"Game" + gameName + " does not exists anymore. Cannot remove it!");
+		
+		// g is a copy need the original list to change it
+		for (Game game : this.gamesList)
+			if (game.getName().equalsIgnoreCase(gameName)){
+				try{
+					this.gamesList.remove(game);
+					break;
+				}
+				catch(IllegalArgumentException e){
+					throw new NotFoundException(e.getMessage());
+				}
+			}
+		
+	}
+	
 
 }

@@ -1,5 +1,7 @@
 package singletons;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +19,7 @@ public enum Peer {
 
 	private Game currentGame;
 	private Player currentPlayer; 
+	private ServerSocket mainSocket;
 	private int currentScore = 0;
 	private boolean isAlive = false;
 	private Cell currentPosition;
@@ -34,6 +37,21 @@ public enum Peer {
 
 	public void setCurrentGame(Game currentGame) {
 		this.currentGame = currentGame;
+	}
+	
+	public void setServerSocket(ServerSocket srv){
+		this.mainSocket = srv;
+	}
+	
+	public synchronized void closeServerSocket(){
+		if (this.mainSocket != null) {
+			try {
+				this.mainSocket.close();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public synchronized Player getCurrentPlayer() {

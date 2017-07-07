@@ -50,6 +50,10 @@ public class OutGoingMessageHandlerThread implements Runnable {
 				this.getToken().handleOutMessage(peerConnection);
 			}
 			
+			/** If i'm dead exit */
+			if (!Peer.INSTANCE.isAlive())
+				System.exit(0);
+			
 		} catch (Exception e){
 			System.err.println("Error handling outgoing message");
 		}

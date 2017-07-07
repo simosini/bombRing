@@ -7,6 +7,7 @@ import beans.Player;
 import peer.Cell;
 import peer.ConnectionData;
 import singletons.Peer;
+import singletons.PositionList;
 
 public class MapUpdateMessage extends Message {
 
@@ -48,6 +49,8 @@ public class MapUpdateMessage extends Message {
 		
 		/** update current position. Another copy */
 		Cell newPos = this.getUpdatedPosition();
+		System.out.println("List of positions: " + PositionList.ISTANCE.getPlayerPositions());
+		System.out.println("My position is: " + newPos);
 		Peer.INSTANCE.setCurrentPosition(new Cell(newPos));
 		return true;
 	}

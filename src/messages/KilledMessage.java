@@ -1,6 +1,9 @@
 package messages;
 
+import java.util.List;
+
 import beans.Player;
+import peer.Broadcast;
 import peer.ConnectionData;
 import singletons.OutQueue;
 import singletons.Peer;
@@ -36,6 +39,7 @@ public class KilledMessage extends Message {
 			final Peer peer = Peer.INSTANCE;
 			final OutQueue outQueue = OutQueue.INSTANCE;
 			final int targetScore = peer.getCurrentGame().getScoreNeeded();
+			System.out.println("You just killed " + this.getKilledPlayer().getNickname());
 			System.out.println("Score before: " + peer.getCurrentScore());
 			
 			/** add points if i'm alive and check victory */
@@ -49,14 +53,20 @@ public class KilledMessage extends Message {
 					
 					/** game is finished set alive false */
 					peer.setAlive(false);
+					System.out.println("Informing other players!");
 					
-					/** put the message on the outQueue */
-					Message victory = new VictoryMessage();
-					victory.setInput(false);
-					Packets newPacket = new Packets(victory, null);
-					synchronized (outQueue) {
-						outQueue.add(newPacket);
-					}
+					/** retrieve connections to other serverSockets */
+					List<ConnectionData> otherPlayers  = peer.getClientConnectionsList();
+					System.out.println("retrieved user sockets");
+					
+					/** tell every player the game is finished. I cannot be alone */
+					new Broadcast(otherPlayers, new VictoryMessage()).broadcastMessage();
+					
+					System.out.println("Broadcast done");
+					
+					/** put Victory message on the outQueue */					
+					Packets newPacket = new Packets(new VictoryMessage(), null);
+					outQueue.add(newPacket);
 					
 				}
 								

@@ -29,6 +29,7 @@ public class GameMain {
 		try {
 			/** init basic structures and socket for the game */
 			ServerSocket srvSocket = new ServerSocket(0);
+			Peer.INSTANCE.setServerSocket(srvSocket);
 			ServiceRequester service = new ServiceRequester();
 
 			BufferedReader readInput = new BufferedReader(new InputStreamReader(System.in));
@@ -141,15 +142,8 @@ public class GameMain {
 				peer.setCurrentGame(currentGame);
 				peer.setClientConnections(new HashMap<>());
 				if(startJoiningRingProcedure()){
-					/** choose a random position */
-					Random random = new Random();
-					Cell newCell = new Cell(random.nextInt(currentGame.getSideLength()), random.nextInt(currentGame.getSideLength()));
-					peer.setCurrentPosition(newCell);
 					peer.setAlive(true);
-					
-					
-					exit = true;
-					
+					exit = true;		
 				}
 				else {
 					/** delete me from the map */
@@ -172,8 +166,7 @@ public class GameMain {
 
 			case 5:
 				System.out.println("Leaving the game. Goodbye!");
-				exit = true;
-				break;
+				System.exit(0);
 
 			default:
 				System.out.println("Please select a number between 1 and 4");

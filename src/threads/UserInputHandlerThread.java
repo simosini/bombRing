@@ -43,32 +43,44 @@ public class UserInputHandlerThread implements Runnable {
 		
 		while (true) {
 			try {
-				Packets nextPacket = this.getUserMove(); // can only be a bomb
-															//  new position or exit
-				if (nextPacket != null) {
-					synchronized (outQueue) {
-					
-						/** 
-						 * if i'm alone there is no token so create thread
-						 * no need to put packet in the queue. Pass it to the handler 
-						 * */
-						if (Peer.INSTANCE.getNumberOfPlayers() == 1) {
-							Thread t = new Thread(new OnePlayerHandlerThread(nextPacket));
-							System.out.println("One Player handler started");
-							t.start();
-							t.join(); 
-							System.out.println("One player handler done");
-						}
-						else {
-							// handler will wake me up when is done with my packet
-							outQueue.add(nextPacket);
-							System.out.println("User Thread put outQueue packet");
-							System.out.println("User thread waiting for handler");
-							outQueue.wait(); 
-							System.out.println("User thread packet handled!");
+				/** If I'm dead no option is available */
+				if (Peer.INSTANCE.isAlive()){
+					Packets nextPacket = this.getUserMove(); // can only be a bomb
+																//  new position or exit
+					if (nextPacket != null) {
+						synchronized (outQueue) {
+						
+							/** 
+							 * if i'm alone there is no token so create thread
+							 * no need to put packet in the queue. Pass it to the handler 
+							 * */
+							if (Peer.INSTANCE.getNumberOfPlayers() == 1) {
+								Thread t = new Thread(new OnePlayerHandlerThread(nextPacket));
+								System.out.println("One Player handler started");
+								t.start();
+								t.join(); 
+								System.out.println("One player handler done");
+							}
+							else {
+								// handler will wake me up when is done with my packet
+								outQueue.add(nextPacket);
+								System.out.println("User Thread put outQueue packet");
+								System.out.println("User thread waiting for handler");
+								outQueue.wait(); 
+								System.out.println("Done!");
+							}
 						}
 					}
 				}
+				else { /** gets here only if the player is not playing anymore */
+					synchronized (outQueue) {
+						/** to avoid busy waiting, It will never be notified
+						 *  but this is not a problem since the game is finished */
+						outQueue.wait(); 
+						
+					}
+				}
+					
 			} catch (InterruptedException e) {
 				System.out.println("The game finished!");
 				break;
@@ -138,13 +150,10 @@ public class UserInputHandlerThread implements Runnable {
 				/*
 				 * case "b": takes first bomb from the queue break;
 				 */ 
-				 case "e": 
-					 
-					 ExitMessage em = new ExitMessage();
-					 em.setInput(false);
+				 case "e": 					 
 					 System.out.println("Waiting to close the game...done!");
-					 // return new Packets(em, null);
-					 System.exit(0); //later will be changed
+					 Peer.INSTANCE.setAlive(false);
+					 return new Packets(new ExitMessage(), null);
 			
 	
 				default:
