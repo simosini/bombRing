@@ -6,8 +6,10 @@ import messages.ExitMessage;
 import messages.Message;
 import messages.Packets;
 import messages.PositionMessage;
+import peer.Bomb;
 import peer.Cell;
 import peer.Cell.DIR;
+import singletons.BombQueue;
 import singletons.OutQueue;
 import singletons.Peer;
 
@@ -72,6 +74,7 @@ public class UserInputHandlerThread implements Runnable {
 						}
 					}
 				}
+				
 				else { /** gets here only if the player is not playing anymore */
 					synchronized (outQueue) {
 						/** to avoid busy waiting, It will never be notified
@@ -98,6 +101,7 @@ public class UserInputHandlerThread implements Runnable {
 			String colorZone = this.computeZone(currentPos.getPosition());
 			System.out.println(colorZone + currentPos);
 			System.out.println("Your current score is: " + Peer.INSTANCE.getCurrentScore());
+			System.out.println(this.showBomb());
 
 			System.out.println("Select a move:\n" + "U - move up;\n" + "D - move down;\n" + "L - move left;\n"
 					+ "R - move right;\n" + "B - toss a bomb if available;\nE - exit game;\n");
@@ -163,6 +167,13 @@ public class UserInputHandlerThread implements Runnable {
 			throw new InterruptedException(e.getMessage());
 		}
 
+	}
+
+	private String showBomb() {
+		Bomb availableBomb = BombQueue.getInstance().peekBomb();
+		if (availableBomb == null)
+			return "No bombs available at the moment";
+		return "Next bomb available: " + availableBomb.getColor();
 	}
 
 	private String computeZone(int[] pos) {

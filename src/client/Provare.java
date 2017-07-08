@@ -2,9 +2,8 @@ package client;
 
 import java.io.IOException;
 
-import beans.Game;
-import beans.Games;
-import beans.Player;
+import simulator.MeasureBuffer;
+import simulator.Measurement;
 
 public class Provare {
 
@@ -34,18 +33,14 @@ public class Provare {
 		System.out.println("Reading answer");
 		System.out.println(in.readObject());
 		s.close();*/
-		Games gs = Games.getInstance();
-		Game g = new Game("a",2,2);
-		Player p = new Player("a","a","a",2);
-		g.addPlayerToGame(p);
-		gs.addGame(g);
-		System.out.println(gs.getGamesList());
-		System.out.println(g.retrievePlayersNumber());
-		gs.deletePlayer(g.getName(), p);
-		if (gs.getByName(g.getName()).retrievePlayersNumber() == 0)
-			gs.deleteGame(g.getName());
-		
-		System.out.println(gs.getGamesList());
+		MeasureBuffer buffer = MeasureBuffer.getInstance();
+		Measurement m0 = new Measurement("id0","ma",10,100);
+		Measurement m1 = new Measurement("id1","ma",8,100);
+		buffer.addNewMeasurement(m0);
+		buffer.addNewMeasurement(m1);
+		System.out.println(buffer);
+		System.out.println(buffer.readAllAndClean());
+		System.out.println(buffer);
 		
 	}
 

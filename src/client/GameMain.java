@@ -16,9 +16,13 @@ import messages.JoinRingMessage;
 import messages.Message;
 import peer.Cell;
 import services.ServiceRequester;
+import simulator.MeasureBuffer;
+import singletons.GameLock;
 import singletons.OutQueue;
 import singletons.Peer;
+import threads.AccelerometerSimulator;
 import threads.MessageHandlerThread;
+import threads.SensorDataAnalyzer;
 import threads.ServerSocketHandler;
 import threads.UserInputHandlerThread;
 
@@ -33,7 +37,8 @@ public class GameMain {
 			ServiceRequester service = new ServiceRequester();
 
 			BufferedReader readInput = new BufferedReader(new InputStreamReader(System.in));
-
+			
+			/** set current player */
 			Player newPlayer = getPlayerInfo(readInput);
 			newPlayer.setPort(srvSocket.getLocalPort());
 			Peer.INSTANCE.addPlayer(newPlayer);
@@ -48,14 +53,41 @@ public class GameMain {
 			new Thread(new ServerSocketHandler(srvSocket)).start();
 
 			/** the game is now started */
-			new Thread(
-					new UserInputHandlerThread(readInput)).start();
-
+			new Thread(new UserInputHandlerThread(readInput)).start();
+			
+			/** start simulator for bombs */
+			AccelerometerSimulator as = new AccelerometerSimulator(MeasureBuffer.getInstance()); 
+			SensorDataAnalyzer sda = new SensorDataAnalyzer();
+			Thread simulator = new Thread(as);
+			Thread analyzer = new Thread(sda);
+			simulator.start();
+			analyzer.start();
+			
+			/** stop  threads gracefully */
+			GameLock lock = GameLock.getInstance();
+			synchronized (lock) {
+				lock.wait();
+			}			
+			exitGame(mht, sda, as);
+			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 
 	}
+
+	
+
+	private static void exitGame(MessageHandlerThread mht, SensorDataAnalyzer sda, AccelerometerSimulator as) {
+		mht.stopThread();
+		sda.stopAnalyzer();
+		as.stopMeGently();
+		System.out.println("The game is over. Goodbye");
+		System.exit(0);
+		
+	}
+
+
 
 	/** Handle the first menu before entering a game */
 	private static void printGameMenu(BufferedReader br, ServiceRequester service) {

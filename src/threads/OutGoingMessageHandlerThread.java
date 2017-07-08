@@ -4,6 +4,7 @@ import beans.Player;
 import messages.Packets;
 import messages.TokenMessage;
 import peer.ConnectionData;
+import singletons.GameLock;
 import singletons.OutQueue;
 import singletons.Peer;
 
@@ -52,8 +53,12 @@ public class OutGoingMessageHandlerThread implements Runnable {
 			}
 			
 			/** After passing the token if i'm dead exit */
-			if (!Peer.INSTANCE.isAlive()) {			
-				System.exit(0);
+			if (!Peer.INSTANCE.isAlive()) {	
+				GameLock lock = GameLock.getInstance();
+				synchronized (lock) {
+					/** wake up main to end the game */
+					lock.notify();
+				}
 			}
 			
 		} catch (Exception e){

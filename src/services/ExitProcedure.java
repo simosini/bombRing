@@ -9,6 +9,7 @@ import messages.Message;
 import messages.Packets;
 import peer.Broadcast;
 import peer.ConnectionData;
+import singletons.GameLock;
 import singletons.InQueue;
 import singletons.OutQueue;
 import singletons.Peer;
@@ -80,8 +81,12 @@ public class ExitProcedure {
 			
 			/** if I was alone the game is finished */
 			if (Peer.INSTANCE.getNumberOfPlayers() == 1){
+				GameLock lock = GameLock.getInstance();
 				System.out.println("Exit procedure done!");
-				System.exit(0);
+				synchronized (lock) {
+					/** wake main up to gracefully close the game */
+					lock.notify();
+				}
 			}
 			
 		} catch (Exception e){

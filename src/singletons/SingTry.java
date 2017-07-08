@@ -14,7 +14,6 @@ public class SingTry {
 	public static synchronized SingTry getInstance(){
 		if (instance == null){
 			instance = new SingTry();
-			return instance;
 		}
 		return instance;
 	}
