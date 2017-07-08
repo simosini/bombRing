@@ -23,6 +23,7 @@ public class ExitProcedure {
 	}
 	
 	public void startRegularProcedure(boolean isGameEnded){
+		System.out.println("Starting exit procedure");
 		Peer peer = Peer.INSTANCE;
 		InQueue inQueue = InQueue.INSTANCE;
 		OutQueue outQueue = OutQueue.INSTANCE;
@@ -32,7 +33,7 @@ public class ExitProcedure {
 			System.out.println("Closing main server socket");
 			peer.closeServerSocket();
 			
-			/** Empty inQueue. There should no need to do that though */
+			/** Empty inQueue. There should be no need to do that though */
 			while (!inQueue.isEmpty()) {
 				System.out.println("Consuming inQueue");
 				Packets inPacket = inQueue.poll();
@@ -62,8 +63,9 @@ public class ExitProcedure {
 			}
 				
 			/** Tell everyone else i'm dead if needed */
-			if (isGameEnded){
+			if (!isGameEnded){ // do it only in case of ExitMessage
 				List<ConnectionData> otherPlayers  = peer.getClientConnectionsList();
+				System.out.println("Number of open connections: " + otherPlayers.size());
 				System.out.println("retrieved user sockets");
 			
 				/** start broadcast */
@@ -88,6 +90,6 @@ public class ExitProcedure {
 	}
 	
 	public void startGameEndedProcedure(){
-		this.startRegularProcedure(false);
+		this.startRegularProcedure(true);
 	}
 }

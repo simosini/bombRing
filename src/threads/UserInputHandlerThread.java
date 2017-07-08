@@ -151,8 +151,7 @@ public class UserInputHandlerThread implements Runnable {
 				 * case "b": takes first bomb from the queue break;
 				 */ 
 				 case "e": 					 
-					 System.out.println("Waiting to close the game...done!");
-					 Peer.INSTANCE.setAlive(false);
+					 System.out.println("Waiting to close the game...");
 					 return new Packets(new ExitMessage(), null);
 			
 	

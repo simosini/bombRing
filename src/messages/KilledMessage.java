@@ -5,7 +5,7 @@ import java.util.List;
 import beans.Player;
 import peer.Broadcast;
 import peer.ConnectionData;
-import singletons.OutQueue;
+import services.ExitProcedure;
 import singletons.Peer;
 
 public class KilledMessage extends Message {
@@ -37,8 +37,8 @@ public class KilledMessage extends Message {
 	public boolean handleInMessage(ConnectionData cd) {
 		try {
 			final Peer peer = Peer.INSTANCE;
-			final OutQueue outQueue = OutQueue.INSTANCE;
 			final int targetScore = peer.getCurrentGame().getScoreNeeded();
+			System.out.println("Killed message received");
 			System.out.println("You just killed " + this.getKilledPlayer().getNickname());
 			System.out.println("Score before: " + peer.getCurrentScore());
 			
@@ -57,16 +57,22 @@ public class KilledMessage extends Message {
 					
 					/** retrieve connections to other serverSockets */
 					List<ConnectionData> otherPlayers  = peer.getClientConnectionsList();
+					System.out.println("Number of connections open: " + otherPlayers.size());
 					System.out.println("retrieved user sockets");
+					
+					/** waits for position broadcast to be done */
+					Thread.sleep(500);
 					
 					/** tell every player the game is finished. I cannot be alone */
 					new Broadcast(otherPlayers, new VictoryMessage()).broadcastMessage();
 					
-					System.out.println("Broadcast done");
+					System.out.println("Broadcast done " + new VictoryMessage());
 					
-					/** put Victory message on the outQueue */					
-					Packets newPacket = new Packets(new VictoryMessage(), null);
-					outQueue.add(newPacket);
+					/** everybody else is dead so exit the game */
+					new ExitProcedure().startGameEndedProcedure();
+					System.out.println("Game left gracefully. Goodbye");
+					System.exit(0);
+					
 					
 				}
 								

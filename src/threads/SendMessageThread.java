@@ -54,6 +54,7 @@ public class SendMessageThread implements Runnable {
 			
 		}
 		catch (IOException | ClassNotFoundException e){
+			e.printStackTrace();
 			System.out.println("Error communicating with other player's server sockets");
 		} 
 		

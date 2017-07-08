@@ -91,8 +91,8 @@ public class ServiceRequester {
 	}
 	
 	//deletes the player from the game if the game exists
-	public Game deletePlayerFromGame(String gameName, Player player) {
-		Game updatedGame = null;
+	public void deletePlayerFromGame(String gameName, Player player) {
+		//Game updatedGame = null;
 		try {
 			Client client = configureRestClient();
 			WebResource wr = client.resource(BASE_URI).path(Uri.DELETE_PLAYER.getPath()).path(gameName);
@@ -107,7 +107,7 @@ public class ServiceRequester {
 						"Failed: Conflict. Reason: " + response.getEntity(String.class));
 			}
 			
-			updatedGame = response.getEntity(Game.class);
+			//updatedGame = response.getEntity(Game.class);
 
 		} catch (RuntimeException re) {
 			System.out.println(re.getMessage());
@@ -116,7 +116,7 @@ public class ServiceRequester {
 			e.printStackTrace();
 		}
 		
-		return updatedGame;
+		//return updatedGame;
 	}
 	
 	// prints the list of all active players in the application

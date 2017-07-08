@@ -2,6 +2,7 @@ package messages;
 
 import peer.ConnectionData;
 import services.ExitProcedure;
+import singletons.Peer;
 
 /** leave the game after user choice */
 public class ExitMessage extends Message {
@@ -25,8 +26,9 @@ public class ExitMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			System.out.println("Starting exit procedure");
-			new ExitProcedure().startRegularProcedure(true);
+			Peer.INSTANCE.setAlive(false);
+			new ExitProcedure().startRegularProcedure(false);
+			System.out.println("done!");
 		}
 		catch (Exception e) {
 			e.printStackTrace();

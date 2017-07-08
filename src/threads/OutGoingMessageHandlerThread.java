@@ -32,12 +32,13 @@ public class OutGoingMessageHandlerThread implements Runnable {
 	@Override
 	public void run() {
 		OutQueue outQueue = OutQueue.INSTANCE;
+		
 		try {
 			/** get first message out the outQueue and handle it */
 			if (!outQueue.isEmpty()){
 					
 				Packets packet = outQueue.poll();
-				System.out.println("OutGoingHandler got packet from outQueue");
+				System.out.println("OutGoingHandler got packet from outQueue " + packet.getMessage());
 				packet.getMessage().handleOutMessage(packet.getSendingClient());
 					
 			}
@@ -50,9 +51,10 @@ public class OutGoingMessageHandlerThread implements Runnable {
 				this.getToken().handleOutMessage(peerConnection);
 			}
 			
-			/** If i'm dead exit */
-			if (!Peer.INSTANCE.isAlive())
+			/** After passing the token if i'm dead exit */
+			if (!Peer.INSTANCE.isAlive()) {			
 				System.exit(0);
+			}
 			
 		} catch (Exception e){
 			System.err.println("Error handling outgoing message");

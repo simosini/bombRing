@@ -1,7 +1,7 @@
 package messages;
 
 import peer.ConnectionData;
-import singletons.OutQueue;
+import services.ExitProcedure;
 import singletons.Peer;
 
 /** This is the message to inform that the match has finished.
@@ -28,11 +28,18 @@ public class VictoryMessage extends Message {
 			/** the game is finished */
 			Peer.INSTANCE.setAlive(false);
 			
-			/** put on the outQueue and wait for the token to arrive */
-			OutQueue.INSTANCE.add(new Packets(this,null));
+			/** put on the outQueue and wait for the token to arrive 
+			OutQueue.INSTANCE.add(new Packets(this,null));*/
+			
+			/** exit procedure */
+			new ExitProcedure().startGameEndedProcedure();
 			
 			/** send ackMessage */
-			new AckMessage().handleOutMessage(clientConnection);
+			new AckMessage().handleOutMessage(clientConnection); 
+			
+			/** exit the game */
+			System.out.println("The game is finally finished");
+			System.exit(0);
 			
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -46,7 +53,14 @@ public class VictoryMessage extends Message {
 	 *  and exit the game. */
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
-		/** start exit procedure */
+		try {
+			/** start exit procedure */
+			new ExitProcedure().startGameEndedProcedure();
+			
+		} catch (Exception e){
+			e.printStackTrace();
+			return false;
+		}
 		return true;
 	}
 	

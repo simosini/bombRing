@@ -33,6 +33,7 @@ public class DeadMessage extends Message {
 		try {
 			/** remove player from the map and from the ring */
 			Peer.INSTANCE.deletePlayer(this.getDeadPlayer());
+			Peer.INSTANCE.deleteConnectedSocket(this.getDeadPlayer().getId());
 			
 			/** send ack to the dead player */
 			new AckMessage().handleOutMessage(clientConnection);
@@ -47,9 +48,13 @@ public class DeadMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			System.out.println("Starting exit procedure");
-			new ExitProcedure().startRegularProcedure(true);
+			new ExitProcedure().startRegularProcedure(false);
 		}
+		catch (Exception e){
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	

@@ -52,14 +52,15 @@ public class PositionMessage extends Message {
 				
 				/** retrieve connections for the broadcast */
 				List<ConnectionData> clientConnections = Peer.INSTANCE.getClientConnectionsList();
+				System.out.println("I have " + clientConnections.size() + " connections open!");
 				System.out.println("retrieved user sockets");
-				this.setInput(true); /** becomes an in packet for the receiver */
+		
 				
 				/** broadcast message */
 				if (clientConnections.size() != 0) /** check i'm not alone */
 					new Broadcast(clientConnections, this).broadcastMessage();
 				
-				System.out.println("Broadcast done");
+				System.out.println("Broadcast done " + this);
 				
 				/** needs the position to set the new one */
 				System.out.println("Next position: " + this.getRow() + " " + this.getCol());

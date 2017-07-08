@@ -115,11 +115,13 @@ public class UserService {
 
 		try {
 			Games.getInstance().deletePlayer(gameName, p);
+			if (Games.getInstance().getByName(gameName).retrievePlayersNumber() == 0) 
+				Games.getInstance().deleteGame(gameName);
 		} catch (NotFoundException e) {
 			throw new AppException(e.getMessage());
 		}
 
-		return Response.ok().entity(Games.getInstance().getByName(gameName)).build();
+		return Response.ok()./*entity(Games.getInstance().getByName(gameName)).*/build();
 	}
 
 }
