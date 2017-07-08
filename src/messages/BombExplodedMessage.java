@@ -91,9 +91,7 @@ public class BombExplodedMessage extends Message {
 				
 				/** this is true if the bomb killed me */
 				if(!peer.isAlive()) {
-					/** tell everyone else i'm dead */
-					new Broadcast(clientConnections, new DeadMessage(peer.getCurrentPlayer())).broadcastMessage();
-					
+										
 					/** now die gracefully */
 					new ExitProcedure().startRegularProcedure(false);
 				}
