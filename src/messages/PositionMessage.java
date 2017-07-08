@@ -85,7 +85,7 @@ public class PositionMessage extends Message {
 		return true;
 	}
 	
-	/** check if i'm still alive */
+	
 	@Override
 	public boolean handleInMessage(ConnectionData cd) {
 		try {
@@ -102,14 +102,11 @@ public class PositionMessage extends Message {
 				
 				/** create dead message */
 				System.out.println("creating dead message");
-				DeadMessage dm = new DeadMessage(myself);
-				dm.setInput(false);
-				Packets packet = new Packets(dm, null);
+				Packets packet = new Packets(new DeadMessage(myself), null);
 				
 				/** put message on the outQueue */
-				synchronized (outQueue) {
-					outQueue.add(packet);
-				}
+				outQueue.add(packet);
+				
 				System.out.println("Dead packet added to the outQueue");
 			}
 			else { /** just send ack */

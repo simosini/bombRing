@@ -79,6 +79,7 @@ simulator/Measurement.class
 beans/TrySinchro.class
 threads/AccelerometerSimulator.class
 services/ServiceRequester$3.class
+threads/BombExplodingThread.class
 peer/ConnectionData.class
 messages/MapUpdateMessage.class
 exceptions/AppExceptionMapper.class

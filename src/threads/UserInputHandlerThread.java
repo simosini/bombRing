@@ -2,6 +2,7 @@ package threads;
 
 import java.io.BufferedReader;
 
+import messages.BombTossedMessage;
 import messages.ExitMessage;
 import messages.Message;
 import messages.Packets;
@@ -151,9 +152,16 @@ public class UserInputHandlerThread implements Runnable {
 					System.out.print("Waiting to move right...");
 					return new Packets(rpm, null);
 	
-				/*
-				 * case "b": takes first bomb from the queue break;
-				 */ 
+				
+				 case "b": 
+					 Bomb tossedBomb = BombQueue.getInstance().removeBomb();
+					 if (tossedBomb != null) {
+						 System.out.println("Tossing a " +  tossedBomb.getColor() + " bomb!");
+						 return new Packets(new BombTossedMessage(tossedBomb.getColor()), null);
+					 }
+					 System.out.println("No bombs available yet!");
+					 return null;
+				  
 				 case "e": 					 
 					 System.out.println("Waiting to close the game...");
 					 return new Packets(new ExitMessage(), null);

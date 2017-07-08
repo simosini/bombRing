@@ -40,7 +40,6 @@ public class KilledMessage extends Message {
 			final int targetScore = peer.getCurrentGame().getScoreNeeded();
 			System.out.println("Killed message received");
 			System.out.println("You just killed " + this.getKilledPlayer().getNickname());
-			System.out.println("Score before: " + peer.getCurrentScore());
 			
 			/** add points if i'm alive and check victory */
 			if (peer.isAlive() && peer.getCurrentScore() < targetScore){

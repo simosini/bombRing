@@ -11,7 +11,7 @@ import singletons.BombQueue;
 public class SensorDataAnalyzer implements Runnable {
 	
 	private static final double ALPHA = 0.5;
-	private static final double THRESHOLD = 0.2;
+	private static final double THRESHOLD = 0.25;
 	
 	private double currentEMA = 0.;
 	private volatile boolean stop = false;
@@ -38,7 +38,7 @@ public class SensorDataAnalyzer implements Runnable {
 		while (!stop) {
 			
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
