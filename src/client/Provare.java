@@ -2,8 +2,10 @@ package client;
 
 import java.io.IOException;
 
-import simulator.MeasureBuffer;
-import simulator.Measurement;
+import beans.Game;
+import peer.Cell;
+import singletons.Peer;
+import singletons.PositionList;
 
 public class Provare {
 
@@ -32,7 +34,7 @@ public class Provare {
 		ObjectInputStream in = new ObjectInputStream(s.getInputStream());
 		System.out.println("Reading answer");
 		System.out.println(in.readObject());
-		s.close();*/
+		s.close();
 		MeasureBuffer buffer = MeasureBuffer.getInstance();
 		Measurement m0 = new Measurement("id0","ma",10,100);
 		Measurement m1 = new Measurement("id1","ma",8,100);
@@ -40,8 +42,23 @@ public class Provare {
 		buffer.addNewMeasurement(m1);
 		System.out.println(buffer);
 		System.out.println(buffer.readAllAndClean());
-		System.out.println(buffer);
-		
+		System.out.println(buffer);*/
+		int i = 0;
+		while (i < 4){
+			Cell c1 = new Cell(1, 1);
+			Cell c2 = new Cell(0, 1);
+			Cell c3 = new Cell(0,0);
+			Game g = new Game("a",2, 2);
+			Peer.INSTANCE.setCurrentGame(g);
+			PositionList.getInstance().addCell(c1);
+			PositionList.getInstance().addCell(c2);
+			PositionList.getInstance().addCell(c3);
+			System.out.println(PositionList.getInstance().getPlayerPositions());
+			System.out.println(PositionList.getInstance().computeNewPosition());
+			PositionList.getInstance().clearList();
+			System.out.println(PositionList.getInstance().getPlayerPositions());
+			i++;
+		}
 	}
 
 }

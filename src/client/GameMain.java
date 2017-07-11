@@ -67,11 +67,13 @@ public class GameMain {
 			GameLock lock = GameLock.getInstance();
 			synchronized (lock) {
 				lock.wait();
-			}			
+			}
+			
 			exitGame(mht, sda, as);
 			
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			System.err.println(e.getMessage());
+			e.printStackTrace();
 		}
 
 	}
@@ -108,7 +110,7 @@ public class GameMain {
 				try {
 					service.retrieveGames();
 				} catch (RuntimeException e) {
-					System.out.println(e.getMessage());
+					System.err.println(e.getMessage());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -175,7 +177,8 @@ public class GameMain {
 				peer.setClientConnections(new HashMap<>());
 				if(startJoiningRingProcedure()){
 					peer.setAlive(true);
-					exit = true;		
+					exit = true;
+					System.out.println("done!");
 				}
 				else {
 					/** delete me from the map */
@@ -201,7 +204,7 @@ public class GameMain {
 				System.exit(0);
 
 			default:
-				System.out.println("Please select a number between 1 and 4");
+				System.out.println("Please select a number between 1 and 5");
 				break;
 			}
 		}
@@ -213,9 +216,9 @@ public class GameMain {
 			OutQueue outQueue = OutQueue.INSTANCE;
 			Peer peer = Peer.INSTANCE;
 			/** create message and handle it */
-			System.out.println("Creating JoinRing message");
+			//System.out.println("Creating JoinRing message");
 			Message joinRing = new JoinRingMessage(peer.getCurrentPlayer());
-			System.out.println(joinRing);
+			//System.out.println(joinRing);
 			/** needed to avoid Token message overlapping */
 			synchronized (outQueue) {
 				return joinRing.handleOutMessage(null);
@@ -223,7 +226,8 @@ public class GameMain {
 			}
 
 		}catch(Exception e){
-			System.out.println("Error joining ring!");
+			System.err.println("Error joining ring!");
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -249,7 +253,7 @@ public class GameMain {
 			p.setNickname(nickname);
 			p.setId(p.hashCode());
 		} catch (IOException e) {
-			System.out.println("Error retrieving player info");
+			System.err.println("Error retrieving player info");
 		}
 
 		return p;

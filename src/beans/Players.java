@@ -1,12 +1,14 @@
 package beans;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class Players {
+public class Players implements Serializable {
 
+	private static final long serialVersionUID = -9053084189406099568L;
 	private TreeMap<Integer, Player> usersMap;
 
 	public Players() {

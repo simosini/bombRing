@@ -27,14 +27,14 @@ public class ServerSocketHandler implements Runnable {
 		try {	
 			while(true){
 				Socket sender = srvSocket.accept();	
-				System.out.println("Received connection from port: " + sender.getPort());
+				//System.out.println("Received connection from port: " + sender.getPort());
 				new Thread(new IncomingMessageHandlerThread(sender)).start();
-				System.out.println("ReceivMessHandlThread started!");
+				//System.out.println("ReceivMessHandlThread started!");
 			
 			} 
 		}
 		catch (IOException e) {
-			System.out.println("The server socket has been correctly closed!");
+			//System.out.println("The server socket has been correctly closed!");
 			
 		}
 

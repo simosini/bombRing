@@ -7,7 +7,6 @@ import beans.Player;
 import peer.Cell;
 import peer.ConnectionData;
 import singletons.Peer;
-import singletons.PositionList;
 
 public class MapUpdateMessage extends Message {
 
@@ -44,17 +43,18 @@ public class MapUpdateMessage extends Message {
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		/** update map and exit */
 		TreeMap<Integer, Player> updatedMap = this.getUpdatedMap();
-		/** send a copy to be saved so I can change it */
+		//System.out.println("UpdatedMap : " + updatedMap);
+		/** save a copy  so I can change it */
 		Peer.INSTANCE.updateMapPlayers(new TreeMap<Integer, Player>(updatedMap));
 		
 		/** update current position. Another copy */
 		Cell newPos = this.getUpdatedPosition();
-		System.out.println("List of positions: " + PositionList.ISTANCE.getPlayerPositions());
-		System.out.println("My position is: " + newPos);
+		//System.out.println("My position is: " + newPos);
 		Peer.INSTANCE.setCurrentPosition(new Cell(newPos));
 		return true;
 	}
-
+	
+	/** This message is sent to a new player to inform him has been added correctly */
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		/** send the new player the updated map */
@@ -62,6 +62,7 @@ public class MapUpdateMessage extends Message {
 			clientConnection.getOutputStream().writeObject(this);
 		} catch (IOException e){
 			System.err.println("Error sending updated map to client");
+			e.printStackTrace();
 			return false;
 		}
 		return true;

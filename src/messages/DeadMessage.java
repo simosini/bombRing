@@ -38,6 +38,7 @@ public class DeadMessage extends Message {
 			/** send ack to the dead player */
 			new AckMessage().handleOutMessage(clientConnection);
 		} catch (Exception e){
+			System.err.println("Error handling incoming dead message");
 			e.printStackTrace();
 			return false;
 		}
@@ -51,6 +52,7 @@ public class DeadMessage extends Message {
 			new ExitProcedure().startRegularProcedure(false);
 		}
 		catch (Exception e){
+			System.err.println("Error handling outgoing dead message");
 			e.printStackTrace();
 			return false;
 		}

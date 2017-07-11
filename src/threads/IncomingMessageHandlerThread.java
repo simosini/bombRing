@@ -35,6 +35,7 @@ public class IncomingMessageHandlerThread implements Runnable {
 			this.clientConnection = new ConnectionData(s, outputStream, inputStream);
 		} catch(IOException e){
 			System.err.println("IncomingMessageThread Could not open streams");
+			e.printStackTrace();
 		}
 	}
 	
@@ -53,23 +54,26 @@ public class IncomingMessageHandlerThread implements Runnable {
 			while(true){			
 				
 				message = (Message) reader.readObject();
-				System.out.println("Received :" + message);
+				//System.out.println("Received :" + message);
 				
-				System.out.println("Creating packet!");
+				//System.out.println("Creating packet!");
 				Packets packet = new Packets(message, this.getConnectionData());
 				inQueue.add(packet);
-				System.out.println("Packet added correctly to inQueue");
-				System.out.println("Notifying handler");
+				//System.out.println("Packet added correctly to inQueue");
+				//System.out.println("Notifying handler");
 				synchronized(inQueue){					
 					inQueue.notify();
-					System.out.println("Notified");
+					//System.out.println("Notified");
 				}	
 				
 			}
 		} catch (IOException e){
-			System.out.println("Client closed connection. Closing current socket...");
+			// do nothing
+			System.err.println();
+			//System.out.println("Client closed connection. Closing current socket...");
 		} catch (ClassNotFoundException e) {
 			System.err.println("Error reading message from socket!");
+			e.printStackTrace();
 		} finally {
 			Socket s = null;
 			try{

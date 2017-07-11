@@ -48,32 +48,31 @@ public class MessageHandlerThread implements Runnable {
 			synchronized (inQueue) {
 				
 				while (inQueue.isEmpty()) {
-					System.out.println("The queue is empty. Waiting!");
+					//System.out.println("The queue is empty. Waiting!");
 					try {
 						inQueue.wait();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					/** check if the player is the only one in the game */
-					System.out.println("Im awake");
+					//System.out.println("Im awake");
 				}
 			}
 				
 			/** consumes all items before releasing the lock on inQueue */
 			while (!inQueue.isEmpty()) {
-				System.out.println("Consuming inQueue");
+				//System.out.println("Consuming inQueue");
 				Packets inPacket = inQueue.poll();
 				Message inMessage = inPacket.getMessage();
-				System.out.println("-----HANDLING-----");
-				System.out.println(inMessage);
+				//System.out.println("-----HANDLING-----");
+				//System.out.println(inMessage);
 				/** handling could be an ack or a new msg to put on the outQ 
 				 *  in most of the cases will be the token */
 				if (!inMessage.handleInMessage(inPacket.getSendingClient())){
-					System.out.println("Something went wrong handling messages. Exiting the game!");
+					System.err.println("Something went wrong handling messages. Exiting the game!");
 					System.exit(1);
 				}
 			}
-			System.out.println("No more msg in the inQueue, releasing lock");
+			//System.out.println("No more msg in the inQueue, releasing lock");
 			
 
 		}

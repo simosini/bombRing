@@ -33,21 +33,22 @@ public class Broadcast {
 	}
 	
 	public void broadcastMessage() {
-		System.out.println("Strarting broadcast threads" + this.getMsgToSend());
+		//System.out.println("Strarting broadcast threads" + this.getMsgToSend());
 		List<Thread> threads = new ArrayList<>();
 		this.getClientConnections().forEach(conn -> threads.add(new Thread(new SendMessageThread(conn, this.getMsgToSend()))));
 		threads.forEach(t -> t.start());
-		System.out.println("Threads started");
+		//System.out.println("Threads started");
 		threads.forEach(t -> {
 			try {
 				t.join(10 * 1000);
 			} catch (InterruptedException e) {
-				System.out.println("Error joining threads exiting the game");
+				System.err.println("Error joining threads exiting the game");
+				e.printStackTrace();
 				System.exit(-1);
 			}
 		});
 		
-		System.out.println("Threads done!");
+		//System.out.println("Threads done!");
 	}
 
 }

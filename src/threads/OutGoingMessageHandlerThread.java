@@ -39,7 +39,7 @@ public class OutGoingMessageHandlerThread implements Runnable {
 			if (!outQueue.isEmpty()){
 					
 				Packets packet = outQueue.poll();
-				System.out.println("OutGoingHandler got packet from outQueue " + packet.getMessage());
+				//System.out.println("OutGoingHandler got packet from outQueue " + packet.getMessage());
 				packet.getMessage().handleOutMessage(packet.getSendingClient());
 					
 			}
@@ -48,7 +48,7 @@ public class OutGoingMessageHandlerThread implements Runnable {
 			Player nextPeer = Peer.INSTANCE.getNextPeer(Peer.INSTANCE.getCurrentGame().getPlayers());
 			if (nextPeer != null){ //it's null only if i'm alone in the game
 				ConnectionData peerConnection = Peer.INSTANCE.getClientConnectionById(nextPeer.getId());
-				System.out.println("OutgoingHandler done, passing the token to port " + peerConnection.getClientSocket().getPort());
+				//System.out.println("OutgoingHandler done, passing the token to port " + peerConnection.getClientSocket().getPort());
 				this.getToken().handleOutMessage(peerConnection);
 			}
 			
@@ -63,6 +63,7 @@ public class OutGoingMessageHandlerThread implements Runnable {
 			
 		} catch (Exception e){
 			System.err.println("Error handling outgoing message");
+			e.printStackTrace();
 		}
 	}
 

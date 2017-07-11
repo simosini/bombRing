@@ -2,6 +2,7 @@ package beans;
 
 import java.util.List;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class Game {
 
@@ -105,10 +106,17 @@ public class Game {
 	
 	@Override
 	public String toString(){
-		StringBuilder sb = new StringBuilder("Name: " + this.getName() + "\n");
-		sb.append("Side length: " + this.getSideLength() + "\n");
-		sb.append("Score to win: " + this.getScoreNeeded() + "\n");
-		sb.append("Number of players: " + this.retrievePlayersNumber());
+		StringBuilder sb = new StringBuilder("GAME NAME: " + this.getName() + "\n");
+		sb.append("DIMENSION: " + this.getSideLength() + "\n");
+		sb.append("SCORE TO WIN: " + this.getScoreNeeded() + "\n");
+		sb.append("NUMBER OF PLAYERS: " + this.retrievePlayersNumber() + "\n");
+		
+		String players = this.getPlayers().retrievePlayersList()
+						 .stream()
+				 		 .map(player -> player.getNickname())
+				 		 .collect(Collectors.joining(", "));
+				 		 
+		sb.append("PLAYERS NAMES: " + players + "\n");		 		 
 		return sb.toString();
 	}
 

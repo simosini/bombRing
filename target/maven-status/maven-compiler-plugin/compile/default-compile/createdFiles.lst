@@ -24,7 +24,6 @@ beans/Provas.class
 peer/JoinTry.class
 threads/ProdsCons$ConsThread.class
 singletons/PositionList.class
-services/ClientSock.class
 services/ServiceRequester.class
 messages/TokenMessage.class
 messages/VictoryMessage.class

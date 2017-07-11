@@ -24,11 +24,11 @@ public class BombExplodingThread implements Runnable {
 			
 			if (Peer.INSTANCE.getNumberOfPlayers() > 1) { 
 				OutQueue.INSTANCE.add(newPacket);
-				System.out.println("BombPacket put on the outQueue");
+				//System.out.println("BombPacket put on the outQueue");
 			}
 			else {
 				Thread t = new Thread(new OnePlayerHandlerThread(newPacket));
-				System.out.println("One Player handler started");
+				//System.out.println("One Player handler started");
 				t.start();
 			}
 		}

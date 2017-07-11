@@ -19,6 +19,7 @@ import peer.ConnectionData;
 public abstract class Message implements Serializable {
 
 	private static final long serialVersionUID = 4232448590544129467L;
+	private static final String LOCALHOST = "localhost";
 	private Type codeMessage;
 	private int priority;
 	private boolean isInput;
@@ -59,17 +60,17 @@ public abstract class Message implements Serializable {
 	
 	public ConnectionData connectToPlayer(Player p) {
 		try {
-			Socket s = new Socket("localhost", p.getPort());
-			System.out.println("Connection established to port " + s.getPort());
-			System.out.println("My port is " + s.getLocalPort());
+			Socket s = new Socket(LOCALHOST, p.getPort());
+			//System.out.println("Connection established to port " + s.getPort());
+			//System.out.println("My port is " + s.getLocalPort());
 			ObjectOutputStream out =  new ObjectOutputStream(s.getOutputStream());
 			out.flush();
-			System.out.println("out stream done");
+			//System.out.println("out stream done");
 			ObjectInputStream in =  null;
-			System.out.println("Streams done!");
+			//System.out.println("Streams done!");
 			return new ConnectionData(s, out, in);
 		} catch (IOException e){
-			System.out.println("Error connecting to other player");
+			System.err.println("The player chosen has closed his server socket!");
 			return null;
 			
 		}

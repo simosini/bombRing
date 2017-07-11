@@ -46,73 +46,75 @@ public class JoinRingMessage extends Message {
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		try {
-			System.out.println("InHandling started!!");
+			//System.out.println("InHandling started!!");
 			OutQueue outQueue = OutQueue.INSTANCE;
 			Peer peer = Peer.INSTANCE;
 			ConnectionData cd = null;
 			
-			/** if i'm dead i send a NackMessage */
+			/** if i'm dead i send a NackMessage with an up to date copy of the map */
 			if (!peer.isAlive()){
-				System.out.println("Sending Nack Message");
-				new NackMessage().handleOutMessage(clientConnection);
+				//System.out.println("Sending Nack Message");
+				Players players = peer.getCurrentGame().getPlayers();
+				players.addPlayer(this.getPlayer());
+				new NackMessage(players).handleOutMessage(clientConnection);
 			}
 			
 			/** if i'm alone no need to put the message on the outQueue */
 			else if (peer.getCurrentGame().getPlayers().size() == 1){
 				/** add player to the map */
-				System.out.println("adding player to map");
-				System.out.println(this.getPlayer());
+				//System.out.println("adding " + this.getPlayer().getNickname() + " to map");
 				peer.addNewPlayer(this.getPlayer());
 				
-				System.out.println("Connecting to new player server socket");
+				//System.out.println("Connecting to new player server socket");
 				/** connect to his server socket */
 				cd = this.connectToPlayer(this.getPlayer());
 				if (cd == null){
 					System.exit(1);
 				}
-				System.out.println("Adding player connection");	
+				//System.out.println("Adding player connection");	
 				peer.addConnectedSocket(this.getPlayer().getId(), cd);
-				
-				/** send a copy of the updated map and position */
-				System.out.println("Player added correctly");
+	
+				//System.out.println("Player added correctly");
 				
 				/** clear list */
-				PositionList.ISTANCE.clearList();
+				PositionList.getInstance().clearList();
 				
 				/** add my position*/
-				PositionList.ISTANCE.addCell(peer.getCurrentPosition());
+				PositionList.getInstance().addCell(peer.getCurrentPosition());
+				//System.out.println("Positions busy (only mine): " + PositionList.getInstance().getPlayerPositions());
 				
-				Cell newPosition = PositionList.ISTANCE.computeNewPosition();
-				System.out.println("This will be next position: " + newPosition);
+				Cell newPosition = PositionList.getInstance().computeNewPosition();
+				//System.out.println("This will be next position: " + newPosition);
+				/** send a copy of the updated map and position */
 				new MapUpdateMessage(peer.getUserMap(), newPosition).handleOutMessage(clientConnection);
-				System.out.println("Map Message sent");
+				//System.out.println("Map Message sent");
 				
 				/** start token (this happens only if i'm alone)*/
-				System.out.println("generating token");
+				//System.out.println("generating token");
 				this.generateToken(cd);
 			}
 			
 			/** otherwise create a AddPlayer message and add it to the OutQueue*/
 			else {
-				System.out.println("Preparing Addplayer message");
+				//System.out.println("Preparing Addplayer message");
 				Message m = new AddPlayerMessage(this.getPlayer());
-				m.setInput(false);
-				
+								
 				/**cd is now null cause i want to wait the addPlayer message
 				 * handler to do that cause i'm not sure yet the new player
 				 * will be added to the game. AddPlayer handler will add
 				 * the player and connect to him if everything go smooth */
 				Packets newPacket = new Packets(m,clientConnection);
 				
-				synchronized (outQueue) {
-					outQueue.add(newPacket);
-				}				
-				System.out.println("Message added to the outQueue");
+				/** put packet on the outQueue */
+				outQueue.add(newPacket);
+								
+				//System.out.println("Message added to the outQueue");
 			}
 			
 		}
 		catch(Exception e){
 			System.err.println("Error communicating with new adding player!");
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -131,61 +133,64 @@ public class JoinRingMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			System.out.println("Start handling ---- " + this);
+			//System.out.println("Start handling ---- " + this);
 			/** retrieve players list */
 			Peer peer = Peer.INSTANCE;
 			
 
 			 /** it's a copy of the map given by the rest server */
 			Players players = peer.getCurrentGame().getPlayers();
+			
 			Player nextPeer = null;
-			System.out.println("Current players: " + players);
+			//System.out.println("Current players: " + players);
 			
 			/** communicate with next peer server socket*/
 			while(players.size() > 1) {
 				nextPeer = peer.getNextPeer(players);
-				System.out.println("next player " + nextPeer);
+				//System.out.println("next player " + nextPeer);
 				
 				/** connect to it */
 				ConnectionData cd = null;
-				System.out.println("Connecting to him");
+				//System.out.println("Connecting to him");
 				if ((cd = this.connectToPlayer(nextPeer)) == null){
-					System.out.println("Error connecting to server socket, trying another peer");
+					System.out.println("Trying another peer...");
 					players.deletePlayer(nextPeer);
 				}
 				
 				else {
 					/** create message and send it */
-					System.out.println("sending message to port " + nextPeer.getPort());
+					//System.out.println("sending message JoinRing");
 					cd.getOutputStream().writeObject(new JoinRingMessage(peer.getCurrentPlayer()));
-					System.out.println("message sent!");
+					//System.out.println("message sent!");
 					
 					/** wait for the answer */
 					Message m = (Message) cd.getInputStream().readObject();
-					System.out.println("received answer :" + m);
+					//System.out.println("received answer :" + m);
 					
-					/** check answer: can only be mapUpdate or nack */
+					/** check answer: can only be mapUpdate or Nack */
 					if (m instanceof MapUpdateMessage){
 						m.handleInMessage(null);
 						TreeMap<Integer, Player> updatedMap = ((MapUpdateMessage) m).getUpdatedMap();
 						
 						/** add cd to my connections */
 						peer.addConnectedSocket(nextPeer.getId(), cd);
-						System.out.println("new connection added");
+						//System.out.println("new connection added");
 						
 						/** connect to all player except myself and nextPeer */
 						updatedMap.remove(peer.getCurrentPlayer().getId());
 						updatedMap.remove(nextPeer.getId());
 						connectAll(updatedMap);	
-						System.out.println("Connected to all players");
+						//System.out.println("Connected to all players");
 						
 						/** new Player is in the game */
-						System.out.println("Im in the game!!!");
+						//System.out.println("Im in the game!!!");
+						System.out.println(nextPeer.getNickname() + " correctly inserted you in the ring");
 						peer.setAlive(true);
 						return true;
 					}
 					
-					/** in case of problems try next player */
+					/** in case of problems update current map and try next player */
+					players = ((NackMessage) m).getPlayers();
 					players.deletePlayer(nextPeer);
 				}
 				
@@ -196,7 +201,7 @@ public class JoinRingMessage extends Message {
 			
 			
 		} catch (Exception e){
-			System.out.println("Could not handle JoinRing outgoing message");
+			System.err.println("Could not handle JoinRing outgoing message");
 			e.printStackTrace();
 						
 		}

@@ -29,6 +29,7 @@ public class TokenMessage extends Message {
 			t.join();
 		} catch (Exception e){
 			System.err.println("Error handling incoming token");
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -37,12 +38,13 @@ public class TokenMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			Thread.sleep(3000);
-			System.out.println("sending token to port " + clientConnection.getClientSocket().getPort());
+			Thread.sleep(100);
+			//System.out.println("sending token to port " + clientConnection.getClientSocket().getPort());
 			clientConnection.getOutputStream().writeObject(this);
 		} catch (IOException | InterruptedException e){
 			/**if the game is finished and I won, I might not have a next active player */
-			System.err.println("The game is finished no more players");
+			System.err.println("Error handling outgoing token");
+			e.printStackTrace();
 			return false;
 		}
 		

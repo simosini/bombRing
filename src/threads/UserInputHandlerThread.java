@@ -59,16 +59,16 @@ public class UserInputHandlerThread implements Runnable {
 							 * */
 							if (Peer.INSTANCE.getNumberOfPlayers() == 1) {
 								Thread t = new Thread(new OnePlayerHandlerThread(nextPacket));
-								System.out.println("One Player handler started");
+								//System.out.println("One Player handler started");
 								t.start();
 								t.join(); 
-								System.out.println("One player handler done");
+								//System.out.println("One player handler done");
 							}
 							else {
 								// handler will wake me up when is done with my packet
 								outQueue.add(nextPacket);
-								System.out.println("User Thread put outQueue packet");
-								System.out.println("User thread waiting for handler");
+								//System.out.println("User Thread put outQueue packet");
+								//System.out.println("User thread waiting for handler");
 								outQueue.wait(); 
 								System.out.println("Done!");
 							}
@@ -86,7 +86,7 @@ public class UserInputHandlerThread implements Runnable {
 				}
 					
 			} catch (InterruptedException e) {
-				System.out.println("The game finished!");
+				System.out.println("The game is over. Goodbye!");
 				break;
 			}
 
@@ -105,7 +105,7 @@ public class UserInputHandlerThread implements Runnable {
 			System.out.println(this.showBomb());
 
 			System.out.println("Select a move:\n" + "U - move up;\n" + "D - move down;\n" + "L - move left;\n"
-					+ "R - move right;\n" + "B - toss a bomb if available;\nE - exit game;\n");
+					+ "R - move right;\n" + "B - toss a bomb if available;\nE - exit game;\nV - view game details;\n");
 			String choice = this.userInput.readLine();
 			switch (choice.toLowerCase()) {
 				case "u":
@@ -156,15 +156,19 @@ public class UserInputHandlerThread implements Runnable {
 				 case "b": 
 					 Bomb tossedBomb = BombQueue.getInstance().removeBomb();
 					 if (tossedBomb != null) {
-						 System.out.println("Tossing a " +  tossedBomb.getColor() + " bomb!");
+						 System.out.print("Tossing a " +  tossedBomb.getColor() + " bomb...");
 						 return new Packets(new BombTossedMessage(tossedBomb.getColor()), null);
 					 }
 					 System.out.println("No bombs available yet!");
 					 return null;
 				  
 				 case "e": 					 
-					 System.out.println("Waiting to close the game...");
+					 System.out.print("Waiting to close the game...");
 					 return new Packets(new ExitMessage(), null);
+					 
+				 case "v":
+					 System.out.println(Peer.INSTANCE.getCurrentGame());
+					 return null;
 			
 	
 				default:

@@ -31,6 +31,7 @@ public class ExitMessage extends Message {
 			System.out.println("done!");
 		}
 		catch (Exception e) {
+			System.err.println("Error handling outgoing dead message");
 			e.printStackTrace();
 			return false;
 		}

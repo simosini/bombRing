@@ -2,6 +2,7 @@ package messages;
 
 import java.io.IOException;
 
+import beans.Players;
 import peer.ConnectionData;
 
 /**
@@ -14,18 +15,28 @@ public class NackMessage extends Message {
 
 	private static final long serialVersionUID = -1036121250705826323L;
 	private static final int NACK_PRIORITY = 5;
+	private Players players; 
 	
 
-	public NackMessage() {
+	public NackMessage(Players players) {
 		super(Type.NACK, NACK_PRIORITY);
+		this.setPlayers(players);
 
 	}
 	
+	public Players getPlayers() {
+		return players;
+	}
+
+	private void setPlayers(Players players) {
+		this.players = players;
+	}
+
 	/** This can only be received by a new player willing to join the game */
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		/** this message is never put on any queue so do nothing */
-		System.out.println("Nack message received");
+		//System.out.println("Nack message received");
 		return true;
 	}
 
@@ -35,6 +46,7 @@ public class NackMessage extends Message {
 			clientConnection.getOutputStream().writeObject(this);
 		} catch (IOException e){
 			System.err.println("Error sending nack message");
+			e.printStackTrace();
 			return false;
 		}
 		return true;

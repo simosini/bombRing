@@ -11,7 +11,7 @@ import singletons.BombQueue;
 public class SensorDataAnalyzer implements Runnable {
 	
 	private static final double ALPHA = 0.5;
-	private static final double THRESHOLD = 0.25;
+	private static final double THRESHOLD = 0.2;
 	
 	private double currentEMA = 0.;
 	private volatile boolean stop = false;
@@ -78,7 +78,7 @@ public class SensorDataAnalyzer implements Runnable {
 				newBomb = new Bomb("blue");
 				break;
 			default:
-				newBomb = new Bomb("Yellow");
+				newBomb = new Bomb("yellow");
 				break;
 			}
 		}

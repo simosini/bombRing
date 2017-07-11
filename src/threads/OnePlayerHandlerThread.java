@@ -15,7 +15,7 @@ public class OnePlayerHandlerThread implements Runnable {
 	@Override
 	public void run() {
 		packetToSend.getMessage().handleOutMessage(null);
-
+		
 	}
 
 }

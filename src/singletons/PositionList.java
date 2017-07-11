@@ -9,13 +9,19 @@ import peer.Cell;
 /** we use this to compute a new position for a new player willing 
  *  to join the game */
 
-public enum PositionList {
-	ISTANCE;
+public class PositionList {
 	
 	private List<Cell> playerPositions;
+	private static PositionList instance;
 	
 	private PositionList(){
 		this.playerPositions = new ArrayList<>();
+	}
+	
+	public static synchronized PositionList getInstance() {
+		if (instance == null)
+			instance = new PositionList();
+		return instance;
 	}
 
 	public synchronized List<Cell> getPlayerPositions() {

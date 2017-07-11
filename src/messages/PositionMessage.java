@@ -48,34 +48,35 @@ public class PositionMessage extends Message {
 			/** if dead cannot move */
 			if (Peer.INSTANCE.isAlive()){
 				OutQueue outQueue = OutQueue.INSTANCE;
-				System.out.println("Handling message. Type: " + this);
+				//System.out.println("Handling message. Type: " + this);
 				
 				/** retrieve connections for the broadcast */
 				List<ConnectionData> clientConnections = Peer.INSTANCE.getClientConnectionsList();
-				System.out.println("I have " + clientConnections.size() + " connections open!");
-				System.out.println("retrieved user sockets");
+				//System.out.println("I have " + clientConnections.size() + " connections open!");
+				//System.out.println("retrieved user sockets");
 		
 				
 				/** broadcast message */
 				if (clientConnections.size() != 0) /** check i'm not alone */
 					new Broadcast(clientConnections, this).broadcastMessage();
 				
-				System.out.println("Broadcast done " + this);
+				//System.out.println("Broadcast done " + this);
 				
 				/** needs the position to set the new one */
-				System.out.println("Next position: " + this.getRow() + " " + this.getCol());
+				//System.out.println("Next position: " + this.getRow() + " " + this.getCol());
 				
 				/** set new position */
 				Peer.INSTANCE.setNewPosition(this.getRow(), this.getCol());
 				
 				/** notify the stdin i've finished handling the message */			
 				if (Peer.INSTANCE.getNumberOfPlayers() > 1){
-					System.out.println("Notifying stdin");
+					//System.out.println("Notifying stdin");
 					synchronized (outQueue) {
 						outQueue.notify();
 					}
 				}
-				System.out.println("Done notification");
+				
+				//System.out.println("Done notification");
 			}
 		} catch (Exception e){
 			System.err.println("Error with outgoing position message");
@@ -101,13 +102,13 @@ public class PositionMessage extends Message {
 				km.handleOutMessage(cd);
 				
 				/** create dead message */
-				System.out.println("creating dead message");
+				//System.out.println("creating dead message");
 				Packets packet = new Packets(new DeadMessage(myself), null);
 				
 				/** put message on the outQueue */
 				outQueue.add(packet);
 				
-				System.out.println("Dead packet added to the outQueue");
+				//System.out.println("Dead packet added to the outQueue");
 			}
 			else { /** just send ack */
 				new AckMessage().handleOutMessage(cd);
@@ -117,6 +118,7 @@ public class PositionMessage extends Message {
 		}
 		catch (Exception e){
 			System.err.println("Error with incoming position message");
+			e.printStackTrace();
 			return false;
 		}
 		return true;

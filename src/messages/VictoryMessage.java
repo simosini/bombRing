@@ -1,7 +1,9 @@
 package messages;
 
+import beans.Player;
 import peer.ConnectionData;
 import services.ExitProcedure;
+import singletons.GameLock;
 import singletons.Peer;
 
 /** This is the message to inform that the match has finished.
@@ -15,9 +17,11 @@ public class VictoryMessage extends Message {
 
 	private static final long serialVersionUID = 4714778184603472137L;
 	private static final int VICTORY_PRIORITY = 1;
+	private Player winner;
 	
-	public VictoryMessage() {
+	public VictoryMessage(Player winner) {
 		super(Type.VICTORY, VICTORY_PRIORITY);
+		this.winner = winner;
 	}
 	
 	/** When the server socket receives this message knows that the match is finished
@@ -28,18 +32,23 @@ public class VictoryMessage extends Message {
 			/** the game is finished */
 			Peer.INSTANCE.setAlive(false);
 			
-			/** put on the outQueue and wait for the token to arrive 
-			OutQueue.INSTANCE.add(new Packets(this,null));*/
+			/** send ackMessage */
+			new AckMessage().handleOutMessage(clientConnection);
+			
+			/** print the winner */
+			System.out.println(this.winner.getNickname() + " won the match");
 			
 			/** exit procedure */
 			new ExitProcedure().startGameEndedProcedure();
 			
-			/** send ackMessage */
-			new AckMessage().handleOutMessage(clientConnection); 
 			
-			/** exit the game */
-			System.out.println("The game is finally finished");
-			System.exit(0);
+			/** exit the game  
+			System.out.println("The game is over. Goodbye");
+			System.exit(0);*/
+			GameLock lock = GameLock.getInstance();
+			synchronized (lock) {
+				lock.notify();
+			}
 			
 		} catch(Exception e) {
 			e.printStackTrace();

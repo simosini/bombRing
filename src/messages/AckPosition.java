@@ -10,7 +10,7 @@ public class AckPosition extends Message {
 
 	private static final long serialVersionUID = 5910422326757924525L;
 	private static final int ACK_POS_PRIORITY = 5;
-	private Cell myPosition;
+	private Cell position;
 
 	public AckPosition(Cell pos) {
 		super(Type.ACK, ACK_POS_PRIORITY);
@@ -18,12 +18,12 @@ public class AckPosition extends Message {
 	}
 
 	private void setPosition(Cell pos) {
-		this.myPosition = pos;
+		this.position = pos;
 		
 	}
 	
-	public Cell getMyPosition(){
-		return new Cell(this.myPosition);
+	public Cell getPosition(){
+		return new Cell(this.position);
 		
 	}
 	
@@ -32,7 +32,7 @@ public class AckPosition extends Message {
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		try {
 			/** add position to the queue */
-			PositionList.ISTANCE.addCell(this.getMyPosition());
+			PositionList.getInstance().addCell(this.getPosition());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
