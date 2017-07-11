@@ -36,7 +36,7 @@ public class AddPlayerMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			Peer peer = Peer.INSTANCE;
+			Peer peer = Peer.getInstance();
 			//System.out.println("Handling addPlayer out");
 			
 			/** if i'm still alive i.e. no bomb killed me in the meantime */
@@ -99,7 +99,7 @@ public class AddPlayerMessage extends Message {
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		try {
-			Peer peer = Peer.INSTANCE;
+			Peer peer = Peer.getInstance();
 			/** add the player */
 			peer.addNewPlayer(this.getPlayerToAdd());
 			//System.out.println("Player added to the map");

@@ -32,8 +32,8 @@ public class DeadMessage extends Message {
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		try {
 			/** remove player from the map and from the ring */
-			Peer.INSTANCE.deletePlayer(this.getDeadPlayer());
-			Peer.INSTANCE.deleteConnectedSocket(this.getDeadPlayer().getId());
+			Peer.getInstance().deletePlayer(this.getDeadPlayer());
+			Peer.getInstance().deleteConnectedSocket(this.getDeadPlayer().getId());
 			
 			/** send ack to the dead player */
 			new AckMessage().handleOutMessage(clientConnection);

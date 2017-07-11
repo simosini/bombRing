@@ -13,9 +13,7 @@ import beans.Players;
 import peer.Cell;
 import peer.ConnectionData;
 
-public enum Peer {
-
-	INSTANCE;
+public class Peer {
 
 	private Game currentGame;
 	private Player currentPlayer; 
@@ -24,11 +22,17 @@ public enum Peer {
 	private boolean isAlive = false;
 	private Cell currentPosition;
 	private HashMap<Integer, ConnectionData> clientConnections;
+	private static Peer instance;
 
 	private Peer() {}
 
 	/** getters and setters method */
 	
+	public static synchronized Peer getInstance() {
+		if (instance == null)
+			instance = new Peer();
+		return instance;
+	}
 	
 	public synchronized Game getCurrentGame() {
 		// yields a copy

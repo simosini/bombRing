@@ -39,7 +39,7 @@ public class KilledMessage extends Message {
 	@Override
 	public boolean handleInMessage(ConnectionData cd) {
 		try {
-			final Peer peer = Peer.INSTANCE;
+			final Peer peer = Peer.getInstance();
 			final int targetScore = peer.getCurrentGame().getScoreNeeded();
 			//System.out.println("Killed message received");
 			final Emoji emoji = EmojiManager.getForAlias("v");
@@ -96,7 +96,7 @@ public class KilledMessage extends Message {
 		try {
 			Emoji emoji = EmojiManager.getForAlias("see_no_evil");
 			System.out.println(emoji.getUnicode() + " Unfortunately you have been killed! " + emoji.getUnicode());
-			Peer.INSTANCE.setAlive(false); // i'm dead
+			Peer.getInstance().setAlive(false); // i'm dead
 		
 			/** send killed */
 			//System.out.println("sending killed message");

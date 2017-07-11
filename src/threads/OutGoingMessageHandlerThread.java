@@ -32,7 +32,8 @@ public class OutGoingMessageHandlerThread implements Runnable {
 
 	@Override
 	public void run() {
-		OutQueue outQueue = OutQueue.INSTANCE;
+		OutQueue outQueue = OutQueue.getInstance();
+		Peer peer = Peer.getInstance();
 		
 		try {
 			/** get first message out the outQueue and handle it */
@@ -45,15 +46,15 @@ public class OutGoingMessageHandlerThread implements Runnable {
 			}
 		
 			/** Pass the token now */			
-			Player nextPeer = Peer.INSTANCE.getNextPeer(Peer.INSTANCE.getCurrentGame().getPlayers());
+			Player nextPeer = peer.getNextPeer(peer.getCurrentGame().getPlayers());
 			if (nextPeer != null){ //it's null only if i'm alone in the game
-				ConnectionData peerConnection = Peer.INSTANCE.getClientConnectionById(nextPeer.getId());
+				ConnectionData peerConnection = peer.getClientConnectionById(nextPeer.getId());
 				//System.out.println("OutgoingHandler done, passing the token to port " + peerConnection.getClientSocket().getPort());
 				this.getToken().handleOutMessage(peerConnection);
 			}
 			
 			/** After passing the token if i'm dead exit */
-			if (!Peer.INSTANCE.isAlive()) {	
+			if (!peer.isAlive()) {	
 				GameLock lock = GameLock.getInstance();
 				synchronized (lock) {
 					/** wake up main to end the game */

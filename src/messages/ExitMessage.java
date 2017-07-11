@@ -26,9 +26,10 @@ public class ExitMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			Peer.INSTANCE.setAlive(false);
+			Peer peer = Peer.getInstance();
+			peer.setAlive(false);
 			new ExitProcedure().startRegularProcedure(false);
-			if (Peer.INSTANCE.getNumberOfPlayers() > 1)
+			if (peer.getNumberOfPlayers() > 1)
 				System.out.println("done!");
 		}
 		catch (Exception e) {

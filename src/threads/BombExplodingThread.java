@@ -22,8 +22,8 @@ public class BombExplodingThread implements Runnable {
 			/** wait 5 seconds */
 			Thread.sleep(5000);
 			
-			if (Peer.INSTANCE.getNumberOfPlayers() > 1) { 
-				OutQueue.INSTANCE.add(newPacket);
+			if (Peer.getInstance().getNumberOfPlayers() > 1) { 
+				OutQueue.getInstance().add(newPacket);
 				//System.out.println("BombPacket put on the outQueue");
 			}
 			else {

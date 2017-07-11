@@ -56,8 +56,10 @@ public class Games {
 
 			// g is a copy need the original list to change it
 			for (Game game : this.gamesList)
-				if (game.getName().equalsIgnoreCase(gameName))
+				if (game.getName().equalsIgnoreCase(gameName)){
 					game.addPlayerToGame(p);
+					break;
+				}
 		}
 	}
 
@@ -93,6 +95,7 @@ public class Games {
 			if (game.getName().equalsIgnoreCase(gameName)){
 				try{
 					game.deletePlayerFromGame(p);
+					break;
 				}
 				catch(IllegalArgumentException e){
 					throw new NotFoundException(e.getMessage());

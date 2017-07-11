@@ -4,14 +4,19 @@ import java.util.LinkedList;
 
 import messages.Packets;
 
-public enum InQueue {
-	
-	INSTANCE;
+public class InQueue {
 	
 	private LinkedList<Packets> inQueue;
+	private static InQueue instance = null;
 		
 	private InQueue(){
 		inQueue = new LinkedList<>();
+	}
+	
+	public static synchronized InQueue getInstance(){
+		if (instance == null)
+			instance = new InQueue();
+		return instance;
 	}
 	
 	public synchronized void add (Packets p){

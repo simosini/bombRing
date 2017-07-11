@@ -36,8 +36,8 @@ public class BombExplodedMessage extends Message {
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		try {
-			Peer peer = Peer.INSTANCE;
-			OutQueue outQueue = OutQueue.INSTANCE;
+			Peer peer = Peer.getInstance();
+			OutQueue outQueue = OutQueue.getInstance();
 			Emoji emoji = EmojiManager.getForAlias("see_no_evil");
 
 			/** check my position */
@@ -76,7 +76,7 @@ public class BombExplodedMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			Peer peer = Peer.INSTANCE;
+			Peer peer = Peer.getInstance();
 
 			/**
 			 * if i'm dead before the bomb count down finished it dies with me
@@ -109,7 +109,7 @@ public class BombExplodedMessage extends Message {
 				/** this is true if the bomb killed me */
 				if (!peer.isAlive()) {
 					System.out.println("Congratulations!! You just committed suicide!");
-					Thread.sleep(2000); //to check adding when the player is dead
+					//Thread.sleep(2000); //to check adding when the player is dead
 					/** now die gracefully */
 					new ExitProcedure().startRegularProcedure(false);
 				}

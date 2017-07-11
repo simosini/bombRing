@@ -25,7 +25,7 @@ import singletons.Peer;
 public class UserInputHandlerThread implements Runnable {
 
 	private BufferedReader userInput; // from the main thread
-	private final int gridDimension = Peer.INSTANCE.getCurrentGame().getSideLength();// to check movement allowed
+	private final int gridDimension = Peer.getInstance().getCurrentGame().getSideLength();// to check movement allowed
 	// private Queue<Bomb> bombs;
 
 	public UserInputHandlerThread(BufferedReader br) {
@@ -42,12 +42,13 @@ public class UserInputHandlerThread implements Runnable {
 
 	@Override
 	public void run() {
-		OutQueue outQueue = OutQueue.INSTANCE;
+		OutQueue outQueue = OutQueue.getInstance();
+		Peer peer = Peer.getInstance();
 		
 		while (true) {
 			try {
 				/** If I'm dead no option is available */
-				if (Peer.INSTANCE.isAlive()){
+				if (peer.isAlive()){
 					Packets nextPacket = this.getUserMove(); // can only be a bomb
 																//  new position or exit
 					if (nextPacket != null) {
@@ -57,7 +58,7 @@ public class UserInputHandlerThread implements Runnable {
 							 * if i'm alone there is no token so create thread
 							 * no need to put packet in the queue. Pass it to the handler 
 							 * */
-							if (Peer.INSTANCE.getNumberOfPlayers() == 1) {
+							if (peer.getNumberOfPlayers() == 1) {
 								Thread t = new Thread(new OnePlayerHandlerThread(nextPacket));
 								//System.out.println("One Player handler started");
 								t.start();
@@ -98,12 +99,13 @@ public class UserInputHandlerThread implements Runnable {
 	private Packets getUserMove() throws InterruptedException {
 
 		try {
+			Peer peer = Peer.getInstance();
 			/** print current position */
 			System.out.println("################# GAME MENU #################");
-			Cell currentPos = Peer.INSTANCE.getCurrentPosition();
+			Cell currentPos = peer.getCurrentPosition();
 			String colorZone = this.computeZone(currentPos.getPosition());
 			System.out.println(colorZone + currentPos);
-			System.out.println("Your current score is: " + Peer.INSTANCE.getCurrentScore());
+			System.out.println("Your current score is: " + peer.getCurrentScore());
 			System.out.println(this.showBomb());
 
 			System.out.println("Select a move:\n" + "U - move up;\n" + "D - move down;\n" + "L - move left;\n"
@@ -169,7 +171,7 @@ public class UserInputHandlerThread implements Runnable {
 					 return new Packets(new ExitMessage(), null);
 					 
 				 case "v":
-					 System.out.println(Peer.INSTANCE.getCurrentGame());
+					 System.out.println(peer.getCurrentGame());
 					 return null;
 			
 	
@@ -206,12 +208,12 @@ public class UserInputHandlerThread implements Runnable {
 			color = "red";
 		sb.append(color);
 		sb.append(" zone. ");
-		Peer.INSTANCE.getCurrentPosition().setColorZone(color);
+		Peer.getInstance().getCurrentPosition().setColorZone(color);
 		return sb.toString();
 	}
 
 	private boolean isMovementAllowed(DIR direction) {
-		int[] newPosition = Peer.INSTANCE.getCurrentPosition().move(direction);
+		int[] newPosition = Peer.getInstance().getCurrentPosition().move(direction);
 		if (newPosition[0] < 0 | newPosition[1] < 0 | newPosition[0] >= this.gridDimension
 				| newPosition[1] >= this.gridDimension)
 			return false;

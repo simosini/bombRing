@@ -39,7 +39,7 @@ public class PositionList {
 	
 	/** the list contains all players positions */
 	public Cell computeNewPosition() {
-		Peer peer= Peer.INSTANCE;
+		Peer peer= Peer.getInstance();
 		int length = peer.getCurrentGame().getSideLength();
 		
 		Random random =  new Random();

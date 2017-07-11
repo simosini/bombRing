@@ -42,7 +42,7 @@ public class MessageHandlerThread implements Runnable {
 
 	@Override
 	public void run() {
-		InQueue inQueue = InQueue.INSTANCE;
+		InQueue inQueue = InQueue.getInstance();
 	
 		while (!stop()) {
 			synchronized (inQueue) {

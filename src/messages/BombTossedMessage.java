@@ -33,7 +33,7 @@ public class BombTossedMessage extends Message {
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		try {
 			System.out.println("A bomb has been tossed in the " + this.color + " zone. You only got 5 seconds to escape!");
-			System.out.println("You are currently in the " + Peer.INSTANCE.getCurrentPosition().getColorZone() + " zone.");
+			System.out.println("You are currently in the " + Peer.getInstance().getCurrentPosition().getColorZone() + " zone.");
 			new AckMessage().handleOutMessage(clientConnection);
 		} catch (Exception e) {
 			System.err.println("Error handling incoming bomb tossed message");
@@ -47,13 +47,14 @@ public class BombTossedMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
+			Peer peer = Peer.getInstance();
 			/** if dead cannot toss any bomb */
-			if (Peer.INSTANCE.isAlive()){
-				OutQueue outQueue = OutQueue.INSTANCE;
+			if (peer.isAlive()){
+				OutQueue outQueue = OutQueue.getInstance();
 				//System.out.println("Handling message. Type: " + this);
 				
 				/** retrieve connections for the broadcast */
-				List<ConnectionData> clientConnections = Peer.INSTANCE.getClientConnectionsList();
+				List<ConnectionData> clientConnections = peer.getClientConnectionsList();
 				//System.out.println("I have " + clientConnections.size() + " connections open!");
 				//System.out.println("retrieved user sockets");
 		
@@ -68,7 +69,7 @@ public class BombTossedMessage extends Message {
 				new Thread(new BombExplodingThread(this.getColor())).start();
 				
 				/** notify the stdin i've finished handling the message */			
-				if (Peer.INSTANCE.getNumberOfPlayers() > 1){
+				if (peer.getNumberOfPlayers() > 1){
 					//System.out.println("Notifying stdin");
 					synchronized (outQueue) {
 						outQueue.notify();

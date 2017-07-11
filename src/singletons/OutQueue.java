@@ -4,14 +4,19 @@ import java.util.PriorityQueue;
 
 import messages.Packets;
 
-public enum OutQueue {
-	
-	INSTANCE;
+public class OutQueue {
 	
 	private PriorityQueue<Packets> outQueue;
+	private static OutQueue instance;
 		
 	private OutQueue(){
 		outQueue = new PriorityQueue<>();
+	}
+	
+	public static synchronized OutQueue getInstance() {
+		if (instance == null)
+			instance = new OutQueue();
+		return instance;
 	}
 	
 	public synchronized void add(Packets p){

@@ -47,8 +47,8 @@ public class JoinRingMessage extends Message {
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		try {
 			//System.out.println("InHandling started!!");
-			OutQueue outQueue = OutQueue.INSTANCE;
-			Peer peer = Peer.INSTANCE;
+			OutQueue outQueue = OutQueue.getInstance();
+			Peer peer = Peer.getInstance();
 			ConnectionData cd = null;
 			
 			/** if i'm dead i send a NackMessage with an up to date copy of the map */
@@ -135,7 +135,7 @@ public class JoinRingMessage extends Message {
 		try {
 			//System.out.println("Start handling ---- " + this);
 			/** retrieve players list */
-			Peer peer = Peer.INSTANCE;
+			Peer peer = Peer.getInstance();
 			
 
 			 /** it's a copy of the map given by the rest server */
@@ -212,7 +212,7 @@ public class JoinRingMessage extends Message {
 		for (Player p : updatedMap.values()){
 			ConnectionData cd = this.connectToPlayer(p);
 			if (cd != null)
-				Peer.INSTANCE.addConnectedSocket(p.getId(), cd);
+				Peer.getInstance().addConnectedSocket(p.getId(), cd);
 		}
 		
 	}

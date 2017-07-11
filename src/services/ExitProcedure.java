@@ -25,9 +25,9 @@ public class ExitProcedure {
 	
 	public void startRegularProcedure(boolean isGameEnded){
 		//System.out.println("Starting exit procedure");
-		Peer peer = Peer.INSTANCE;
-		InQueue inQueue = InQueue.INSTANCE;
-		OutQueue outQueue = OutQueue.INSTANCE;
+		Peer peer = Peer.getInstance();
+		InQueue inQueue = InQueue.getInstance();
+		OutQueue outQueue = OutQueue.getInstance();
 		
 		try {
 			/** close server socket */
@@ -80,7 +80,7 @@ public class ExitProcedure {
 			new ServiceRequester().deletePlayerFromGame(peer.getCurrentGame().getName(), peer.getCurrentPlayer());
 			
 			/** if I was alone the game is finished */
-			if (Peer.INSTANCE.getNumberOfPlayers() == 1){
+			if (peer.getNumberOfPlayers() == 1){
 				GameLock lock = GameLock.getInstance();
 				//System.out.println("Exit procedure done!");
 				synchronized (lock) {

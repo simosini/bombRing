@@ -59,6 +59,11 @@ public class Game {
 	public synchronized void setPlayers(Players players) {
 		this.players = players;
 	}
+	
+	public synchronized void setUserMap(TreeMap<Integer, Player> map) {
+		this.players.setUsersMap(map);
+		
+	}
 
 	public String getName() {
 		return name;
@@ -120,9 +125,6 @@ public class Game {
 		return sb.toString();
 	}
 
-	public void setUserMap(TreeMap<Integer, Player> map) {
-		this.players.setUsersMap(map);
-		
-	}
+	
 
 }

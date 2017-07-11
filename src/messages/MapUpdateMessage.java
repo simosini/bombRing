@@ -45,12 +45,12 @@ public class MapUpdateMessage extends Message {
 		TreeMap<Integer, Player> updatedMap = this.getUpdatedMap();
 		//System.out.println("UpdatedMap : " + updatedMap);
 		/** save a copy  so I can change it */
-		Peer.INSTANCE.updateMapPlayers(new TreeMap<Integer, Player>(updatedMap));
+		Peer.getInstance().updateMapPlayers(new TreeMap<Integer, Player>(updatedMap));
 		
 		/** update current position. Another copy */
 		Cell newPos = this.getUpdatedPosition();
 		//System.out.println("My position is: " + newPos);
-		Peer.INSTANCE.setCurrentPosition(new Cell(newPos));
+		Peer.getInstance().setCurrentPosition(new Cell(newPos));
 		return true;
 	}
 	

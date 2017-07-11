@@ -30,7 +30,7 @@ public class VictoryMessage extends Message {
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		try {
 			/** the game is finished */
-			Peer.INSTANCE.setAlive(false);
+			Peer.getInstance().setAlive(false);
 			
 			/** send ackMessage */
 			new AckMessage().handleOutMessage(clientConnection);

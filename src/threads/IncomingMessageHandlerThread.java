@@ -45,7 +45,7 @@ public class IncomingMessageHandlerThread implements Runnable {
 
 	@Override
 	public void run() {
-		InQueue inQueue = InQueue.INSTANCE;
+		InQueue inQueue = InQueue.getInstance();
 		Message message = null;
 		ObjectInputStream reader = null;
 

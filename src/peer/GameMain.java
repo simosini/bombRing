@@ -34,7 +34,7 @@ public class GameMain {
 		try {
 			/** init basic structures and socket for the game */
 			ServerSocket srvSocket = new ServerSocket(DEFAULT_PORT);
-			Peer.INSTANCE.setServerSocket(srvSocket);
+			Peer.getInstance().setServerSocket(srvSocket);
 			ServiceRequester service = new ServiceRequester();
 
 			BufferedReader readInput = new BufferedReader(new InputStreamReader(System.in));
@@ -42,7 +42,7 @@ public class GameMain {
 			/** set current player */
 			Player newPlayer = getPlayerInfo(readInput);
 			newPlayer.setPort(srvSocket.getLocalPort());
-			Peer.INSTANCE.addPlayer(newPlayer);
+			Peer.getInstance().addPlayer(newPlayer);
 
 			/** start server communication */
 			printGameMenu(readInput, service);
@@ -70,7 +70,7 @@ public class GameMain {
 				lock.wait();
 			}
 			
-			exitGame(mht, sda, as);
+			exitGameGracefully(mht, sda, as);
 			
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -81,7 +81,7 @@ public class GameMain {
 
 	
 
-	private static void exitGame(MessageHandlerThread mht, SensorDataAnalyzer sda, AccelerometerSimulator as) {
+	private static void exitGameGracefully(MessageHandlerThread mht, SensorDataAnalyzer sda, AccelerometerSimulator as) {
 		mht.stopThread();
 		sda.stopAnalyzer();
 		as.stopMeGently();
@@ -121,7 +121,7 @@ public class GameMain {
 				;
 				try {
 					Game currentGame = null;
-					Peer peer = Peer.INSTANCE;
+					Peer peer = Peer.getInstance();
 					System.out.println("Select a name for the game: ");
 					String name = br.readLine();
 					int length;
@@ -160,7 +160,7 @@ public class GameMain {
 			case 3: /** save game returned by the server when you choose it */
 				Game currentGame = null;
 				String gameName = null;
-				Peer peer = Peer.INSTANCE;
+				Peer peer = Peer.getInstance();
 				try {
 					System.out.println("Enter game name: ");
 					gameName = br.readLine();
@@ -214,8 +214,8 @@ public class GameMain {
 
 	private static boolean startJoiningRingProcedure() {
 		try {
-			OutQueue outQueue = OutQueue.INSTANCE;
-			Peer peer = Peer.INSTANCE;
+			OutQueue outQueue = OutQueue.getInstance();
+			Peer peer = Peer.getInstance();
 			/** create message and handle it */
 			//System.out.println("Creating JoinRing message");
 			Message joinRing = new JoinRingMessage(peer.getCurrentPlayer());

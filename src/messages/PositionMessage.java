@@ -45,13 +45,14 @@ public class PositionMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData cd) {
 		try {
+			Peer peer = Peer.getInstance();
 			/** if dead cannot move */
-			if (Peer.INSTANCE.isAlive()){
-				OutQueue outQueue = OutQueue.INSTANCE;
+			if (peer.isAlive()){
+				OutQueue outQueue = OutQueue.getInstance();
 				//System.out.println("Handling message. Type: " + this);
 				
 				/** retrieve connections for the broadcast */
-				List<ConnectionData> clientConnections = Peer.INSTANCE.getClientConnectionsList();
+				List<ConnectionData> clientConnections = peer.getClientConnectionsList();
 				//System.out.println("I have " + clientConnections.size() + " connections open!");
 				//System.out.println("retrieved user sockets");
 		
@@ -66,10 +67,10 @@ public class PositionMessage extends Message {
 				//System.out.println("Next position: " + this.getRow() + " " + this.getCol());
 				
 				/** set new position */
-				Peer.INSTANCE.setNewPosition(this.getRow(), this.getCol());
+				peer.setNewPosition(this.getRow(), this.getCol());
 				
 				/** notify the stdin i've finished handling the message */			
-				if (Peer.INSTANCE.getNumberOfPlayers() > 1){
+				if (peer.getNumberOfPlayers() > 1){
 					//System.out.println("Notifying stdin");
 					synchronized (outQueue) {
 						outQueue.notify();
@@ -90,8 +91,8 @@ public class PositionMessage extends Message {
 	@Override
 	public boolean handleInMessage(ConnectionData cd) {
 		try {
-			Peer peer = Peer.INSTANCE;
-			OutQueue outQueue = OutQueue.INSTANCE;
+			Peer peer = Peer.getInstance();
+			OutQueue outQueue = OutQueue.getInstance();
 			
 			/** check my position */			
 			if(peer.isAlive() && Arrays.equals(peer.getCurrentPosition().getPosition(), new int[]{this.getRow(),this.getCol()})){
