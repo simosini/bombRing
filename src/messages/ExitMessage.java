@@ -28,7 +28,8 @@ public class ExitMessage extends Message {
 		try {
 			Peer.INSTANCE.setAlive(false);
 			new ExitProcedure().startRegularProcedure(false);
-			System.out.println("done!");
+			if (Peer.INSTANCE.getNumberOfPlayers() > 1)
+				System.out.println("done!");
 		}
 		catch (Exception e) {
 			System.err.println("Error handling outgoing dead message");

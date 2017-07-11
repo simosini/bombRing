@@ -236,7 +236,7 @@ public class GameMain {
 	/** retrieve player's info */
 	private static Player getPlayerInfo(BufferedReader br) {
 		Emoji emoji = EmojiManager.getForAlias("bomb");
-		System.out.println(emoji.getUnicode() + emoji.getUnicode() + " Welcome to Bomb Ring " + emoji.getUnicode()
+		System.out.println(emoji.getUnicode() + emoji.getUnicode() + " WELCOME TO BOMB RING " + emoji.getUnicode()
 				+ emoji.getUnicode());
 
 		Player p = new Player();

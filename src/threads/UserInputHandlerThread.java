@@ -62,6 +62,7 @@ public class UserInputHandlerThread implements Runnable {
 								//System.out.println("One Player handler started");
 								t.start();
 								t.join(); 
+								System.out.println("Done!");
 								//System.out.println("One player handler done");
 							}
 							else {
@@ -98,6 +99,7 @@ public class UserInputHandlerThread implements Runnable {
 
 		try {
 			/** print current position */
+			System.out.println("################# GAME MENU #################");
 			Cell currentPos = Peer.INSTANCE.getCurrentPosition();
 			String colorZone = this.computeZone(currentPos.getPosition());
 			System.out.println(colorZone + currentPos);
