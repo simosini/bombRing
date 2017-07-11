@@ -1,4 +1,4 @@
-package client;
+package peer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,7 +14,6 @@ import beans.Game;
 import beans.Player;
 import messages.JoinRingMessage;
 import messages.Message;
-import peer.Cell;
 import services.ServiceRequester;
 import simulator.MeasureBuffer;
 import singletons.GameLock;
@@ -28,11 +27,13 @@ import threads.UserInputHandlerThread;
 
 /** this is the main of the game: everything starts here */
 public class GameMain {
+	
+	private static final int DEFAULT_PORT = 0;
 
 	public static void main(String[] args) {
 		try {
 			/** init basic structures and socket for the game */
-			ServerSocket srvSocket = new ServerSocket(0);
+			ServerSocket srvSocket = new ServerSocket(DEFAULT_PORT);
 			Peer.INSTANCE.setServerSocket(srvSocket);
 			ServiceRequester service = new ServiceRequester();
 

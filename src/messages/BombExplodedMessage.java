@@ -83,7 +83,7 @@ public class BombExplodedMessage extends Message {
 			 */
 			if (peer.isAlive()) {
 				// System.out.println("Handling message. Type: " + this);
-				System.out.print("Bomb exploded in the " + this.getColor() + " zone. Informing other players...");
+				System.out.println("Bomb exploded in the " + this.getColor() + " zone. Informing other players...");
 
 				/** retrieve connections for the broadcast */
 				List<ConnectionData> clientConnections = peer.getClientConnectionsList();
