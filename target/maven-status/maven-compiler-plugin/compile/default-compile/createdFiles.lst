@@ -15,7 +15,6 @@ simulator/MeasureBuffer.class
 threads/MessageHandlerThread.class
 threads/IncomingMessageHandlerThread.class
 messages/BombExplodedMessage.class
-beans/Provas.class
 singletons/PositionList.class
 services/ServiceRequester.class
 messages/TokenMessage.class

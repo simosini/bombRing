@@ -8,6 +8,7 @@ import java.net.Socket;
 
 import beans.Player;
 import peer.ConnectionData;
+import singletons.Peer;
 
 /**
  * Abstract generic class for messages. Every message has a specific code and a
@@ -22,7 +23,6 @@ public abstract class Message implements Serializable {
 	private static final String LOCALHOST = "localhost";
 	private Type codeMessage;
 	private int priority;
-	private boolean isInput;
 
 	public Message() {
 	}
@@ -30,7 +30,7 @@ public abstract class Message implements Serializable {
 	public Message(Type type, int priority) {
 		this.setCodeMessage(type);
 		this.setPriority(priority);
-		this.setInput(true); // default value to be set at creation
+
 	}
 
 	public Type getCodeMessage() {
@@ -49,14 +49,6 @@ public abstract class Message implements Serializable {
 		this.priority = priority;
 	}
 
-	public boolean checkIsInput() {
-		return isInput;
-	}
-
-	public void setInput(boolean flag) {
-		this.isInput = flag;
-
-	}
 	
 	public ConnectionData connectToPlayer(Player p) {
 		try {
@@ -68,6 +60,8 @@ public abstract class Message implements Serializable {
 			//System.out.println("out stream done");
 			ObjectInputStream in =  null;
 			//System.out.println("Streams done!");
+			/** send current player */
+			out.writeObject(Peer.getInstance().getCurrentPlayer());
 			return new ConnectionData(s, out, in);
 		} catch (IOException e){
 			System.err.println("The player chosen has closed his server socket!");

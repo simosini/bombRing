@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import beans.Player;
 import messages.Message;
 import messages.Packets;
 import peer.ConnectionData;
@@ -21,6 +22,7 @@ import singletons.InQueue;
 public class IncomingMessageHandlerThread implements Runnable {
 
 	private ConnectionData clientConnection;
+	private Player connectedPlayer;
 	
 	public IncomingMessageHandlerThread(Socket s) {
 	
@@ -33,12 +35,26 @@ public class IncomingMessageHandlerThread implements Runnable {
 			outputStream.flush();
 			ObjectInputStream inputStream = new ObjectInputStream(s.getInputStream());
 			this.clientConnection = new ConnectionData(s, outputStream, inputStream);
+			Player connectedPlayer = (Player) inputStream.readObject();
+			this.setConnectedPlayer(connectedPlayer);
+			
 		} catch(IOException e){
-			System.err.println("IncomingMessageThread Could not open streams");
+			System.err.println("IncomingMessageThread could not open streams");
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			System.err.println("Couldn't retrieve player!");
 			e.printStackTrace();
 		}
 	}
 	
+	private Player getConnectedPlayer() {
+		return connectedPlayer;
+	}
+
+	private void setConnectedPlayer(Player connectedPlayer) {
+		this.connectedPlayer = connectedPlayer;
+	}
+
 	private ConnectionData getConnectionData() {
 		return this.clientConnection;
 	}
@@ -68,10 +84,10 @@ public class IncomingMessageHandlerThread implements Runnable {
 				
 			}
 		} catch (IOException e){
-			// do nothing
-			System.err.println();
-			//System.out.println("Client closed connection. Closing current socket...");
+			
+			System.out.print(this.getConnectedPlayer().getNickname() + " just left the game. Disconnecting from him...");
 		} catch (ClassNotFoundException e) {
+			
 			System.err.println("Error reading message from socket!");
 			e.printStackTrace();
 		} finally {
@@ -82,6 +98,7 @@ public class IncomingMessageHandlerThread implements Runnable {
 			} catch(IOException ie){
 				ie.printStackTrace();
 			}
+			System.out.println("Done!");
 		}
 		
 		

@@ -119,7 +119,6 @@ public class UserInputHandlerThread implements Runnable {
 					}
 					int[] upPosition = currentPos.move(Cell.DIR.UP);
 					Message upm = new PositionMessage(upPosition[0], upPosition[1]);
-					upm.setInput(false);
 					System.out.print("Waiting to move up...");
 					return new Packets(upm, null);
 	
@@ -130,7 +129,6 @@ public class UserInputHandlerThread implements Runnable {
 					}
 					int[] downPosition = currentPos.move(Cell.DIR.DOWN);
 					Message dpm = new PositionMessage(downPosition[0], downPosition[1]);
-					dpm.setInput(false);
 					System.out.print("Waiting to move down...");
 					return new Packets(dpm, null);
 	
@@ -141,7 +139,6 @@ public class UserInputHandlerThread implements Runnable {
 					}
 					int[] leftPosition = currentPos.move(Cell.DIR.LEFT);
 					Message lpm = new PositionMessage(leftPosition[0], leftPosition[1]);
-					lpm.setInput(false);
 					System.out.print("Waiting to move left...");
 					return new Packets(lpm, null);
 	
@@ -152,7 +149,6 @@ public class UserInputHandlerThread implements Runnable {
 					}
 					int[] rightPosition = currentPos.move(Cell.DIR.RIGHT);
 					Message rpm = new PositionMessage(rightPosition[0], rightPosition[1]);
-					rpm.setInput(false);
 					System.out.print("Waiting to move right...");
 					return new Packets(rpm, null);
 	
