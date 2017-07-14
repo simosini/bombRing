@@ -2,6 +2,7 @@ package messages;
 
 import peer.ConnectionData;
 
+/** this message is sent by the peers to confirm reception of particular message.*/
 public class AckMessage extends Message {
 	
 	private static final long serialVersionUID = -2461861844306614558L;
@@ -11,13 +12,14 @@ public class AckMessage extends Message {
 		super(Type.ACK, ACK_PRIORITY);
 	}
 	
+	/** this message is never put on the outQueue so do nothing */
 	@Override
 	public boolean handleInMessage(ConnectionData cd){
-		/** this message is never put on the outQueue so do nothing */
 		//System.out.println("Ack message received");
 		return true;
 	}
 	
+	/** send out ack */
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
@@ -25,7 +27,7 @@ public class AckMessage extends Message {
 			//System.out.println("Ack sent");
 		}
 		catch(Exception e){
-			System.out.println("Error sending out Ack");
+			System.err.println("Error sending out Ack");
 			return false;
 		}
 		return true;
