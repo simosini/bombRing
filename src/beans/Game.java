@@ -3,13 +3,14 @@ package beans;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-
+ 
+/** This class contains all the details of a game. */
 public class Game {
 
 	private String name;
 	private int sideLength;
 	private int scoreNeeded;
-	private Players players; /** players list of the game*/
+	private Players players; // players map of the game
 
 	public Game() {}
 	
@@ -19,12 +20,20 @@ public class Game {
 		this.setScore(score);
 		this.setPlayers(new Players());
 	}
-
+	
+	/** create a game inserting the player passed in the map (Players) */
 	public Game(String name, int length, int score, Player p) {
 		this.setName(name);
 		this.setSideLength(length);
 		this.setScore(score);
 		this.setPlayers(initList(p));
+	}
+	
+	/** this method is only called to initialize the newly created Game */
+	private Players initList(Player p) {
+		Players players = new Players();
+		players.addPlayer(p);
+		return players;
 	}
 	
 	/** create a copy of the given game */
@@ -34,13 +43,7 @@ public class Game {
 		this.setScore(game.getScoreNeeded());
 		this.setPlayers(game.getPlayers());
 	}
-
-	/** this method is only called to initialize the newly created Game */
-	private Players initList(Player p) {
-		Players players = new Players();
-		players.addPlayer(p);
-		return players;
-	}
+	
 
 	/** setters and getters: get returns a copy when needed */
 	
@@ -76,31 +79,35 @@ public class Game {
 	public int getScoreNeeded() {
 		return scoreNeeded;
 	}
-
+	
+	/** return a copy of the map of game's players */
 	public synchronized Players getPlayers() {
-		// return a copy
 		return new Players(players);
 
 	}
 	
 	/** helper methods */
 
-	/** retrieve players of a game as a list */
+	/** retrieve a copy of the players of a game as a list */
 	public synchronized List<Player> retrieveGamePlayers() {
-		// return a copy 
+ 
 		return getPlayers().retrievePlayersList();
 	}
-
+	
+	/** add a player to the current game */
 	public synchronized void addPlayerToGame(Player p) {
 		
 		players.addPlayer(p);
 	}
 	
+	
+	/** delete the given player from the game. If it does not exists nothing happens */
 	public synchronized void deletePlayerFromGame(Player p) {
 		players.deletePlayer(p);	
 		
 	}
-
+	
+	/** return the number of players in the game */
 	public synchronized int retrievePlayersNumber() {
 		return this.players.size();
 	}
@@ -116,13 +123,17 @@ public class Game {
 		sb.append("SCORE TO WIN: " + this.getScoreNeeded() + "\n");
 		sb.append("NUMBER OF PLAYERS: " + this.retrievePlayersNumber() + "\n");
 		
-		String players = this.getPlayers().retrievePlayersList()
-						 .stream()
-				 		 .map(player -> player.getNickname())
-				 		 .collect(Collectors.joining(", "));
+		String players = buildPlayersList();
 				 		 
 		sb.append("PLAYERS NAMES: " + players + "\n");		 		 
 		return sb.toString();
+	}
+
+	private String buildPlayersList() {
+		return this.getPlayers().retrievePlayersList()
+						 .stream()
+				 		 .map(player -> player.getNickname())
+				 		 .collect(Collectors.joining(", "));
 	}
 
 	

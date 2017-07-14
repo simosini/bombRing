@@ -2,6 +2,10 @@ package beans;
 
 import java.io.Serializable;
 
+/** 
+ * This class keeps track of all details about a player.
+ * It's serialized cause is sent over the sockets when needed.
+ * */
 public class Player implements Serializable {
 
 	private static final long serialVersionUID = -6157801865035828060L;
@@ -20,7 +24,8 @@ public class Player implements Serializable {
 		this.setPort(port);
 		this.setId(this.hashCode());
 	}
-
+	
+	/** builds a copy of the given player */
 	public Player(Player player) {
 		this.setName(player.getName());
 		this.setSurname(player.getSurname());
@@ -28,6 +33,8 @@ public class Player implements Serializable {
 		this.setPort(player.getPort());
 		this.setId(player.getId());
 	}
+	
+	/** setters and getters */
 
 	public String getName() {
 		return name;
@@ -44,11 +51,19 @@ public class Player implements Serializable {
 	public void setSurname(String surname) {
 		this.surname = surname;
 	}
+	
+	public int getId() {
+		return id;
+	}
 
 	public void setId(int id) {
 		this.id = id;
 	}
-
+	
+	public int getPort() {
+		return port;
+	}
+	
 	public void setPort(int port) {
 		this.port = port;
 	}
@@ -61,14 +76,7 @@ public class Player implements Serializable {
 		this.nickname = nickname;
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public int getPort() {
-		return port;
-	}
-	
+	/** compute the Id of the current player */
 	@Override
 	public int hashCode() {
 		int result = 17;

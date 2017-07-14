@@ -109,7 +109,7 @@ public class BombExplodedMessage extends Message {
 				/** this is true if the bomb killed me */
 				if (!peer.isAlive()) {
 					System.out.println("Congratulations!! You just committed suicide!");
-					//Thread.sleep(2000); //to check adding when the player is dead
+					Thread.sleep(2000); //to check adding when the player is dead
 					/** now die gracefully */
 					new ExitProcedure().startRegularProcedure(false);
 				}
