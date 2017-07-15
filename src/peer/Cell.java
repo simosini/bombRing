@@ -3,10 +3,17 @@ package peer;
 import java.io.Serializable;
 import java.util.Arrays;
 
+/**
+ * A cell is the position of a peer in the distributed grid.
+ * The grid does not actually exist it's only a logical grid.
+ */
 public class Cell implements Serializable{
 
 	private static final long serialVersionUID = -454007840477943670L;
-
+	
+	/**
+	 * possible directions
+	 */
 	public enum DIR {
 		UP, DOWN, LEFT, RIGHT;
 	}
@@ -14,8 +21,7 @@ public class Cell implements Serializable{
 	protected int[] gridLocation = new int[2];
 	protected String colorZone;
 
-	public Cell() {
-	}
+	public Cell() {}
 
 	public Cell(Cell currentCell) {
 		int[] location = currentCell.getPosition();
@@ -42,7 +48,11 @@ public class Cell implements Serializable{
 	public synchronized int[] getPosition() {
 		return gridLocation;
 	}
-
+	
+	/**
+	 * moves player from current position according to the direction given.
+	 * It returns the new position after the move.
+	 */
 	public int[] move(DIR d) {
 		int[] currentPosition = this.getPosition();
 		if (d != null) {
@@ -77,7 +87,6 @@ public class Cell implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Your position is: " + this.gridLocation[0] + ","
-				+ this.gridLocation[1];
+		return "Your position is: " + this.gridLocation[0] + "," + this.gridLocation[1];
 	}
 }

@@ -1,5 +1,9 @@
 package peer;
 
+/**
+ * This is a bomb that can be used in the game. It can be one of 4 different colors:
+ * yellow, blue, green and red.
+ */
 public class Bomb {
 	
 	private String color;

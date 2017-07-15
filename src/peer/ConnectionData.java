@@ -5,6 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/**
+ * ConnectionData contains the client socket and the streams to communicate
+ * with another peer server socket. Every client connection data is saved in a map by the peer
+ * and kept open during the whole game as far as the 2 peers are still alive.
+ */
 public class ConnectionData {
 	
 	private Socket clientSocket = null;

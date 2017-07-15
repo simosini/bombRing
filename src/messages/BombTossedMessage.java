@@ -2,6 +2,9 @@ package messages;
 
 import java.util.List;
 
+import com.vdurmont.emoji.Emoji;
+import com.vdurmont.emoji.EmojiManager;
+
 import peer.Broadcast;
 import peer.ConnectionData;
 import singletons.OutQueue;
@@ -40,7 +43,8 @@ public class BombTossedMessage extends Message {
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		try {
-			System.out.println("A bomb has been tossed in the " + this.color + " zone. You only got 5 seconds to escape!");
+			Emoji bomb = EmojiManager.getForAlias("bomb");
+			System.out.println(bomb.getUnicode() + " A bomb has been tossed in the " + this.color + " zone. You only got 5 seconds to escape!");
 			System.out.println("You are currently in the " + Peer.getInstance().getCurrentPosition().getColorZone() + " zone.");
 			new AckMessage().handleOutMessage(clientConnection);
 		} catch (Exception e) {

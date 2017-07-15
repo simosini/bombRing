@@ -91,12 +91,13 @@ public class BombExplodedMessage extends Message {
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
 			Peer peer = Peer.getInstance();
+			Emoji emoji = EmojiManager.getForAlias("bomb");
 
 			// if i'm dead before the bomb count down finished it dies with me i.e. it does not explode
 			 
 			if (peer.isAlive()) {
 				// System.out.println("Handling message. Type: " + this);
-				System.out.println("Bomb exploded in the " + this.getColor() + " zone. Informing other players...");
+				System.out.println(emoji.getUnicode() + " Bomb exploded in the " + this.getColor() + " zone. Informing other players...");
 
 				// retrieve connections for the broadcast 
 				List<ConnectionData> clientConnections = peer.getClientConnectionsList();

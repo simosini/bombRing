@@ -1,6 +1,10 @@
 package peer;
 
+/**
+ * This class contains all possible server URI used to retrieve resources
+ */
 public enum Uri {
+	
 	BASE_URI("http://localhost:8080/restConverter/rest/services/"),
 	ADD_GAME("addgame"),
 	ADD_PLAYER("addplayer/"),
@@ -9,7 +13,6 @@ public enum Uri {
 	GET_PLAYERS("getplayers/"),
 	GET_GAME("getgame/"),
 	GET_GAMES("getgames");
-	
 	
 	
 	private String path;
