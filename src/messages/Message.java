@@ -12,10 +12,13 @@ import singletons.Peer;
 
 /**
  * Abstract generic class for messages. Every message has a specific code and a
- * priority associated so as to handle them accordingly. There is also a boolean
- * value to check if is a received message or a message to be sent, this allows
- * different handling of the same message.
- **/
+ * priority associated so as to handle them accordingly. 
+ * The two abstract methods to implements are: 
+ * 1- handleInMessage: this method is called to handle messages received on the 
+ * 	  peer's server Socket
+ * 2- handleOutMessage: this method is called to handle messages that need to be 
+ * 	  sent out from one of the peer's client sockets
+ */
 
 public abstract class Message implements Serializable {
 
@@ -49,7 +52,10 @@ public abstract class Message implements Serializable {
 		this.priority = priority;
 	}
 
-	
+	/**
+	 * connects to the server socket of the player passed as argument 
+	 * and initializes streams
+	 */
 	public ConnectionData connectToPlayer(Player p) {
 		try {
 			Socket s = new Socket(LOCALHOST, p.getPort());
@@ -60,7 +66,7 @@ public abstract class Message implements Serializable {
 			//System.out.println("out stream done");
 			ObjectInputStream in =  null;
 			//System.out.println("Streams done!");
-			/** send current player */
+			// send current player 
 			out.writeObject(Peer.getInstance().getCurrentPlayer());
 			return new ConnectionData(s, out, in);
 		} catch (IOException e){
@@ -69,7 +75,9 @@ public abstract class Message implements Serializable {
 			
 		}
 	}
-	/** true means the message has been handled correctly */
+	/** 
+	 * true means the message has been handled correctly 
+	 */
 	public abstract boolean handleInMessage(ConnectionData clientConnection);
 	
 	public abstract boolean handleOutMessage(ConnectionData clientConnection);

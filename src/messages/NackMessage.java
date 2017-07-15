@@ -7,7 +7,7 @@ import peer.ConnectionData;
 
 /**
  * This message is sent to inform a player willing to join the game
- * that should ask someone else cause the current player is either
+ * that it should ask someone else cause the current player is either
  * dead or leaving the game
  */
 
@@ -32,14 +32,19 @@ public class NackMessage extends Message {
 		this.players = players;
 	}
 
-	/** This can only be received by a new player willing to join the game */
+	/** 
+	 * This can only be received by a new player willing to join the game 
+	 */
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
-		/** this message is never put on any queue so do nothing */
+		// this message is never put on any queue so do nothing 
 		//System.out.println("Nack message received");
 		return true;
 	}
-
+	
+	/**
+	 * just send out the message
+	 */
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {

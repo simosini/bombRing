@@ -85,7 +85,7 @@ public class IncomingMessageHandlerThread implements Runnable {
 			}
 		} catch (IOException e){
 			
-			System.out.print(this.getConnectedPlayer().getNickname() + " just left the game. Disconnecting from him...");
+			System.out.print(this.getConnectedPlayer().getNickname() + " just left the game. Disconnecting socket...");
 		} catch (ClassNotFoundException e) {
 			
 			System.err.println("Error reading message from socket!");

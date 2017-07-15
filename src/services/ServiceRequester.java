@@ -241,6 +241,7 @@ public class ServiceRequester {
 			if (games.size() == 0)
 				System.out.println("There are no active games at the moment!");
 			else {
+				System.out.println("This is the list of current active games:");
 				for (Game g : games) {
 					System.out.println("Name : " + g.getName());
 				}

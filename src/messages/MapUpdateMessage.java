@@ -8,6 +8,12 @@ import peer.Cell;
 import peer.ConnectionData;
 import singletons.Peer;
 
+/**
+ * This message is used to provide a new player the updated map of the game players 
+ * and its new position on the grid. This is used to maintain consistency, because it might 
+ * happen that the map given by the REST server is out of date and to ensure the new player
+ * has been given a free spot on the grid.
+ */
 public class MapUpdateMessage extends Message {
 
 	private static final long serialVersionUID = -4776904767781287642L;
@@ -22,7 +28,10 @@ public class MapUpdateMessage extends Message {
 		this.setUpdatedMap(map);
 		this.setUpdatedPosition(pos);
 	}
-
+	
+	/**
+	 * getters and setters
+	 */
 	public TreeMap<Integer, Player> getUpdatedMap() {
 		return updatedMap;
 	}
@@ -39,25 +48,31 @@ public class MapUpdateMessage extends Message {
 		this.updatedPosition = updatedPosition;
 	}
 
+	/**
+	 * When a peer receives this message it updates his map and set his position.
+	 * This also means that the player has been added correctly to the ring.
+	 */
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
-		/** update map and exit */
+		// update map and exit 
 		TreeMap<Integer, Player> updatedMap = this.getUpdatedMap();
 		//System.out.println("UpdatedMap : " + updatedMap);
-		/** save a copy  so I can change it */
+		// save a copy so I can change it later 
 		Peer.getInstance().updateMapPlayers(new TreeMap<Integer, Player>(updatedMap));
 		
-		/** update current position. Another copy */
+		// update current position: another copy 
 		Cell newPos = this.getUpdatedPosition();
 		//System.out.println("My position is: " + newPos);
 		Peer.getInstance().setCurrentPosition(new Cell(newPos));
 		return true;
 	}
 	
-	/** This message is sent to a new player to inform him has been added correctly */
+	/** 
+	 * This message is sent to a new player to inform him has been added correctly 
+	 */
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
-		/** send the new player the updated map */
+		// send the new player the updated map and position 
 		try {
 			clientConnection.getOutputStream().writeObject(this);
 		} catch (IOException e){

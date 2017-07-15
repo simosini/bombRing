@@ -4,7 +4,10 @@ import peer.ConnectionData;
 import services.ExitProcedure;
 import singletons.Peer;
 
-/** leave the game after user choice */
+/** 
+ * This message is used in case a player decides to leave the game 
+ * while it's still alive.
+ */
 public class ExitMessage extends Message {
 	
 	private static final long serialVersionUID = -5807158110067786776L;
@@ -14,15 +17,19 @@ public class ExitMessage extends Message {
 		super(Type.EXITGAME, EXIT_PRIORITY);
 	}
 	
-	/** this messages will be mapped to the Dead message so 
-	 *  this can never be received */
+	/** 
+	 * This messages will be mapped to the Dead message so 
+	 * this can never be received 
+	 */
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		return true;
 		
 	}
 
-	/** starts regular exit procedure */
+	/** 
+	 * Current player has decided to leave the game: starts regular exit procedure 
+	 */
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {

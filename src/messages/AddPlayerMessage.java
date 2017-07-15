@@ -10,8 +10,10 @@ import peer.ConnectionData;
 import singletons.Peer;
 import singletons.PositionList;
 
-/** this Message is sent broadcast to all other players to 
- *  inform them of a new player willing to join the game */
+/** 
+ * This Message is sent broadcast to all other players to 
+ * inform them of a new player willing to join the game. 
+ */
 
 public class AddPlayerMessage extends Message {
 
@@ -28,17 +30,18 @@ public class AddPlayerMessage extends Message {
 		return playerToAdd;
 	}
 	
-	/** only called by the constructor */
+	/** 
+	 * only called by the constructor 
+	 */
 	private void setPlayerToAdd(Player playerToAdd) {
 		this.playerToAdd = playerToAdd;
 	}
 	
-	/**
-	 * This message is used to insert a new player in the ring. 
-	 * The current peer broadcast to other players informing of a new user
-	 * if it's alive, otherwise inform the new player it cannot fulfill
-	 * the request 
-	 **/
+	/** 
+	 * If the current peer it's alive broadcasts other players informing of a new user.
+	 * Otherwise tells the new player it cannot fulfill the request
+	 * sending him a Nack message. 
+	 */
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {

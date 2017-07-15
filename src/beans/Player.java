@@ -3,9 +3,12 @@ package beans;
 import java.io.Serializable;
 
 /** 
- * This class keeps track of all details about a player.
+ * This class keeps track of all the details about a player.
  * It's serialized cause is sent over the sockets when needed.
- * */
+ * Using this application only on local host there is no need to 
+ * provide an actual address. We use a hash function to compute the Id 
+ * in order to avoid collisions as much as possible.
+ */
 public class Player implements Serializable {
 
 	private static final long serialVersionUID = -6157801865035828060L;
@@ -25,7 +28,9 @@ public class Player implements Serializable {
 		this.setId(this.hashCode());
 	}
 	
-	/** builds a copy of the given player */
+	/** 
+	 * builds a copy of the given player
+	 */
 	public Player(Player player) {
 		this.setName(player.getName());
 		this.setSurname(player.getSurname());
@@ -34,7 +39,9 @@ public class Player implements Serializable {
 		this.setId(player.getId());
 	}
 	
-	/** setters and getters */
+	/** 
+	 * setters and getters 
+	 */
 
 	public String getName() {
 		return name;
@@ -76,7 +83,9 @@ public class Player implements Serializable {
 		this.nickname = nickname;
 	}
 
-	/** compute the Id of the current player */
+	/** 
+	 * compute the Id of the current player 
+	 */
 	@Override
 	public int hashCode() {
 		int result = 17;

@@ -8,8 +8,9 @@ import com.sun.jersey.api.NotFoundException;
 /** 
  * This class is used by the REST server to create a single instance of the list of 
  * currently active games. A game with no players can not exist. When the last player of a
- * game leaves or when the game is finished, it's immediately deleted from this list. 
- **/
+ * game leaves or when the game is finished, it's immediately deleted from this list.
+ * Games names must be unique, and players with the same name cannot be in the same game. 
+ */
 public class Games {
 
 	private List<Game> gamesList;
@@ -19,14 +20,18 @@ public class Games {
 		setGamesList(new ArrayList<>());
 	}
 
-	/** singleton in order to have only one list of games */
+	/** 
+	 * singleton in order to have only one list of games 
+	 */
 	public static synchronized Games getInstance() {
 		if (instance == null)
 			instance = new Games();
 		return instance;
 	}
 	
-	/** return a copy of the list of games */
+	/** 
+	 * return a copy of the list of games 
+	 */
 	public synchronized List<Game> getGamesList() {
 		// yield a copy for synchronization
 		return new ArrayList<>(gamesList);
@@ -34,11 +39,13 @@ public class Games {
 	}
 
 	public synchronized void setGamesList(List<Game> gameslist) {
-
 		this.gamesList = gameslist;
 	}
 
-	/** cannot work on a copy cause need to change the original list. */
+	/** 
+	 * Add a game to the list.
+	 * It cannot work on a copy cause need to change the original list. 
+	 */
 	public synchronized void addGame(Game g) {
 
 		for (Game game : this.gamesList)
@@ -48,8 +55,10 @@ public class Games {
 
 	}
 
-	/** Adds a player to the game passed as argument. 
-	 *  This must update the games list, cannot use a copy. */
+	/** 
+	 *  Add a player to the game passed as argument. 
+	 *  This must update the games list, cannot use a copy. 
+	 */
 	public synchronized void addPlayer(String gameName, Player p) {
 		
 		// first check the game still exists
@@ -71,7 +80,9 @@ public class Games {
 		}
 	}
 	
-	/** check existence of a player in a game */
+	/** 
+	 * check existence of a player in a game 
+	 */
 	private boolean playerExists(Game g, String playerName) {
 		for (Player player : g.getPlayers().retrievePlayersList()) {
 			if (player.getNickname().equalsIgnoreCase(playerName))
@@ -81,7 +92,10 @@ public class Games {
 		return false;
 	}
 	
-	/** yield a game given its name. If the game does not exist return null */
+	/** 
+	 * yield a game given its name. 
+	 * If the game does not exist return null. 
+	 */
 	public synchronized Game getByName(String name) {
 		List<Game> gamesCopy = getGamesList();
 
@@ -92,8 +106,10 @@ public class Games {
 		return null;
 	}
 	
-	/** delete the given player from the game passed.
-	 *  If the player does not exist it does nothing */
+	/** 
+	 * delete the given player from the game passed as parameter.
+	 * If the player does not exist it does nothing 
+	 */
 	public synchronized void deletePlayer(String gameName, Player p) {
 		// need to check the game still exists
 		Game g = this.getByName(gameName);
@@ -115,11 +131,14 @@ public class Games {
 			}		
 	}
 	
-	/** delete a game given its name. This method is only called by the REST server*/
+	/** 
+	 * delete a game given its name. 
+	 * This method is only called by the REST server.
+	 */
 	public synchronized void deleteGame(String gameName) {
 		// need to check the game still exists
 		Game g = this.getByName(gameName);
-		if (g == null) // should never get here
+		if (g == null) // the game is not in the list
 			throw new IllegalArgumentException(
 				"Game" + gameName + " does not exists anymore. Cannot remove it!");
 		

@@ -6,13 +6,14 @@ import services.ExitProcedure;
 import singletons.GameLock;
 import singletons.Peer;
 
-/** This is the message to inform that the match has finished.
- *  This message will be sent immediately.
- *  When a player receives a Victory message on the server socket,it put it 
- *  on the outQueue with max priority.
- *  As soon as the token is received the exit procedure will start.
- *  The exit procedure in this case is different from the regular one,
- *  cause I don't need to inform other players i'm dead.  */
+/** 
+ * This is the message to inform that the match has finished.
+ * This message will be sent immediately, without passing the token forward.
+ * When a player receives a Victory message on the server socket, it leaves
+ * the game immediately and the exit procedure is started.
+ * The exit procedure in this case is different from the regular one,
+ * cause I don't need to inform other players i'm dead.  
+ */
 public class VictoryMessage extends Message {
 
 	private static final long serialVersionUID = 4714778184603472137L;
@@ -24,27 +25,26 @@ public class VictoryMessage extends Message {
 		this.winner = winner;
 	}
 	
-	/** When the server socket receives this message knows that the match is finished
-	 * so it just send an AckMessage */
+	/** 
+	 * When the server socket receives this message knows that the match is finished
+	 * so it just sends an AckMessage and starts the exit procedure. 
+	 */
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		try {
-			/** the game is finished */
+			// the game is finished 
 			Peer.getInstance().setAlive(false);
 			
-			/** send ackMessage */
+			// send ackMessage 
 			new AckMessage().handleOutMessage(clientConnection);
 			
-			/** print the winner */
+			// print the winner 
 			System.out.println(this.winner.getNickname() + " won the match");
 			
-			/** exit procedure */
+			// start exit procedure 
 			new ExitProcedure().startGameEndedProcedure();
 			
-			
-			/** exit the game  
-			System.out.println("The game is over. Goodbye");
-			System.exit(0);*/
+			// leave the application gracefully. The notify will unblock the main thread
 			GameLock lock = GameLock.getInstance();
 			synchronized (lock) {
 				lock.notify();
@@ -58,12 +58,14 @@ public class VictoryMessage extends Message {
 		
 	}
 	
-	/** When I found this on the outQueue means I need to start the exit procedure
-	 *  and exit the game. */
+	/** 
+	 * This message is sent to inform all other player that the game is finished.
+	 * The exit procedure will take care of the broadcast and to gracefully leave the game.
+	 */
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			/** start exit procedure */
+			// start exit procedure 
 			new ExitProcedure().startGameEndedProcedure();
 			
 		} catch (Exception e){

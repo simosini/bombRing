@@ -1,5 +1,8 @@
 package messages;
 
+/**
+ * Enum to identify the type of message 
+ */
 public enum Type {
 	ACK,
 	ADDPLAYER,

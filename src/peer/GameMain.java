@@ -107,7 +107,6 @@ public class GameMain {
 			}
 			switch (choice) {
 			case 1:
-				System.out.println("This is the list of current active games:");
 				try {
 					service.retrieveGames();
 				} catch (RuntimeException e) {
