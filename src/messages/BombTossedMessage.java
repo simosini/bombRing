@@ -14,7 +14,7 @@ import threads.BombExplodingThread;
 /** 
  * This message  informs all other players that a bomb has just been tossed in
  * a particular area. Once received a peer has 5 seconds to sneak away from there.
- * The behavior of the sender is to broadcast the message, wait for all ack to arrive
+ * The behavior of the sender is to broadcast the message, wait for all acks to arrive
  * and finally start the thread in charge of exploding the bomb after 5 seconds. 
  */
 public class BombTossedMessage extends Message {

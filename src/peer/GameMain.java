@@ -26,7 +26,7 @@ import threads.ServerSocketHandler;
 import threads.UserInputHandlerThread;
 
 /** 
- * This is the main of the game: everything starts here! 
+ * This is the main of the game: everything starts and ends here! 
  */
 public class GameMain {
 	

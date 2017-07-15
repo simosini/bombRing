@@ -101,7 +101,7 @@ public class UserInputHandlerThread implements Runnable {
 		try {
 			Peer peer = Peer.getInstance();
 			/** print current position */
-			System.out.println("################# GAME MENU #################");
+			System.out.println("\n#################### GAME MENU ####################");
 			Cell currentPos = peer.getCurrentPosition();
 			String colorZone = this.computeZone(currentPos.getPosition());
 			System.out.println(colorZone + currentPos);

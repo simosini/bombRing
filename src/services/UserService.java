@@ -20,10 +20,16 @@ import beans.Games;
 import beans.Player;
 import exceptions.AppException;
 
+/**
+ * This is the class that exposes the available REST services to clients. 
+ */
 @Path("/services")
 public class UserService {
 
-	// yields a list of all players of all games.
+	/**
+	 * @return a response with the list of all players of all games
+	 * @throws AppException if no player is actually active in any game
+	 */
 	@Path("/getallplayers")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -33,14 +39,22 @@ public class UserService {
 			throw new AppException("There are no current active players!");
 		return Response.ok().entity(allplayers).build();
 	}
-
+	
+	/**
+	 * @param the list of all games
+	 * @return the list of all players for each game
+	 */
 	private List<Player> getAllPlayers(List<Game> gamesList) {
 		List<Player> players = new ArrayList<>();
 		gamesList.forEach(el -> players.addAll(el.retrieveGamePlayers()));
 		return players;
 	}
 
-	// yields a list of all players for the given game
+	/**
+	 * @param the name of the game where to retrieve players
+	 * @return a response with the list of all players of the given game
+	 * @throws AppException when the game does not exist
+	 */
 	@Path("/getplayers/{gameName}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -52,7 +66,13 @@ public class UserService {
 
 	}
 
-	// insert a player to the selected game
+	/**
+	 * Insert a player to the selected game
+	 * @param the name of a game passed through the URI
+	 * @param a player to be added
+	 * @return a response with a copy of the updated game 
+	 * @throws AppException if the adding operation could not be performed
+	 */
 	@Path("/addplayer/{gameName}")
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -68,7 +88,9 @@ public class UserService {
 		return Response.ok().entity(Games.getInstance().getByName(name)).build();
 	}
 
-	// yields games list
+	/**
+	 * @return a response with a copy of the list of all active games
+	 */
 	@Path("/getgames")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -78,7 +100,12 @@ public class UserService {
 
 	}
 
-	// add a game to the list
+	/**
+	 * Add a new game to the list on the REST server
+	 * @param the game to be added
+	 * @return a response with a copy of the added game
+	 * @throws AppException if a game with the same name already existed
+	 */
 	@Path("/addgame")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -93,7 +120,12 @@ public class UserService {
 		return Response.ok().entity(Games.getInstance().getByName(g.getName())).build();
 	}
 
-	// yield the game specified by the name if exists
+	/**
+	 * Yield a copy of the game specified by the name if present
+	 * @param the name of the game
+	 * @return a response with a copy of the requested game if present or else null
+	 * @throws AppException if the game selected does not exist
+	 */
 	@Path("/getgame/{name}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -105,14 +137,22 @@ public class UserService {
 			throw new AppException("The game selected does not exist!");
 	}
 
-	// delete a player from the selected game. It does not delete a resource but
-	// just update it
+	/**
+	 * Delete a player from the selected game. It does not delete a resource but
+	 * just update the current one. That's why a PUT method is used.
+	 * @param the name of the game to update through the URI
+	 * @param the player to delete
+	 * @return an OK response in case the operation concluded gracefully
+	 * @throws AppException if player or games could not be deleted 
+	 */
+	
 	@Path("/deleteplayer/{gameName}")
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deletePlayer(@PathParam("gameName") String gameName, Player p) throws AppException {
-
+		
+		// delete the given player and if the game has no more players left also delete the game
 		try {
 			Games.getInstance().deletePlayer(gameName, p);
 			if (Games.getInstance().getByName(gameName).retrievePlayersNumber() == 0) 
@@ -121,7 +161,7 @@ public class UserService {
 			throw new AppException(e.getMessage());
 		}
 
-		return Response.ok()./*entity(Games.getInstance().getByName(gameName)).*/build();
+		return Response.ok().build();
 	}
 
 }
