@@ -6,8 +6,10 @@ import java.util.Random;
 
 import peer.Cell;
 
-/** we use this to compute a new position for a new player willing 
- *  to join the game */
+/** 
+ * We use this to compute a new position for a new player willing 
+ * to join the game. 
+ */
 
 public class PositionList {
 	
@@ -23,12 +25,20 @@ public class PositionList {
 			instance = new PositionList();
 		return instance;
 	}
-
+	
+	/**
+	 * yield a copy of the position saved in the list
+	 * @return the list of positions
+	 */
 	public synchronized List<Cell> getPlayerPositions() {
 		return new ArrayList<>(playerPositions);
 	}
 	
-	public synchronized void addCell (Cell c){
+	/**
+	 * adds a position to the current list
+	 * @param the position (cell) to be added
+	 */
+	public synchronized void addCell(Cell c){
 		this.playerPositions.add(c);
 	}
 	
@@ -37,7 +47,9 @@ public class PositionList {
 			this.playerPositions.clear();
 	}
 	
-	/** the list contains all players positions */
+	/** 
+	 * yields the new computed position to be assigned to a new player 
+	 */
 	public Cell computeNewPosition() {
 		Peer peer= Peer.getInstance();
 		int length = peer.getCurrentGame().getSideLength();

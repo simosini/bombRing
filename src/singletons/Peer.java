@@ -12,7 +12,11 @@ import beans.Player;
 import beans.Players;
 import peer.Cell;
 import peer.ConnectionData;
-
+/**
+ * This is a singleton that contains any details about the player and the game
+ * it has been inserted in. This avoids the burden to pass the various argument to
+ * every thread.
+ */
 public class Peer {
 
 	private Game currentGame;
@@ -47,6 +51,10 @@ public class Peer {
 		this.mainSocket = srv;
 	}
 	
+	/**
+	 * Closes the server socket.
+	 * This method is called during the exit procedure
+	 */
 	public synchronized void closeServerSocket(){
 		if (this.mainSocket != null) {
 			try {
@@ -68,12 +76,8 @@ public class Peer {
 	}
 
 
-	public int getCurrentScore() {
+	public synchronized int getCurrentScore() {
 		return currentScore;
-	}
-
-	public void setCurrentScore(int currentScore) {
-		this.currentScore = currentScore;
 	}
 
 	public synchronized boolean isAlive() {
@@ -98,7 +102,12 @@ public class Peer {
 		
 		
 	}
-
+	
+	/**
+	 * The same as setCurrentPosition but with the new coordinates
+	 * @param row number
+	 * @param column number
+	 */
 	public synchronized void setNewPosition(int row, int col) {
 	
 		this.currentPosition.setPosition(row, col);
@@ -110,8 +119,10 @@ public class Peer {
 		this.currentGame.setUserMap(map);
 	}
 	
-	/** methods to add and delete a player. Work on actual object not a copy. 
-	 *  Those methods are only called by the handler */
+	/**
+	 * Methods to add and delete a player. Work on actual object not a copy. 
+	 * Those methods are only called by the handler.  
+	 */
 	public void addNewPlayer(Player p){
 		synchronized (this.currentGame) {
 			this.currentGame.addPlayerToGame(p);
@@ -119,10 +130,19 @@ public class Peer {
 		
 	}
 	
+	/**
+	 * Adds a new client socket and the streams to the ConnectedSockets list
+	 * @param the Id of the player to which a connection has been made
+	 * @param the connection data.
+	 */
 	public synchronized void addConnectedSocket(Integer playerId, ConnectionData data){
 		this.clientConnections.put(playerId, data);
 	}
 	
+	/**
+	 * deletes a closed socket from the list.
+	 * @param the Id of the player that closed his server socket
+	 */
 	public synchronized void deleteConnectedSocket(Integer playerId){
 		if (this.clientConnections.containsKey(playerId)){
 			this.clientConnections.remove(playerId);
@@ -135,29 +155,48 @@ public class Peer {
 		this.clientConnections = map;
 	}
 	
+	/**
+	 * @return the list of all client sockets connected
+	 */
 	public synchronized List<ConnectionData> getClientConnectionsList(){
 		//it's a copy
 		return new ArrayList<ConnectionData>(this.clientConnections.values());
 	}
 	
+	/**
+	 * deletes a player from the current game
+	 * @param the player to be deleted
+	 */
 	public synchronized void deletePlayer(Player p){
 		
 		this.currentGame.deletePlayerFromGame(p);
 		
 	}
 	
+	/**
+	 * @return the number of the players of the current game
+	 */
 	public int getNumberOfPlayers(){
 		
 		return this.getCurrentGame().retrievePlayersNumber();
 	}
 	
+	/**
+	 * This method finds the next peer in the ring to which pass the token 
+	 * or to which ask to be inserted in the ring
+	 * @param the map of all active players of the game
+	 * @return the next player in the ring
+	 */
 	public Player getNextPeer(Players players) {
-		TreeMap<Integer, Player> gamePlayers = players.getUsersMap(); //it's a copy
+		//it's a copy
+		TreeMap<Integer, Player> gamePlayers = players.getUsersMap(); 
+		
 		if (gamePlayers.size() > 1) {
 			Integer nextPlayerKey = findNextPlayerKey(this.getCurrentPlayer().getId(), gamePlayers);
 			return gamePlayers.get(nextPlayerKey);
 		} else {
-			return null; // no more players, only me in the map
+			// no more players, only me in the map
+			return null; 
 
 		}
 	}
@@ -169,17 +208,28 @@ public class Peer {
 		else
 			return nextKey;
 	}
-
+	
+	/**
+	 * @return a copy of the current userMap of all players
+	 */
 	public synchronized TreeMap<Integer, Player> getUserMap() {
-		// yield a copy of the current userMap
+		
 		return this.getCurrentGame().getPlayers().getUsersMap();
 	}
-
+	
+	/**
+	 * Increments current score when the peer has killed someone else
+	 */
 	public synchronized void incrementCurrentScore() {
 		this.currentScore++;
 		
 	}
-
+	
+	/**
+	 * retrieve the connection data from the list given the player Id
+	 * @param the Id of the player to contact
+	 * @return the connected socket and the streams
+	 */
 	public ConnectionData getClientConnectionById(int id) {
 		return this.clientConnections.get(id);
 	}
