@@ -38,7 +38,7 @@ public class MeasureBuffer implements Buffer<Measurement> {
 	 */
 	@Override
 	public synchronized List<Measurement> readAllAndClean() {
-		List<Measurement> measures = new ArrayList<>(this.measureList);
+		final List<Measurement> measures = new ArrayList<>(this.measureList);
 		clearBuffer();
 		return measures;
 	}

@@ -107,10 +107,10 @@ public class SensorDataAnalyzer implements Runnable {
 	private double computeNextEMA(List<Measurement> data) {
 		
 		// compute average
-		OptionalDouble average = data
-	            .stream()
-	            .mapToDouble(el -> el.getValue())
-	            .average();
+		final OptionalDouble average = data
+	            						.stream()
+	            						.mapToDouble(el -> el.getValue())
+	            						.average();
 		
 		double nextEMA = (average.getAsDouble() - this.getCurrentEMA()) * ALPHA;
 		return this.getCurrentEMA() + nextEMA;

@@ -44,12 +44,12 @@ public class ExitProcedure {
 			
 			// Empty inQueue. There should be no need to do that though 
 			while (!inQueue.isEmpty()) {
-				//System.out.println("Consuming inQueue");
+				
+				// retrieve message contained in the packet
 				Packets inPacket = inQueue.poll();
 				Message inMessage = inPacket.getMessage();
-				//System.out.println("-----HANDLING-----");
-				//System.out.println(inMessage);
 				
+				// handle it
 				inMessage.handleInMessage(inPacket.getSendingClient());
 					
 			}
@@ -61,13 +61,10 @@ public class ExitProcedure {
 			 */
 			if(peer.getNumberOfPlayers() > 1){
 				while (!outQueue.isEmpty()) {
-					//System.out.println("Consuming outQueue");
+					
 					Packets outPacket = outQueue.poll();
 					Message outMessage = outPacket.getMessage();
 					
-					//System.out.println("-----HANDLING-----");
-					//System.out.println(outMessage);
-				
 					// This is the only message to actually handle. All others can be ignored. 					
 					if (outMessage instanceof AddPlayerMessage)
 						outMessage.handleOutMessage(outPacket.getSendingClient());
@@ -76,27 +73,22 @@ public class ExitProcedure {
 				
 			// This is the broadcast. It's not performed in case of victory of one of the players
 			if (!isGameEnded){ 
-				List<ConnectionData> otherPlayers  = peer.getClientConnectionsList();
-				//System.out.println("Number of open connections: " + otherPlayers.size());
-				//System.out.println("retrieved user sockets");
-			
-				// start broadcast 
-				if (otherPlayers.size() != 0) /** check i'm not alone */
+				final List<ConnectionData> otherPlayers  = peer.getClientConnectionsList();
+				
+				// start broadcast if i'm not alone 
+				if (otherPlayers.size() != 0) 
 					new Broadcast(otherPlayers, new DeadMessage(peer.getCurrentPlayer())).broadcastMessage();
 			
-				//System.out.println("Broadcast done");
 			}
 			
 			// tell REST server I'm out 
-			//System.out.println("Asking the rest server to delete me from game");
 			new ServiceRequester().deletePlayerFromGame(peer.getCurrentGame().getName(), peer.getCurrentPlayer());
 			
-			// if I was alone the game is finished 
+			// if I was alone the game is finished wake up main thread 
 			if (peer.getNumberOfPlayers() == 1){
-				GameLock lock = GameLock.getInstance();
-				//System.out.println("Exit procedure done!");
+				final GameLock lock = GameLock.getInstance();
 				synchronized (lock) {
-					// wake main up to gracefully close the game 
+					// wake main thread up to gracefully close the game 
 					lock.notify();
 				}
 			}

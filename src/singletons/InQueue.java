@@ -16,6 +16,9 @@ public class InQueue {
 		inQueue = new LinkedList<>();
 	}
 	
+	/**
+	 * singleton
+	 */
 	public static synchronized InQueue getInstance(){
 		if (instance == null)
 			instance = new InQueue();

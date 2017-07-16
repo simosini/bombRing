@@ -29,20 +29,25 @@ public class Peer {
 	private static Peer instance;
 
 	private Peer() {}
-
-	/** getters and setters method */
 	
+	/**
+	 * singleton
+	 */
 	public static synchronized Peer getInstance() {
 		if (instance == null)
 			instance = new Peer();
 		return instance;
 	}
 	
+	/**
+	 * setters and getters
+	 */
+	
 	public synchronized Game getCurrentGame() {
 		// yields a copy
 		return new Game(this.currentGame);
 	}
-
+	
 	public void setCurrentGame(Game currentGame) {
 		this.currentGame = currentGame;
 	}
@@ -50,6 +55,35 @@ public class Peer {
 	public void setServerSocket(ServerSocket srv){
 		this.mainSocket = srv;
 	}
+
+	public synchronized Player getCurrentPlayer() {
+		// yields a copy
+		return new Player(this.currentPlayer);
+	}
+	
+	public synchronized int getCurrentScore() {
+		return currentScore;
+	}
+
+	public synchronized boolean isAlive() {
+		return isAlive;
+	}
+
+	public synchronized void setAlive(boolean isAlive) {
+		this.isAlive = isAlive;
+	}
+
+	public Cell getCurrentPosition() {
+		synchronized (this.currentPosition) {
+			return this.currentPosition;
+		}
+		
+	}
+	
+	public synchronized void setCurrentPosition(Cell position){	
+		this.currentPosition = position;	
+	}
+
 	
 	/**
 	 * Closes the server socket.
@@ -65,44 +99,10 @@ public class Peer {
 			}
 		}
 	}
-
-	public synchronized Player getCurrentPlayer() {
-		// yields a copy
-		return new Player(this.currentPlayer);
-	}
-
 	public void addPlayer(Player currentPlayer) {
 		this.currentPlayer = currentPlayer;
 	}
-
-
-	public synchronized int getCurrentScore() {
-		return currentScore;
-	}
-
-	public synchronized boolean isAlive() {
-		return isAlive;
-	}
-
-	public synchronized void setAlive(boolean isAlive) {
-		this.isAlive = isAlive;
-	}
-
-	
-	public Cell getCurrentPosition() {
-		synchronized (this.currentPosition) {
-			return this.currentPosition;
-		}
 		
-	}
-	
-	public synchronized void setCurrentPosition(Cell position){
-		
-		this.currentPosition = position;
-		
-		
-	}
-	
 	/**
 	 * The same as setCurrentPosition but with the new coordinates
 	 * @param row number
@@ -189,10 +189,10 @@ public class Peer {
 	 */
 	public Player getNextPeer(Players players) {
 		//it's a copy
-		TreeMap<Integer, Player> gamePlayers = players.getUsersMap(); 
+		final TreeMap<Integer, Player> gamePlayers = players.getUsersMap(); 
 		
 		if (gamePlayers.size() > 1) {
-			Integer nextPlayerKey = findNextPlayerKey(this.getCurrentPlayer().getId(), gamePlayers);
+			final Integer nextPlayerKey = findNextPlayerKey(this.getCurrentPlayer().getId(), gamePlayers);
 			return gamePlayers.get(nextPlayerKey);
 		} else {
 			// no more players, only me in the map
@@ -213,7 +213,6 @@ public class Peer {
 	 * @return a copy of the current userMap of all players
 	 */
 	public synchronized TreeMap<Integer, Player> getUserMap() {
-		
 		return this.getCurrentGame().getPlayers().getUsersMap();
 	}
 	
@@ -221,8 +220,7 @@ public class Peer {
 	 * Increments current score when the peer has killed someone else
 	 */
 	public synchronized void incrementCurrentScore() {
-		this.currentScore++;
-		
+		this.currentScore++;		
 	}
 	
 	/**

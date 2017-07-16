@@ -19,6 +19,10 @@ public class OutQueue {
 		outQueue = new PriorityQueue<>();
 	}
 	
+	/**
+	 * singleton
+	 */
+	
 	public static synchronized OutQueue getInstance() {
 		if (instance == null)
 			instance = new OutQueue();

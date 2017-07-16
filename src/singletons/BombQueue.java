@@ -16,6 +16,9 @@ public class BombQueue {
 		this.bombQueue = new LinkedList<>();
 	}
 	
+	/**
+	 * singleton
+	 */
 	public static synchronized BombQueue getInstance() {
 		if (instance == null)
 			instance = new BombQueue();

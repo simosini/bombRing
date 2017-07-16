@@ -36,11 +36,11 @@ public class IncomingMessageHandlerThread implements Runnable {
 	 */
 	private void initStreams(Socket s) {
 		try {
-			ObjectOutputStream outputStream = new ObjectOutputStream(s.getOutputStream());
+			final ObjectOutputStream outputStream = new ObjectOutputStream(s.getOutputStream());
 			outputStream.flush();
-			ObjectInputStream inputStream = new ObjectInputStream(s.getInputStream());
+			final ObjectInputStream inputStream = new ObjectInputStream(s.getInputStream());
 			this.clientConnection = new ConnectionData(s, outputStream, inputStream);
-			Player connectedPlayer = (Player) inputStream.readObject();
+			final Player connectedPlayer = (Player) inputStream.readObject();
 			this.setConnectedPlayer(connectedPlayer);
 			
 		} catch(IOException e){

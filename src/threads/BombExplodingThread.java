@@ -12,7 +12,7 @@ public class BombExplodingThread implements Runnable {
 	
 	private String colorZone;
 
-	public BombExplodingThread(String color) {
+	public BombExplodingThread(final String color) {
 		this.colorZone = color;
 	}
 	
@@ -23,7 +23,7 @@ public class BombExplodingThread implements Runnable {
 	@Override
 	public void run() {
 		try {
-			Packets newPacket = new Packets(new BombExplodedMessage(colorZone), null);
+			final Packets newPacket = new Packets(new BombExplodedMessage(colorZone), null);
 			
 			// wait 5 seconds 
 			Thread.sleep(5000);

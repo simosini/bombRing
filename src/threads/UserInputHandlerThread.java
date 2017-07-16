@@ -27,7 +27,7 @@ public class UserInputHandlerThread implements Runnable {
 	private BufferedReader userInput; 
 	private final int gridDimension = Peer.getInstance().getCurrentGame().getSideLength();
 
-	public UserInputHandlerThread(BufferedReader br) {
+	public UserInputHandlerThread(final BufferedReader br) {
 		this.setUserInput(br);
 	}
 
@@ -75,13 +75,9 @@ public class UserInputHandlerThread implements Runnable {
 						}
 					}
 				}
-				
-				else // gets here only if the player is not playing anymore 
-					/*synchronized (outQueue) {
-						 to avoid busy waiting. It will never be notified
-						 * but this is not a problem since the game is finished 
-						outQueue.wait(); 						
-					}*/		
+				// gets here only if the player is not playing anymore. So exit the thread 
+				else 
+						
 					break;
 					
 			} catch (InterruptedException e) {
@@ -105,8 +101,8 @@ public class UserInputHandlerThread implements Runnable {
 			
 			// print current position, score and bombs available 
 			System.out.println("\n#################### GAME MENU ####################");
-			Cell currentPos = peer.getCurrentPosition();
-			String colorZone = this.computeZone(currentPos.getPosition());
+			final Cell currentPos = peer.getCurrentPosition();
+			final String colorZone = this.computeZone(currentPos.getPosition());
 			System.out.println(colorZone + currentPos);
 			System.out.println("Your current score is: " + peer.getCurrentScore());
 			System.out.println(this.showBomb());
@@ -120,8 +116,8 @@ public class UserInputHandlerThread implements Runnable {
 						System.out.println("You can't move up from your position. Please choose another move!");
 						return null;
 					}
-					int[] upPosition = currentPos.move(Cell.DIR.UP);
-					Message upm = new PositionMessage(upPosition[0], upPosition[1]);
+					final int[] upPosition = currentPos.move(Cell.DIR.UP);
+					final Message upm = new PositionMessage(upPosition[0], upPosition[1]);
 					System.out.print("Waiting to move up...");
 					return new Packets(upm, null);
 	
@@ -130,18 +126,18 @@ public class UserInputHandlerThread implements Runnable {
 						System.out.println("You can't move down from your position. Please choose another move!");
 						return null;
 					}
-					int[] downPosition = currentPos.move(Cell.DIR.DOWN);
-					Message dpm = new PositionMessage(downPosition[0], downPosition[1]);
+					final int[] downPosition = currentPos.move(Cell.DIR.DOWN);
+					final Message dpm = new PositionMessage(downPosition[0], downPosition[1]);
 					System.out.print("Waiting to move down...");
 					return new Packets(dpm, null);
 	
-				case "l":
+			 	case "l":
 					if (!isMovementAllowed(Cell.DIR.LEFT)) {
 						System.out.println("You can't move left from your position. Please choose another move!");
 						return null;
 					}
-					int[] leftPosition = currentPos.move(Cell.DIR.LEFT);
-					Message lpm = new PositionMessage(leftPosition[0], leftPosition[1]);
+					final int[] leftPosition = currentPos.move(Cell.DIR.LEFT);
+					final Message lpm = new PositionMessage(leftPosition[0], leftPosition[1]);
 					System.out.print("Waiting to move left...");
 					return new Packets(lpm, null);
 	
@@ -150,14 +146,14 @@ public class UserInputHandlerThread implements Runnable {
 						System.out.println("You can't move right from your position. Please choose another move!");
 						return null;
 					}
-					int[] rightPosition = currentPos.move(Cell.DIR.RIGHT);
-					Message rpm = new PositionMessage(rightPosition[0], rightPosition[1]);
+					final int[] rightPosition = currentPos.move(Cell.DIR.RIGHT);
+					final Message rpm = new PositionMessage(rightPosition[0], rightPosition[1]);
 					System.out.print("Waiting to move right...");
 					return new Packets(rpm, null);
 	
 				
 				 case "b": 
-					 Bomb tossedBomb = BombQueue.getInstance().removeBomb();
+					 final Bomb tossedBomb = BombQueue.getInstance().removeBomb();
 					 if (tossedBomb != null) {
 						 System.out.print("Tossing a " +  tossedBomb.getColor() + " bomb...");
 						 return new Packets(new BombTossedMessage(tossedBomb.getColor()), null);
@@ -188,7 +184,7 @@ public class UserInputHandlerThread implements Runnable {
 	 * @return  a string describing the next available bomb  
 	 */
 	private String showBomb() {
-		Bomb availableBomb = BombQueue.getInstance().peekBomb();
+		final Bomb availableBomb = BombQueue.getInstance().peekBomb();
 		if (availableBomb == null)
 			return "No bombs available at the moment";
 		return "Next bomb available: " + availableBomb.getColor();
@@ -200,7 +196,7 @@ public class UserInputHandlerThread implements Runnable {
 	 * @return a string describing the zone color of the peer.
 	 */
 	private String computeZone(int[] pos) {
-		StringBuilder sb = new StringBuilder("You are in the ");
+		final StringBuilder sb = new StringBuilder("You are in the ");
 		String color = null;
 		if (this.gridDimension / (pos[0] + 1) >= 2 && this.gridDimension / (pos[1] +1) >= 2){
 			color = "green";
@@ -225,7 +221,7 @@ public class UserInputHandlerThread implements Runnable {
 	 * @return true if that movement is allowed
 	 */
 	private boolean isMovementAllowed(DIR direction) {
-		int[] newPosition = Peer.getInstance().getCurrentPosition().move(direction);
+		final int[] newPosition = Peer.getInstance().getCurrentPosition().move(direction);
 		if (newPosition[0] < 0 | newPosition[1] < 0 | newPosition[0] >= this.gridDimension
 				| newPosition[1] >= this.gridDimension)
 			return false;

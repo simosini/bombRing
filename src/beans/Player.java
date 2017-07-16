@@ -20,7 +20,7 @@ public class Player implements Serializable {
 
 	public Player() {}
 
-	public Player(String name, String surname, String nickname, int port) {
+	public Player(final String name, final String surname, final String nickname, final int port) {
 		this.setName(name);
 		this.setSurname(surname);
 		this.setNickname(nickname);

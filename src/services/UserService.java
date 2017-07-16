@@ -34,7 +34,7 @@ public class UserService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getFullPlayersList() throws AppException {
-		List<Player> allplayers = getAllPlayers(Games.getInstance().getGamesList());
+		final List<Player> allplayers = getAllPlayers(Games.getInstance().getGamesList());
 		if (allplayers == null)
 			throw new AppException("There are no current active players!");
 		return Response.ok().entity(allplayers).build();
@@ -45,7 +45,7 @@ public class UserService {
 	 * @return the list of all players for each game
 	 */
 	private List<Player> getAllPlayers(List<Game> gamesList) {
-		List<Player> players = new ArrayList<>();
+		final List<Player> players = new ArrayList<>();
 		gamesList.forEach(el -> players.addAll(el.retrieveGamePlayers()));
 		return players;
 	}
@@ -59,7 +59,7 @@ public class UserService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getPlayersList(@PathParam("gameName") String gameName) throws AppException {
-		Game g = Games.getInstance().getByName(gameName);
+		final Game g = Games.getInstance().getByName(gameName);
 		if (g == null)
 			throw new AppException("The game selected does not exist!");
 		return Response.ok().entity(g.retrieveGamePlayers()).build();
@@ -78,7 +78,7 @@ public class UserService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addPlayer(@PathParam("gameName") String gameName, Player p) throws AppException {
-		String name = gameName;
+		final String name = gameName;
 		try {
 			Games.getInstance().addPlayer(name, p);
 		} catch (IllegalArgumentException iae) {
@@ -130,7 +130,7 @@ public class UserService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getGameByName(@PathParam("name") String name) throws AppException {
-		Game g = Games.getInstance().getByName(name);
+		final Game g = Games.getInstance().getByName(name);
 		if (g != null)
 			return Response.ok().entity(g).build();
 		else

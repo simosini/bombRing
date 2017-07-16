@@ -37,9 +37,9 @@ public class ServiceRequester {
 	 * @return a client configured to interact with the REST server
 	 */
 	private Client configureRestClient() {
-		ClientConfig clientConfig = new DefaultClientConfig();
+		final ClientConfig clientConfig = new DefaultClientConfig();
 		clientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
-		Client client = Client.create(clientConfig);
+		final Client client = Client.create(clientConfig);
 		return client;
 	}
 
@@ -53,13 +53,13 @@ public class ServiceRequester {
 		// to save the game returned by the server
 		Game addedGame = null;
 		try {
-			Client client = configureRestClient();
-			WebResource wr = client.resource(BASE_URI).path(Uri.ADD_GAME.getPath());
+			final Client client = configureRestClient();
+			final WebResource wr = client.resource(BASE_URI).path(Uri.ADD_GAME.getPath());
 
 			// POST method
-			ClientResponse response = wr.accept(MediaType.APPLICATION_JSON)
-										 .type(MediaType.APPLICATION_JSON)
-										 .post(ClientResponse.class, game);
+			final ClientResponse response = wr.accept(MediaType.APPLICATION_JSON)
+										 	  .type(MediaType.APPLICATION_JSON)
+										 	  .post(ClientResponse.class, game);
 			
 			if (response.getStatus() != 200) {
 				throw new RuntimeException(
@@ -87,13 +87,13 @@ public class ServiceRequester {
 	public Game addPlayerToGame(String gameName, Player player) {
 		Game updatedGame = null;
 		try {
-			Client client = configureRestClient();
-			WebResource wr = client.resource(BASE_URI).path(Uri.ADD_PLAYER.getPath()).path(gameName);
+			final Client client = configureRestClient();
+			final WebResource wr = client.resource(BASE_URI).path(Uri.ADD_PLAYER.getPath()).path(gameName);
 			
 			// PUT method
-			ClientResponse response = wr.accept(MediaType.APPLICATION_JSON)
-										.type(MediaType.APPLICATION_JSON)
-										.put(ClientResponse.class,player);
+			final ClientResponse response = wr.accept(MediaType.APPLICATION_JSON)
+											  .type(MediaType.APPLICATION_JSON)
+											  .put(ClientResponse.class,player);
 
 			if (response.getStatus() != 200) {
 				throw new RuntimeException(
@@ -120,13 +120,13 @@ public class ServiceRequester {
 	public void deletePlayerFromGame(String gameName, Player player) {
 		
 		try {
-			Client client = configureRestClient();
-			WebResource wr = client.resource(BASE_URI).path(Uri.DELETE_PLAYER.getPath()).path(gameName);
+			final Client client = configureRestClient();
+			final WebResource wr = client.resource(BASE_URI).path(Uri.DELETE_PLAYER.getPath()).path(gameName);
 			
 			// PUT method
-			ClientResponse response = wr.accept(MediaType.APPLICATION_JSON)
-										.type(MediaType.APPLICATION_JSON)
-										.put(ClientResponse.class, player);
+			final ClientResponse response = wr.accept(MediaType.APPLICATION_JSON)
+											  .type(MediaType.APPLICATION_JSON)
+											  .put(ClientResponse.class, player);
 
 			if (response.getStatus() != 200) {
 				throw new RuntimeException(
@@ -147,12 +147,12 @@ public class ServiceRequester {
 	 */
 	public void retrieveAllPlayers() {
 		try {
-			Client client = configureRestClient();
-			WebResource wr = client.resource(BASE_URI).path(Uri.GET_ALL_PLAYERS.getPath());
+			final Client client = configureRestClient();
+			final WebResource wr = client.resource(BASE_URI).path(Uri.GET_ALL_PLAYERS.getPath());
 			
 			// GET method
-			ClientResponse response = wr.accept(MediaType.APPLICATION_JSON)
-										.get(ClientResponse.class);
+			final ClientResponse response = wr.accept(MediaType.APPLICATION_JSON)
+											  .get(ClientResponse.class);
 			
 			if (response.getStatus() != 200) {
 				throw new RuntimeException(
@@ -161,7 +161,7 @@ public class ServiceRequester {
 			
 			// retrieve the list from the response
 			final ObjectMapper mapper = new ObjectMapper();
-			List<Player> players = mapper.readValue(response.getEntity(String.class),
+			final List<Player> players = mapper.readValue(response.getEntity(String.class),
 					new TypeReference<List<Player>>() { });
 			
 			// print the list of players
@@ -187,12 +187,12 @@ public class ServiceRequester {
 	 */
 	public void retrievePlayers(String gameName) {
 		try {
-			Client client = configureRestClient();
-			WebResource wr = client.resource(BASE_URI)
-								   .path(Uri.GET_PLAYERS.getPath())
-								   .path(gameName);
-			ClientResponse response = wr.accept(MediaType.APPLICATION_JSON)
-										.get(ClientResponse.class);
+			final Client client = configureRestClient();
+			final WebResource wr = client.resource(BASE_URI)
+								   		 .path(Uri.GET_PLAYERS.getPath())
+								   		 .path(gameName);
+			final ClientResponse response = wr.accept(MediaType.APPLICATION_JSON)
+											  .get(ClientResponse.class);
 			
 			if (response.getStatus() != 200) {
 				throw new RuntimeException(
@@ -201,7 +201,7 @@ public class ServiceRequester {
 			
 			// retrieve list from the response
 			final ObjectMapper mapper = new ObjectMapper();
-			List<Player> players = mapper.readValue(response.getEntity(String.class),
+			final List<Player> players = mapper.readValue(response.getEntity(String.class),
 					new TypeReference<List<Player>>() { });
 			
 			// print player list
@@ -228,13 +228,13 @@ public class ServiceRequester {
 	 */
 	public void retrieveGameInfo(String gameName) {
 		try {
-			Client client = configureRestClient();
-			WebResource wr = client.resource(BASE_URI)
-								   .path(Uri.GET_GAME.getPath())
-								   .path(gameName);
+			final Client client = configureRestClient();
+			final WebResource wr = client.resource(BASE_URI)
+						 		   		 .path(Uri.GET_GAME.getPath())
+						 		   		 .path(gameName);
 			
-			ClientResponse response = wr.accept(MediaType.APPLICATION_JSON)
-										.get(ClientResponse.class);
+			final ClientResponse response = wr.accept(MediaType.APPLICATION_JSON)
+											  .get(ClientResponse.class);
 			
 			if (response.getStatus() != 200) {
 				throw new RuntimeException(
@@ -242,7 +242,7 @@ public class ServiceRequester {
 			}
 			
 			// retrieve the game from the response
-			Game game = response.getEntity(Game.class);
+			final Game game = response.getEntity(Game.class);
 			System.out.println(game + "\n");
 
 		} catch (RuntimeException re) {
@@ -258,12 +258,12 @@ public class ServiceRequester {
 	 */
 	public void retrieveGames() {
 		try {
-			Client client = configureRestClient();
-			WebResource wr = client.resource(BASE_URI)
-								   .path(Uri.GET_GAMES.getPath());
+			final Client client = configureRestClient();
+			final WebResource wr = client.resource(BASE_URI)
+								   		 .path(Uri.GET_GAMES.getPath());
 			
-			ClientResponse response = wr.accept(MediaType.APPLICATION_JSON)
-										.get(ClientResponse.class);
+			final ClientResponse response = wr.accept(MediaType.APPLICATION_JSON)
+											  .get(ClientResponse.class);
 			
 			if (response.getStatus() != 200) {
 				throw new RuntimeException(
@@ -272,7 +272,8 @@ public class ServiceRequester {
 			
 			// retrieve the list of games from the response
 			final ObjectMapper mapper = new ObjectMapper();
-			List<Game> games = mapper.readValue(response.getEntity(String.class), new TypeReference<List<Game>>() {	});
+			final List<Game> games = mapper.readValue(response.getEntity(String.class), 
+					new TypeReference<List<Game>>() {	});
 			
 			// print the list
 			if (games.size() == 0)
@@ -292,7 +293,5 @@ public class ServiceRequester {
 		}
 
 	}
-
-	
 
 }

@@ -19,7 +19,7 @@ public class OutGoingMessageHandlerThread implements Runnable {
 	private TokenMessage token;
 	
 
-	public OutGoingMessageHandlerThread(TokenMessage token) {
+	public OutGoingMessageHandlerThread(final TokenMessage token) {
 		this.setToken(token);
 	}
 
@@ -43,22 +43,23 @@ public class OutGoingMessageHandlerThread implements Runnable {
 			// get first message out the outQueue and handle it 
 			if (!outQueue.isEmpty()){
 					
-				Packets packet = outQueue.poll();
+				final Packets packet = outQueue.poll();
 				packet.getMessage().handleOutMessage(packet.getSendingClient());
 					
 			}
 		
 			// Pass the token now 			
-			Player nextPeer = peer.getNextPeer(peer.getCurrentGame().getPlayers());
+			final Player nextPeer = peer.getNextPeer(peer.getCurrentGame().getPlayers());
+			
 			//it's null only if i'm alone in the game
 			if (nextPeer != null){ 
-				ConnectionData peerConnection = peer.getClientConnectionById(nextPeer.getId());
+				final ConnectionData peerConnection = peer.getClientConnectionById(nextPeer.getId());
 				this.getToken().handleOutMessage(peerConnection);
 			}
 			
 			// After passing the token if i'm dead exit 
 			if (!peer.isAlive()) {	
-				GameLock lock = GameLock.getInstance();
+				final GameLock lock = GameLock.getInstance();
 				synchronized (lock) {
 					// wake up main to end the game
 					lock.notify();

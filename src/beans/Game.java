@@ -18,7 +18,7 @@ public class Game {
 
 	public Game() {}
 	
-	public Game(String name, int length, int score) {
+	public Game(final String name, final int length, final int score) {
 		this.setName(name);
 		this.setSideLength(length);
 		this.setScore(score);
@@ -32,7 +32,7 @@ public class Game {
 	 * @param score needed to win the game
 	 * @param the player who created the game
 	 */
-	public Game(String name, int length, int score, Player p) {
+	public Game(final String name, final int length, final int score, Player p) {
 		this.setName(name);
 		this.setSideLength(length);
 		this.setScore(score);

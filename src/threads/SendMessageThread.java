@@ -17,7 +17,7 @@ public class SendMessageThread implements Runnable {
 	private ConnectionData clientConnection; // server socket to send the message 
 	private Message msgToSend;
 	
-	public SendMessageThread(ConnectionData cd, Message m) {
+	public SendMessageThread(final ConnectionData cd, final Message m) {
 		this.setClientConnection(cd);
 		this.setMsgToSend(m);
 	}
@@ -45,14 +45,14 @@ public class SendMessageThread implements Runnable {
 	public void run() {
 		try  {
 			// retrieve streams 
-			ObjectOutputStream out = this.getClientConnection().getOutputStream();
-			ObjectInputStream in = this.getClientConnection().getInputStream();
+			final ObjectOutputStream out = this.getClientConnection().getOutputStream();
+			final ObjectInputStream in = this.getClientConnection().getInputStream();
 						
 			// send message 
 			out.writeObject(this.getMsgToSend());;
 			
 			// wait for answer 
-			Message response = (Message) in.readObject();
+			final Message response = (Message) in.readObject();
 			
 			// handle incoming message 
 			response.handleInMessage(this.getClientConnection());

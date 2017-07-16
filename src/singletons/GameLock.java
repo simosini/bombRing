@@ -11,6 +11,9 @@ public class GameLock {
 	
 	private GameLock() {}
 	
+	/**
+	 * singleton
+	 */
 	public static synchronized GameLock getInstance() {
 		if (instance == null)
 			instance = new GameLock();

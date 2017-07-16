@@ -20,6 +20,9 @@ public class PositionList {
 		this.playerPositions = new ArrayList<>();
 	}
 	
+	/**
+	 * singleton
+	 */
 	public static synchronized PositionList getInstance() {
 		if (instance == null)
 			instance = new PositionList();
@@ -51,10 +54,10 @@ public class PositionList {
 	 * yields the new computed position to be assigned to a new player 
 	 */
 	public Cell computeNewPosition() {
-		Peer peer= Peer.getInstance();
-		int length = peer.getCurrentGame().getSideLength();
+		final Peer peer = Peer.getInstance();
+		final int length = peer.getCurrentGame().getSideLength();
 		
-		Random random =  new Random();
+		final Random random =  new Random();
 		Cell newCell = null;
 		
 		do {

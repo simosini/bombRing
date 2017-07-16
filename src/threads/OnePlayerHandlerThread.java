@@ -10,7 +10,7 @@ public class OnePlayerHandlerThread implements Runnable {
 	
 	private Packets packetToSend;
 	
-	public OnePlayerHandlerThread(Packets p) {
+	public OnePlayerHandlerThread(final Packets p) {
 		this.packetToSend = p;
 	}
 	
