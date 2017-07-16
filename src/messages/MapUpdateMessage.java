@@ -54,15 +54,16 @@ public class MapUpdateMessage extends Message {
 	 */
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
-		// update map and exit 
+		
+		// update current map  
 		TreeMap<Integer, Player> updatedMap = this.getUpdatedMap();
-		//System.out.println("UpdatedMap : " + updatedMap);
+		
 		// save a copy so I can change it later 
 		Peer.getInstance().updateMapPlayers(new TreeMap<Integer, Player>(updatedMap));
 		
 		// update current position: another copy 
 		Cell newPos = this.getUpdatedPosition();
-		//System.out.println("My position is: " + newPos);
+		
 		Peer.getInstance().setCurrentPosition(new Cell(newPos));
 		return true;
 	}
@@ -72,6 +73,7 @@ public class MapUpdateMessage extends Message {
 	 */
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
+		
 		// send the new player the updated map and position 
 		try {
 			clientConnection.getOutputStream().writeObject(this);

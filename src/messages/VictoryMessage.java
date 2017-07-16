@@ -45,7 +45,7 @@ public class VictoryMessage extends Message {
 			new ExitProcedure().startGameEndedProcedure();
 			
 			// leave the application gracefully. The notify will unblock the main thread
-			GameLock lock = GameLock.getInstance();
+			final GameLock lock = GameLock.getInstance();
 			synchronized (lock) {
 				lock.notify();
 			}
@@ -65,6 +65,7 @@ public class VictoryMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
+			
 			// start exit procedure 
 			new ExitProcedure().startGameEndedProcedure();
 			

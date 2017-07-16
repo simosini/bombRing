@@ -24,9 +24,13 @@ public class Game {
 		this.setScore(score);
 		this.setPlayers(new Players());
 	}
-	
-	/** 
-	 * create a game inserting the player passed in the map (Players) 
+		
+	/**
+	 * create a game inserting the player passed in the map (Players)
+	 * @param name of the game
+	 * @param length of the side of the grid
+	 * @param score needed to win the game
+	 * @param the player who created the game
 	 */
 	public Game(String name, int length, int score, Player p) {
 		this.setName(name);
@@ -35,8 +39,10 @@ public class Game {
 		this.setPlayers(initList(p));
 	}
 	
-	/** 
-	 * this method is only called to initialize the newly created Game 
+	/**
+	 * this method is only called to initialize the newly created Game
+	 * @param the player who created the game
+	 * @return a map initialized with the given player
 	 */
 	private Players initList(Player p) {
 		Players players = new Players();
@@ -44,8 +50,9 @@ public class Game {
 		return players;
 	}
 	
-	/** 
-	 * create a copy of the given game 
+	/**
+	 * create a copy of the given game
+	 * @param game to be copied
 	 */
 	public Game(Game game) {
 		this.setName(game.getName());
@@ -54,8 +61,7 @@ public class Game {
 		this.setPlayers(game.getPlayers());
 	}
 	
-
-	/** 
+	/**
 	 * setters and getters: get returns a copy when needed 
 	 */
 	
@@ -92,41 +98,40 @@ public class Game {
 		return scoreNeeded;
 	}
 	
-	/** 
-	 * return a copy of the map of game's players 
+	/**
+	 * @return a copy of the map of game's players
 	 */
 	public synchronized Players getPlayers() {
 		return new Players(players);
 
 	}
 
-	/** 
-	 * retrieve a copy of the players of a game as a list 
+	/**
+	 * the same as getPlayers but returns a list
+	 * @return a copy of the players of a game as a list 
 	 */
 	public synchronized List<Player> retrieveGamePlayers() {
- 
-		return getPlayers().retrievePlayersList();
+ 		return getPlayers().retrievePlayersList();
 	}
-	
-	/** 
-	 * add a player to the current game 
-	 */
-	public synchronized void addPlayerToGame(Player p) {
-		
-		players.addPlayer(p);
-	}
-	
 	
 	/**
-	 * delete the given player from the game. If it does not exists nothing happens 
+	 * add a player to the current game
+	 * @param the player to be added to the current game
+	 */
+	public synchronized void addPlayerToGame(Player p) {
+		players.addPlayer(p);
+	}
+		
+	/**
+	 * delete the given player from the game. If it does not exists nothing happens
+	 * @param the player to be deleted from the current game 
 	 */
 	public synchronized void deletePlayerFromGame(Player p) {
 		players.deletePlayer(p);	
-		
 	}
-	
-	/** 
-	 * return the number of players in the game 
+
+	/**
+	 * @return the number of players in the game 
 	 */
 	public synchronized int retrievePlayersNumber() {
 		return this.players.size();
@@ -143,7 +148,7 @@ public class Game {
 		sb.append("SCORE TO WIN: " + this.getScoreNeeded() + "\n");
 		sb.append("NUMBER OF PLAYERS: " + this.retrievePlayersNumber() + "\n");
 		
-		String players = buildPlayersList();
+		String players = this.buildPlayersList();
 				 		 
 		sb.append("PLAYERS NAMES: " + players + "\n");		 		 
 		return sb.toString();

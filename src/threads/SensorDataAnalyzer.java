@@ -8,17 +8,21 @@ import simulator.MeasureBuffer;
 import simulator.Measurement;
 import singletons.BombQueue;
 
+/**
+ * This thread is in charge of monitoring data coming sensors 
+ * in order to detect possible outliers.
+ */
 public class SensorDataAnalyzer implements Runnable {
 	
 	private static final double ALPHA = 0.5;
-	private static final double THRESHOLD = 0.2;
+	private static final double THRESHOLD = 0.15;
 	
 	private double currentEMA = 0.;
 	private volatile boolean stop = false;
 	
 	public SensorDataAnalyzer() {}
 	
-	public void stopAnalyzer(){
+	public synchronized void stopAnalyzer(){
 		stop = true;
 	}
 
@@ -29,31 +33,36 @@ public class SensorDataAnalyzer implements Runnable {
 	private void setCurrentEMA(double currentEMA) {
 		this.currentEMA = currentEMA;
 	}
-
+	
+	/**
+	 * periodically check the presence of outliers. When those are detected a new bomb is
+	 * put on the queue. The color depends on the value of the new EMA
+	 */
 	@Override
 	public void run() {
-		BombQueue bombQueue = BombQueue.getInstance();
-		MeasureBuffer dataBuffer = MeasureBuffer.getInstance();
+		final BombQueue bombQueue = BombQueue.getInstance();
+		final MeasureBuffer dataBuffer = MeasureBuffer.getInstance();
 		
 		while (!stop) {
 			
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			
-			/** retrieve data */
+			// retrieve data 
 			List<Measurement> data = dataBuffer.readAllAndClean();
 			
-			/** compute next EMA */
+			// compute next EMA 
 			double nextEMA = computeNextEMA(data);
 			
-			/** add bomb to the queue if needed */
+			// add bomb to the queue if needed 
 			Bomb bomb = null;
 			if ((bomb = getNextBomb(nextEMA)) != null)
 				bombQueue.addBomb(bomb);
 			
+			// set new EMA
 			this.setCurrentEMA(nextEMA);
 			
 			
@@ -61,10 +70,16 @@ public class SensorDataAnalyzer implements Runnable {
 		}
 
 	}
-
+	
+	/**
+	 * Creates a new bomb if the new EMA is different from the previous one
+	 * more than the threshold
+	 * @param next calculated EMA  
+	 * @return A bomb if an outlier is detected null otherwise
+	 */
 	private Bomb getNextBomb(double nextEMA) {
 		Bomb newBomb = null;
-		double currentEMA = this.currentEMA;
+		final double currentEMA = this.currentEMA;
 		if ((nextEMA - currentEMA) / nextEMA > THRESHOLD) {
 			int val = (int)nextEMA % 4;
 			switch (val) {
@@ -84,12 +99,19 @@ public class SensorDataAnalyzer implements Runnable {
 		}
 		return newBomb;
 	}
-
+	/**
+	 * Compute next EMA from the values retrieved from list of measurements
+	 * @param data from sensors
+	 * @return next EMA
+	 */
 	private double computeNextEMA(List<Measurement> data) {
+		
+		// compute average
 		OptionalDouble average = data
 	            .stream()
 	            .mapToDouble(el -> el.getValue())
-	            .average(); 
+	            .average();
+		
 		double nextEMA = (average.getAsDouble() - this.getCurrentEMA()) * ALPHA;
 		return this.getCurrentEMA() + nextEMA;
 

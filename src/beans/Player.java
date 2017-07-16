@@ -83,8 +83,8 @@ public class Player implements Serializable {
 		this.nickname = nickname;
 	}
 
-	/** 
-	 * compute the Id of the current player 
+	/**
+	 * @return the Id of the current player computed using a hash function
 	 */
 	@Override
 	public int hashCode() {

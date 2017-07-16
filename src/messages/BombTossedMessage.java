@@ -43,7 +43,7 @@ public class BombTossedMessage extends Message {
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		try {
-			Emoji bomb = EmojiManager.getForAlias("bomb");
+			final Emoji bomb = EmojiManager.getForAlias("bomb");
 			System.out.println(bomb.getUnicode() + " A bomb has been tossed in the " + this.color + " zone. You only got 5 seconds to escape!");
 			System.out.println("You are currently in the " + Peer.getInstance().getCurrentPosition().getColorZone() + " zone.");
 			new AckMessage().handleOutMessage(clientConnection);
@@ -61,36 +61,29 @@ public class BombTossedMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			Peer peer = Peer.getInstance();
+			final Peer peer = Peer.getInstance();
+			
 			// if dead cannot toss any bomb
 			if (peer.isAlive()){
-				OutQueue outQueue = OutQueue.getInstance();
-				//System.out.println("Handling message. Type: " + this);
+				final OutQueue outQueue = OutQueue.getInstance();
 				
 				// retrieve connections for the broadcast 
-				List<ConnectionData> clientConnections = peer.getClientConnectionsList();
-				//System.out.println("I have " + clientConnections.size() + " connections open!");
-				//System.out.println("retrieved user sockets");
-		
-				
+				final List<ConnectionData> clientConnections = peer.getClientConnectionsList();
+								
 				// broadcast message if not alone
 				if (clientConnections.size() != 0) 
 					new Broadcast(clientConnections, this).broadcastMessage();
 				
-				//System.out.println("Broadcast done " + this);
-				
 				// start bomb exploding thread				
 				new Thread(new BombExplodingThread(this.getColor())).start();
 				
-				// notify the stdin i've finished handling the message 			
+				// notify the standard in I've finished handling the message 			
 				if (peer.getNumberOfPlayers() > 1){
-					//System.out.println("Notifying stdin");
 					synchronized (outQueue) {
 						outQueue.notify();
 					}
 				}
 				
-				//System.out.println("Done notification");
 			}
 		} catch (Exception e){
 			System.err.println("Error with outgoing bomb tossed message");

@@ -11,7 +11,8 @@ import singletons.Peer;
 /** 
  * This Thread is in charge of retrieving the packet with highest priority
  * from the outQueue and handle it. It can only be called by the MessageHandlerThread
- * whenever it receives a token */
+ * whenever it receives the token. So it's started only if the token is active. 
+ */
 
 public class OutGoingMessageHandlerThread implements Runnable {
 	
@@ -29,35 +30,37 @@ public class OutGoingMessageHandlerThread implements Runnable {
 	private void setToken(TokenMessage token) {
 		this.token = token;
 	}
-
+	
+	/**
+	 * handles packets of the out Queue
+	 */
 	@Override
 	public void run() {
-		OutQueue outQueue = OutQueue.getInstance();
-		Peer peer = Peer.getInstance();
+		final OutQueue outQueue = OutQueue.getInstance();
+		final Peer peer = Peer.getInstance();
 		
 		try {
-			/** get first message out the outQueue and handle it */
+			// get first message out the outQueue and handle it 
 			if (!outQueue.isEmpty()){
 					
 				Packets packet = outQueue.poll();
-				//System.out.println("OutGoingHandler got packet from outQueue " + packet.getMessage());
 				packet.getMessage().handleOutMessage(packet.getSendingClient());
 					
 			}
 		
-			/** Pass the token now */			
+			// Pass the token now 			
 			Player nextPeer = peer.getNextPeer(peer.getCurrentGame().getPlayers());
-			if (nextPeer != null){ //it's null only if i'm alone in the game
+			//it's null only if i'm alone in the game
+			if (nextPeer != null){ 
 				ConnectionData peerConnection = peer.getClientConnectionById(nextPeer.getId());
-				//System.out.println("OutgoingHandler done, passing the token to port " + peerConnection.getClientSocket().getPort());
 				this.getToken().handleOutMessage(peerConnection);
 			}
 			
-			/** After passing the token if i'm dead exit */
+			// After passing the token if i'm dead exit 
 			if (!peer.isAlive()) {	
 				GameLock lock = GameLock.getInstance();
 				synchronized (lock) {
-					/** wake up main to end the game */
+					// wake up main to end the game
 					lock.notify();
 				}
 			}

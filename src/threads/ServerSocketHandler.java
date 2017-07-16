@@ -5,8 +5,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /** 
- * This thread is in charge of handling the server socket.
- * it accepts requests from outside 
+ * This thread is in charge of handling the main server socket.
+ * It's a multiThreaded server that accept incoming connections requests
+ * and starts a new thread for each new client.
  */
 
 public class ServerSocketHandler implements Runnable {
@@ -21,16 +22,17 @@ public class ServerSocketHandler implements Runnable {
 		this.srvSocket = server;
 		
 	}
-
+	
+	/**
+	 * accept incoming connection and start a new server thread
+	 */
 	@Override
 	public void run() {
 		try {	
 			while(true){
 				Socket sender = srvSocket.accept();	
-				//System.out.println("Received connection from port: " + sender.getPort());
 				new Thread(new IncomingMessageHandlerThread(sender)).start();
-				//System.out.println("ReceivMessHandlThread started!");
-			
+				
 			} 
 		}
 		catch (IOException e) {

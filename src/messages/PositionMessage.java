@@ -27,7 +27,10 @@ public class PositionMessage extends Message {
 		this.setCol(col);
 
 	}
-
+	
+	/**
+	 * setters and getters
+	 */
 	public int getRow() {
 		return row;
 	}
@@ -51,28 +54,23 @@ public class PositionMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData cd) {
 		try {
-			Peer peer = Peer.getInstance();
+			final Peer peer = Peer.getInstance();
+			
 			// if dead I cannot move 
 			if (peer.isAlive()){
-				OutQueue outQueue = OutQueue.getInstance();
-				//System.out.println("Handling message. Type: " + this);
+				final OutQueue outQueue = OutQueue.getInstance();
 				
 				// retrieve connections for the broadcast 
-				List<ConnectionData> clientConnections = peer.getClientConnectionsList();
-				//System.out.println("I have " + clientConnections.size() + " connections open!");
-				//System.out.println("retrieved user sockets");
-		
-				
+				final List<ConnectionData> clientConnections = peer.getClientConnectionsList();
+								
 				// broadcast message if not alone
 				if (clientConnections.size() != 0) 
 					new Broadcast(clientConnections, this).broadcastMessage();
 				
-				//System.out.println("Broadcast done " + this);
-				
 				// set new position 
 				peer.setNewPosition(this.getRow(), this.getCol());
 				
-				// notify the stdin i've finished handling the message			
+				// notify the standard in i've finished handling the message			
 				if (peer.getNumberOfPlayers() > 1){
 					synchronized (outQueue) {
 						outQueue.notify();
@@ -107,19 +105,17 @@ public class PositionMessage extends Message {
 			if(peer.isAlive() && Arrays.equals(otherPeerPosition, myPosition)){
 				
 				// build killed message and call handler 
-				Player myself = peer.getCurrentPlayer();
-				KilledMessage km = new KilledMessage(myself);
+				final Player myself = peer.getCurrentPlayer();
+				final KilledMessage km = new KilledMessage(myself);
 				km.handleOutMessage(cd);
 				
 				// create dead message
-				//System.out.println("creating dead message");
-				Packets packet = new Packets(new DeadMessage(myself), null);
+				final Packets packet = new Packets(new DeadMessage(myself), null);
 				
 				// put message on the outQueue 
 				outQueue.add(packet);
 				
-				//System.out.println("Dead packet added to the outQueue");
-			}
+			}	
 			 // otherwise just send ack
 			else { 
 				new AckMessage().handleOutMessage(cd);

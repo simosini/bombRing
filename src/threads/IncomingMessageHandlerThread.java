@@ -14,10 +14,10 @@ import singletons.InQueue;
 /** 
  * This handler takes care of the messages received on the server Socket.
  * It's started by the server and creates a packet to put on the inQueue.
- * It stays alive and connected with the same client.
+ * It stays alive and connected with the same client during the whole game.
  * It does not handle any message just put them on the inQueue and notify 
  * the handler.
- * */
+ */
 
 public class IncomingMessageHandlerThread implements Runnable {
 
@@ -28,7 +28,12 @@ public class IncomingMessageHandlerThread implements Runnable {
 	
 		initStreams(s);
 	}
-
+	
+	/**
+	 * initializes the streams of the connection with the client 
+	 * connected to the main server socket 
+	 * @param the connected socket, that is the server side of the peer
+	 */
 	private void initStreams(Socket s) {
 		try {
 			ObjectOutputStream outputStream = new ObjectOutputStream(s.getOutputStream());
@@ -58,10 +63,15 @@ public class IncomingMessageHandlerThread implements Runnable {
 	private ConnectionData getConnectionData() {
 		return this.clientConnection;
 	}
-
+	
+	/**
+	 * The server thread receives the message and put it on the incoming
+	 * messages queue. Once done it notifies the message handler which is
+	 * in charge of emptying the queue.
+	 */
 	@Override
 	public void run() {
-		InQueue inQueue = InQueue.getInstance();
+		final InQueue inQueue = InQueue.getInstance();
 		Message message = null;
 		ObjectInputStream reader = null;
 
@@ -84,7 +94,7 @@ public class IncomingMessageHandlerThread implements Runnable {
 				
 			}
 		} catch (IOException e){
-			
+			// when the connected player closes its client socket this socket can be closed as well 
 			System.out.print(this.getConnectedPlayer().getNickname() + " just left the game. Disconnecting socket...");
 		} catch (ClassNotFoundException e) {
 			

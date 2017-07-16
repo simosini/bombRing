@@ -38,7 +38,6 @@ public class NackMessage extends Message {
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		// this message is never put on any queue so do nothing 
-		//System.out.println("Nack message received");
 		return true;
 	}
 	

@@ -33,7 +33,7 @@ public class ExitMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			Peer peer = Peer.getInstance();
+			final Peer peer = Peer.getInstance();
 			peer.setAlive(false);
 			new ExitProcedure().startRegularProcedure(false);
 			if (peer.getNumberOfPlayers() > 1)
@@ -53,8 +53,5 @@ public class ExitMessage extends Message {
 	public String toString(){
 		return "This is an Exit message";
 	}
-
-
-
 	
 }

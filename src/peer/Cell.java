@@ -32,6 +32,10 @@ public class Cell implements Serializable{
 		this.setPosition(row, col);
 	}
 	
+	/**
+	 * setters and getters
+	 */
+	
 	public void setColorZone(String color){
 		this.colorZone = color;
 	}
@@ -51,18 +55,24 @@ public class Cell implements Serializable{
 	
 	/**
 	 * moves player from current position according to the direction given.
-	 * It returns the new position after the move.
+	 * @param the direction to move towards
+	 * @return the new position after the move.
 	 */
 	public int[] move(DIR d) {
-		int[] currentPosition = this.getPosition();
+		final int[] currentPosition = this.getPosition();
 		if (d != null) {
 			int[] movement = this.vector(d);
-			int newPosition[] = { currentPosition[0] + movement[0], currentPosition[1] + movement[1] };
+			final int newPosition[] = { currentPosition[0] + movement[0], currentPosition[1] + movement[1] };
 			return newPosition;
 		}
 		return null;
 	}
-
+	
+	/**
+	 * the result of a movement
+	 * @param the direction
+	 * @return how to change the position after the movement
+	 */
 	private int[] vector(DIR d) {
 		switch (d) {
 		case UP:

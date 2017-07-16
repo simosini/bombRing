@@ -7,12 +7,14 @@ import java.io.ObjectOutputStream;
 import messages.Message;
 import peer.ConnectionData;
 
-/** This is one of the broadcast threads. It just sends out the passed msg
- *  and wait for the answer. The handling is done calling the suitable methods. */
+/** 
+ * This is one of the broadcast threads. It just sends out the passed message
+ * and wait for the answer. The handling is done calling the suitable methods. 
+ */
 
 public class SendMessageThread implements Runnable {
 	
-	private ConnectionData clientConnection; /** server socket to send the message */
+	private ConnectionData clientConnection; // server socket to send the message 
 	private Message msgToSend;
 	
 	public SendMessageThread(ConnectionData cd, Message m) {
@@ -35,21 +37,24 @@ public class SendMessageThread implements Runnable {
 	public void setMsgToSend(Message msgToSend) {
 		this.msgToSend = msgToSend;
 	}
-
+	
+	/**
+	 * send out the message from the client socket and wait for the answer
+	 */
 	@Override
 	public void run() {
 		try  {
-			/** retrieve streams */
+			// retrieve streams 
 			ObjectOutputStream out = this.getClientConnection().getOutputStream();
 			ObjectInputStream in = this.getClientConnection().getInputStream();
 						
-			/** send message */
+			// send message 
 			out.writeObject(this.getMsgToSend());;
 			
-			/** wait for answer */
+			// wait for answer 
 			Message response = (Message) in.readObject();
 			
-			/** handle incoming message */
+			// handle incoming message 
 			response.handleInMessage(this.getClientConnection());
 			
 		}

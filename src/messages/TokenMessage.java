@@ -29,8 +29,9 @@ public class TokenMessage extends Message {
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		try {
+			
 			// start Handler. it will pass the token when is done 
-			OutGoingMessageHandlerThread outHandler = new OutGoingMessageHandlerThread(this);
+			final OutGoingMessageHandlerThread outHandler = new OutGoingMessageHandlerThread(this);
 			Thread t = new Thread(outHandler);
 			t.start();
 			t.join();
@@ -50,7 +51,7 @@ public class TokenMessage extends Message {
 		try {
 			// inserting a little delay
 			Thread.sleep(100);
-			//System.out.println("sending token to port " + clientConnection.getClientSocket().getPort());
+			
 			clientConnection.getOutputStream().writeObject(this);
 		} catch (IOException | InterruptedException e){
 			// if the game is finished and I won, I might not have a next active player 
@@ -66,7 +67,5 @@ public class TokenMessage extends Message {
 	public String toString(){
 		return "This is a Token message";
 	}
-
-	
 
 }

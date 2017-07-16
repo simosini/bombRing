@@ -25,56 +25,61 @@ import singletons.InQueue;
  */
 
 public class MessageHandlerThread implements Runnable {
-
-	private volatile boolean stop = false; // to stop the thread when the game
-											// is finished
+	
+	// to stop the thread when the game is finished
+	private volatile boolean stop = false; 
 
 	public MessageHandlerThread() { }
 
-
+	/**
+	 * this method stops the thread 
+	 */
 	public synchronized void stopThread() {
 		this.stop = true;
 	}
 
-	private synchronized boolean stop() {
+	/**
+	 * check if someone has stopped the thread
+	 * @return the value of the boolean stop
+	 */
+	private synchronized boolean isStopped() {
 		return this.stop;
 	}
-
+	
+	/**
+	 * handles incoming messages
+	 */
 	@Override
 	public void run() {
-		InQueue inQueue = InQueue.getInstance();
+		final InQueue inQueue = InQueue.getInstance();
 	
-		while (!stop()) {
+		while (!isStopped()) {
 			synchronized (inQueue) {
 				
+				// while the queue is empty wait
 				while (inQueue.isEmpty()) {
-					//System.out.println("The queue is empty. Waiting!");
 					try {
 						inQueue.wait();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					//System.out.println("Im awake");
 				}
 			}
 				
-			/** consumes all items before releasing the lock on inQueue */
+			// consumes all items
 			while (!inQueue.isEmpty()) {
-				//System.out.println("Consuming inQueue");
 				Packets inPacket = inQueue.poll();
 				Message inMessage = inPacket.getMessage();
-				//System.out.println("-----HANDLING-----");
-				//System.out.println(inMessage);
-				/** handling could be an ack or a new msg to put on the outQ 
-				 *  in most of the cases will be the token */
+				/* 
+				 * handling could mean sending an ack or putting a new message in the outQueue. 
+				 * In most of the cases will be the token.
+				 */
 				if (!inMessage.handleInMessage(inPacket.getSendingClient())){
 					System.err.println("Something went wrong handling messages. Exiting the game!");
 					System.exit(1);
 				}
 			}
-			//System.out.println("No more msg in the inQueue, releasing lock");
 			
-
 		}
 	}
 

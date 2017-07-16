@@ -19,7 +19,10 @@ public class Broadcast {
 		this.setClientConnections(new ArrayList<>(clientConnections));
 		this.setMsgToSend(m);
 	}
-
+	
+	/**
+	 * setters and getters
+	 */
 	public List<ConnectionData> getClientConnections() {
 		return this.clientConnections;
 	}
@@ -57,8 +60,7 @@ public class Broadcast {
 				System.exit(-1);
 			}
 		});
-		
-		//System.out.println("Threads done!");
+	
 	}
 
 }

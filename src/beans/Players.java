@@ -47,8 +47,8 @@ public class Players implements Serializable {
 		this.usersMap = userMap;
 	}
 	
-	/** 
-	 * return a copy of the players of the game as list 
+	/**
+	 * @return a copy of the players of the game as list
 	 */
 	public synchronized List<Player> retrievePlayersList() {
 		// yields a copy to guarantee synchronization
@@ -56,16 +56,18 @@ public class Players implements Serializable {
 
 	}
 	
-	/** 
-	 * add the given player to the current map 
+	/**
+	 * add the given player to the current map
+	 * @param the player to be added to the current map
 	 */
 	public synchronized void addPlayer(Player p) {
 		usersMap.put(p.getId(), p);
 
 	}
 	
-	/** 
-	 * delete the given player from the map if it exists 
+	/**
+	 * delete the given player from the map if it exists
+	 * @param the player to be deleted from the map
 	 */
 	public synchronized void deletePlayer(Player p) {		
 		Player player = usersMap.remove(p.getId());
@@ -73,8 +75,9 @@ public class Players implements Serializable {
 			throw new IllegalArgumentException("The player given does not exist!");		
 	}
 
-	/** 
-	 * return a copy of a player given its name 
+	/**
+	 * @param playerName of the player to be retrieved
+	 * @return a copy of the requested player or null if the player does not exist
 	 */
 	public Player getByName(String playerName) {
 		List<Player> usersCopy = this.retrievePlayersList();
@@ -86,10 +89,11 @@ public class Players implements Serializable {
 		return null;
 	}
 	
-	/** 
+	/**
 	 * Add all players of the given list to the map.
 	 * This is always called on a copy so it won't actually change the current map.
 	 * This means no sync is needed.
+	 * @param list of players to be added to the map
 	 */
 	public void addAll(List<Player> list) {
 		for (Player p : list) {
@@ -98,8 +102,8 @@ public class Players implements Serializable {
 
 	}
 	
-	/** 
-	 * return the number of player in the map. No need to sync on the whole object 
+	/**
+	 * @return the number of players in the map. No need to sync on the whole object
 	 */
 	public int size() {
 		synchronized (this.usersMap) {
@@ -114,7 +118,7 @@ public class Players implements Serializable {
 			return "There are no players at the moment";
 		else {
 			StringBuilder sb = new StringBuilder("This is the list of the current active players: \n");
-			Map<Integer, Player> pls = this.getUsersMap();
+			Map<Integer, Player> pls = this.getUsersMap();			
 			pls.forEach((k,v)-> sb.append(v.getNickname() + "\n"));
 			return sb.toString();
 		}

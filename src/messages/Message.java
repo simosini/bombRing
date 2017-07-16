@@ -35,7 +35,11 @@ public abstract class Message implements Serializable {
 		this.setPriority(priority);
 
 	}
-
+	
+	/**
+	 * setters and getters
+	 */
+	
 	public Type getCodeMessage() {
 		return codeMessage;
 	}
@@ -55,19 +59,22 @@ public abstract class Message implements Serializable {
 	/**
 	 * connects to the server socket of the player passed as argument 
 	 * and initializes streams
+	 * @param the player to be connected with
+	 * @return an object containing the connected socket and the initialized streams
 	 */
 	public ConnectionData connectToPlayer(Player p) {
 		try {
-			Socket s = new Socket(LOCALHOST, p.getPort());
-			//System.out.println("Connection established to port " + s.getPort());
-			//System.out.println("My port is " + s.getLocalPort());
-			ObjectOutputStream out =  new ObjectOutputStream(s.getOutputStream());
+			// connect to the server socket
+			final Socket s = new Socket(LOCALHOST, p.getPort());
+			
+			// initialize streams
+			final ObjectOutputStream out =  new ObjectOutputStream(s.getOutputStream());
 			out.flush();
-			//System.out.println("out stream done");
 			ObjectInputStream in =  null;
-			//System.out.println("Streams done!");
+
 			// send current player 
 			out.writeObject(Peer.getInstance().getCurrentPlayer());
+			
 			return new ConnectionData(s, out, in);
 		} catch (IOException e){
 			System.err.println("The player chosen has closed his server socket!");
@@ -75,11 +82,19 @@ public abstract class Message implements Serializable {
 			
 		}
 	}
-	/** 
-	 * true means the message has been handled correctly 
+
+	/**
+	 * method to handle incoming messages
+	 * @param the connection parameters of the client who sent the message
+	 * @return true if the message has been handled correctly
 	 */
 	public abstract boolean handleInMessage(ConnectionData clientConnection);
 	
+	/**
+	 * method to handle outgoing messages
+	 * @param the connection parameters of the client who sent the message
+	 * @return true if the message has been handled correctly
+	 */
 	public abstract boolean handleOutMessage(ConnectionData clientConnection);
 
 }

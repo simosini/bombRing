@@ -35,15 +35,15 @@ public class GameMain {
 	public static void main(String[] args) {
 		try {
 			// initialize basic structures and socket for the game 
-			ServerSocket srvSocket = new ServerSocket(DEFAULT_PORT);
+			final ServerSocket srvSocket = new ServerSocket(DEFAULT_PORT);
 			Peer.getInstance().setServerSocket(srvSocket);
-			ServiceRequester service = new ServiceRequester();
+			final ServiceRequester service = new ServiceRequester();
 			
 			// stream for user input
-			BufferedReader readInput = new BufferedReader(new InputStreamReader(System.in));
+			final BufferedReader readInput = new BufferedReader(new InputStreamReader(System.in));
 			
 			// set current player 
-			Player newPlayer = getPlayerInfo(readInput);
+			final Player newPlayer = getPlayerInfo(readInput);
 			newPlayer.setPort(srvSocket.getLocalPort());
 			Peer.getInstance().addPlayer(newPlayer);
 
@@ -51,7 +51,7 @@ public class GameMain {
 			printGameMenu(readInput, service);
 
 			// start threads 
-			MessageHandlerThread mht = new MessageHandlerThread();
+			final MessageHandlerThread mht = new MessageHandlerThread();
 			Thread handler = new Thread(mht);
 			handler.start();
 			
@@ -61,15 +61,15 @@ public class GameMain {
 			new Thread(new UserInputHandlerThread(readInput)).start();
 			
 			// start simulator for bombs 
-			AccelerometerSimulator as = new AccelerometerSimulator(MeasureBuffer.getInstance()); 
-			SensorDataAnalyzer sda = new SensorDataAnalyzer();
+			final AccelerometerSimulator as = new AccelerometerSimulator(MeasureBuffer.getInstance()); 
+			final SensorDataAnalyzer sda = new SensorDataAnalyzer();
 			Thread simulator = new Thread(as);
 			Thread analyzer = new Thread(sda);
 			simulator.start();
 			analyzer.start();
 			
 			// wait for the game to be finished
-			GameLock lock = GameLock.getInstance();
+			final GameLock lock = GameLock.getInstance();
 			synchronized (lock) {
 				lock.wait();
 			}
@@ -84,9 +84,11 @@ public class GameMain {
 
 	}
 
-	
 	/**
-	 * This stops every thread and then exit the game
+	 * This stops every thread and then exit the game	 
+	 * @param message handler thread to be stopped
+	 * @param the sensor data thread to be stopped
+	 * @param the accelerometer simulator to be stopped
 	 */
 	private static void exitGameGracefully(MessageHandlerThread mht, SensorDataAnalyzer sda, AccelerometerSimulator as) {
 		mht.stopThread();
@@ -97,11 +99,11 @@ public class GameMain {
 		
 	}
 
-
-
-	/** 
+	/**
 	 * Handle the first menu before entering a game.
-	 * From this menu a new player can join or create a game. 
+	 * From this menu a new player can join or create a game.
+	 * @param the bufferedReader to communicate with the user
+	 * @param the service requester to communicate with the REST server
 	 */
 	private static void printGameMenu(BufferedReader br, ServiceRequester service) {
 		int choice = 0;
@@ -131,14 +133,14 @@ public class GameMain {
 					Game currentGame = null;
 					final Peer peer = Peer.getInstance();
 					System.out.println("Select a name for the game: ");
-					String name = br.readLine();
+					final String name = br.readLine();
 					int length;
 					do {
 						System.out.println("Select the length for the grid (must be an even number > 2): ");
 						length = Integer.parseInt(br.readLine());  
 					} while(length%2 != 0);
 					System.out.println("Select the number of points to win: ");
-					int points = Integer.parseInt(br.readLine());
+					final int points = Integer.parseInt(br.readLine());
 					
 					// ask the REST server to add a new game 
 					currentGame = service
@@ -154,7 +156,7 @@ public class GameMain {
 					peer.setCurrentGame(currentGame);
 					
 					// choose a random position and start playing 
-					Random random = new Random();
+					final Random random = new Random();
 					Cell newCell = new Cell(random.nextInt(length), random.nextInt(length));
 					peer.setCurrentPosition(newCell);
 					peer.setAlive(true);
@@ -206,7 +208,7 @@ public class GameMain {
 			case 4: // print active games details
 				try {
 					System.out.println("Enter game name: ");
-					String gamename = br.readLine();
+					final String gamename = br.readLine();
 					service.retrieveGameInfo(gamename);
 					break;
 
@@ -228,16 +230,19 @@ public class GameMain {
 	}
 	 
 	/**
-	 * This is the procedure to join a game.
-	 * It returns true if the operation has been handled correctly.
+	 
+	 */
+	/**
+	 * This is the procedure to join the user selected game 
+	 * @return true if the operation has been handled correctly.
 	 */
 	private static boolean startJoiningRingProcedure() {
 		try {
-			OutQueue outQueue = OutQueue.getInstance();
-			Peer peer = Peer.getInstance();
+			final OutQueue outQueue = OutQueue.getInstance();
+			final Peer peer = Peer.getInstance();
 			
 			// create message and handle it 
-			Message joinRing = new JoinRingMessage(peer.getCurrentPlayer());
+			final Message joinRing = new JoinRingMessage(peer.getCurrentPlayer());
 			
 			// needed to avoid Token message overlapping 
 			synchronized (outQueue) {
@@ -252,24 +257,25 @@ public class GameMain {
 		return false;
 	}
 		
-
-	/** 
+	/**
 	 * retrieve player's info from standard in
+	 * @param the buffered reader to communicate with the user
+	 * @return the current player of the game
 	 */
 	private static Player getPlayerInfo(BufferedReader br) {
 		final Emoji emoji = EmojiManager.getForAlias("bomb");
 		System.out.println(emoji.getUnicode() + emoji.getUnicode() + " WELCOME TO BOMB RING " + emoji.getUnicode()
 				+ emoji.getUnicode());
 
-		Player p = new Player();
-
+		final Player p = new Player();
+ 
 		try {
 			System.out.println("Please insert your name");
-			String name = br.readLine();
+			final String name = br.readLine();
 			System.out.println("Please insert your surname");
-			String surname = br.readLine();
+			final String surname = br.readLine();
 			System.out.println("Please pick a nickname");
-			String nickname = br.readLine();
+			final String nickname = br.readLine();
 			p.setName(name);
 			p.setSurname(surname);
 			p.setNickname(nickname);

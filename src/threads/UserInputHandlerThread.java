@@ -19,14 +19,13 @@ import singletons.Peer;
  * user. It builds packets to put in the outQueue and must wait until the
  * requested message has been processed by the messageHandler. Access to the
  * priority queue must be sync. If the player is alone in the game this thread
- * create an handling out packet thread to handle his packets and join with it.
+ * creates a specific thread to handle his packets and join with it.
  */
 
 public class UserInputHandlerThread implements Runnable {
 
-	private BufferedReader userInput; // from the main thread
-	private final int gridDimension = Peer.getInstance().getCurrentGame().getSideLength();// to check movement allowed
-	// private Queue<Bomb> bombs;
+	private BufferedReader userInput; 
+	private final int gridDimension = Peer.getInstance().getCurrentGame().getSideLength();
 
 	public UserInputHandlerThread(BufferedReader br) {
 		this.setUserInput(br);
@@ -39,38 +38,37 @@ public class UserInputHandlerThread implements Runnable {
 	private void setUserInput(BufferedReader userInput) {
 		this.userInput = userInput;
 	}
-
+	/**
+	 * handles incoming requests from the user
+	 */
 	@Override
 	public void run() {
-		OutQueue outQueue = OutQueue.getInstance();
-		Peer peer = Peer.getInstance();
+		final OutQueue outQueue = OutQueue.getInstance();
+		final Peer peer = Peer.getInstance();
 		
 		while (true) {
 			try {
-				/** If I'm dead no option is available */
+				
+				// If I'm dead no option is available 
 				if (peer.isAlive()){
-					Packets nextPacket = this.getUserMove(); // can only be a bomb
-																//  new position or exit
+					
+					Packets nextPacket = this.getUserMove(); 
+					
 					if (nextPacket != null) {
 						synchronized (outQueue) {
-						
-							/** 
-							 * if i'm alone there is no token so create thread
-							 * no need to put packet in the queue. Pass it to the handler 
-							 * */
+							/*
+							 * if i'm alone there is no token so create one player thread.
+							 * no need to put packet in the queue just pass it to the thread 
+							 */
 							if (peer.getNumberOfPlayers() == 1) {
 								Thread t = new Thread(new OnePlayerHandlerThread(nextPacket));
-								//System.out.println("One Player handler started");
 								t.start();
 								t.join(); 
 								System.out.println("Done!");
-								//System.out.println("One player handler done");
 							}
 							else {
 								// handler will wake me up when is done with my packet
 								outQueue.add(nextPacket);
-								//System.out.println("User Thread put outQueue packet");
-								//System.out.println("User thread waiting for handler");
 								outQueue.wait(); 
 								System.out.println("Done!");
 							}
@@ -78,14 +76,13 @@ public class UserInputHandlerThread implements Runnable {
 					}
 				}
 				
-				else { /** gets here only if the player is not playing anymore */
-					synchronized (outQueue) {
-						/** to avoid busy waiting, It will never be notified
-						 *  but this is not a problem since the game is finished */
-						outQueue.wait(); 
-						
-					}
-				}
+				else // gets here only if the player is not playing anymore 
+					/*synchronized (outQueue) {
+						 to avoid busy waiting. It will never be notified
+						 * but this is not a problem since the game is finished 
+						outQueue.wait(); 						
+					}*/		
+					break;
 					
 			} catch (InterruptedException e) {
 				System.out.println("The game is over. Goodbye!");
@@ -95,12 +92,18 @@ public class UserInputHandlerThread implements Runnable {
 		}
 
 	}
-
+	
+	/**
+	 * get the move selected by the user
+	 * @return a packet with the move chosen by the user or null if the request is not a new move
+	 * @throws InterruptedException when an error occurs
+	 */
 	private Packets getUserMove() throws InterruptedException {
 
 		try {
-			Peer peer = Peer.getInstance();
-			/** print current position */
+			final Peer peer = Peer.getInstance();
+			
+			// print current position, score and bombs available 
 			System.out.println("\n#################### GAME MENU ####################");
 			Cell currentPos = peer.getCurrentPosition();
 			String colorZone = this.computeZone(currentPos.getPosition());
@@ -180,14 +183,22 @@ public class UserInputHandlerThread implements Runnable {
 		}
 
 	}
-
+	
+	/**
+	 * @return  a string describing the next available bomb  
+	 */
 	private String showBomb() {
 		Bomb availableBomb = BombQueue.getInstance().peekBomb();
 		if (availableBomb == null)
 			return "No bombs available at the moment";
 		return "Next bomb available: " + availableBomb.getColor();
 	}
-
+	
+	/**
+	 * compute the zone color according to current peer position
+	 * @param peer's current position on the logical grid
+	 * @return a string describing the zone color of the peer.
+	 */
 	private String computeZone(int[] pos) {
 		StringBuilder sb = new StringBuilder("You are in the ");
 		String color = null;
@@ -207,7 +218,12 @@ public class UserInputHandlerThread implements Runnable {
 		Peer.getInstance().getCurrentPosition().setColorZone(color);
 		return sb.toString();
 	}
-
+	
+	/**
+	 * Checks if the movement requested by user is allowed.
+	 * @param movement selected by the user
+	 * @return true if that movement is allowed
+	 */
 	private boolean isMovementAllowed(DIR direction) {
 		int[] newPosition = Peer.getInstance().getCurrentPosition().move(direction);
 		if (newPosition[0] < 0 | newPosition[1] < 0 | newPosition[0] >= this.gridDimension

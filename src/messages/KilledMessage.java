@@ -48,36 +48,31 @@ public class KilledMessage extends Message {
 		try {
 			final Peer peer = Peer.getInstance();
 			final int targetScore = peer.getCurrentGame().getScoreNeeded();
-			//System.out.println("Killed message received");
 			final Emoji emoji = EmojiManager.getForAlias("v");
 
 			System.out.println("You just killed " + this.getKilledPlayer().getNickname());
 			
 			// add points if i'm alive and check victory 
 			if (peer.isAlive() && peer.getCurrentScore() < targetScore){
+				
 				// set new score 
 				peer.incrementCurrentScore();
-				//System.out.println("Score after: " + peer.getCurrentScore());
 				
+				// check victory
 				if (peer.getCurrentScore() == targetScore){
 					System.out.println(emoji.getUnicode() + " Congratulations! You just won the game!! " + emoji.getUnicode());
 					
 					// game is finished set alive false 
 					peer.setAlive(false);
-					//System.out.println("Informing other players!");
 					
 					// retrieve connections to other serverSockets 
 					final List<ConnectionData> otherPlayers  = peer.getClientConnectionsList();
-					//System.out.println("Number of connections open: " + otherPlayers.size());
-					//System.out.println("retrieved user sockets");
 					
 					// waits for position broadcast to be done 
 					Thread.sleep(500);
 					
 					// tell every player the game is finished. I cannot be alone.  
 					new Broadcast(otherPlayers, new VictoryMessage(peer.getCurrentPlayer())).broadcastMessage();
-					
-					//System.out.println("Broadcast done " + new VictoryMessage());
 					
 					// everybody else is dead so exit the game
 					new ExitProcedure().startGameEndedProcedure();
@@ -108,7 +103,6 @@ public class KilledMessage extends Message {
 			Peer.getInstance().setAlive(false); // i'm dead
 		
 			// send killed message
-			//System.out.println("sending killed message");
 			cd.getOutputStream().writeObject(this);
 			
 		}
@@ -125,5 +119,4 @@ public class KilledMessage extends Message {
 		return "This is a Killed message";
 	}
 	
-
 }

@@ -21,7 +21,11 @@ public class ConnectionData {
 		this.setOutputStream(os);
 		this.setInputStream(is);
 	}
-
+	
+	/**
+	 * setters and getters
+	 */
+	
 	public Socket getClientSocket() {
 		return clientSocket;
 	}

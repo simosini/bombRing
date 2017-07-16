@@ -19,7 +19,6 @@ public class AckMessage extends Message {
 	 */
 	@Override
 	public boolean handleInMessage(ConnectionData cd){
-		//System.out.println("Ack message received");
 		return true;
 	}
 	
@@ -30,7 +29,6 @@ public class AckMessage extends Message {
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
 			clientConnection.getOutputStream().writeObject(this);
-			//System.out.println("Ack sent");
 		}
 		catch(Exception e){
 			System.err.println("Error sending out Ack");
