@@ -33,6 +33,7 @@ public class Games {
 	 * @return a copy of the list of games
 	 */
 	public synchronized List<Game> getGamesList() {
+		
 		// yield a copy for synchronization
 		return new ArrayList<>(gamesList);
 
@@ -123,6 +124,7 @@ public class Games {
 	 * @param the player to delete
 	 */
 	public synchronized void deletePlayer(String gameName, Player p) {
+		
 		// need to check the game still exists
 		Game g = this.getByName(gameName);
 		if (g == null) // should never get here
@@ -150,13 +152,14 @@ public class Games {
 	 * @param gameName to be deleted from the list
 	 */
 	public synchronized void deleteGame(String gameName) {
+		
 		// need to check the game still exists
 		Game g = this.getByName(gameName);
 		if (g == null) // the game is not in the list
 			throw new IllegalArgumentException(
 				"Game" + gameName + " does not exists anymore. Cannot remove it!");
 		
-		// g is a copy need the original list to change it
+		// g is a copy: need the original list to change it
 		for (Game game : this.gamesList)
 			if (game.getName().equalsIgnoreCase(gameName)){
 				try{

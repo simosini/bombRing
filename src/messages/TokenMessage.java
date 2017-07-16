@@ -49,11 +49,13 @@ public class TokenMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
+			
 			// inserting a little delay
 			Thread.sleep(100);
 			
 			clientConnection.getOutputStream().writeObject(this);
 		} catch (IOException | InterruptedException e){
+			
 			// if the game is finished and I won, I might not have a next active player 
 			System.err.println("Error handling outgoing token");
 			e.printStackTrace();

@@ -37,6 +37,7 @@ public class NackMessage extends Message {
 	 */
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
+		
 		// this message is never put on any queue so do nothing 
 		return true;
 	}

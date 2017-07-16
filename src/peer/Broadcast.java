@@ -23,6 +23,7 @@ public class Broadcast {
 	/**
 	 * setters and getters
 	 */
+	
 	public List<ConnectionData> getClientConnections() {
 		return this.clientConnections;
 	}
@@ -52,6 +53,7 @@ public class Broadcast {
 		// wait for threads to be done
 		threads.forEach(t -> {
 			try {
+				
 				// don't want to wait for ever...
 				t.join(10 * 1000);
 			} catch (InterruptedException e) {

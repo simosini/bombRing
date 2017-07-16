@@ -32,6 +32,7 @@ public class VictoryMessage extends Message {
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		try {
+			
 			// the game is finished 
 			Peer.getInstance().setAlive(false);
 			

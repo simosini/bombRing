@@ -51,7 +51,7 @@ public class JoinRingMessage extends Message {
 	@Override
 	public boolean handleInMessage(ConnectionData clientConnection) {
 		try {
-			//System.out.println("InHandling started!!");
+			
 			final OutQueue outQueue = OutQueue.getInstance();
 			final Peer peer = Peer.getInstance();
 			ConnectionData cd = null;
@@ -65,6 +65,7 @@ public class JoinRingMessage extends Message {
 			
 			// if i'm alone no need to put the message on the outQueue 
 			else if (peer.getNumberOfPlayers() == 1){
+				
 				// add player to the map 
 				peer.addNewPlayer(this.getPlayer());
 				
@@ -120,6 +121,7 @@ public class JoinRingMessage extends Message {
 	}
 	
 	private void generateToken(ConnectionData cd) {
+		
 		// send token 
 		new TokenMessage().handleOutMessage(cd);
 	}
@@ -153,6 +155,7 @@ public class JoinRingMessage extends Message {
 				}
 				
 				else {
+					
 					// create message and send it 
 					cd.getOutputStream().writeObject(new JoinRingMessage(peer.getCurrentPlayer()));
 					

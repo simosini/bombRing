@@ -44,6 +44,7 @@ public class SendMessageThread implements Runnable {
 	@Override
 	public void run() {
 		try  {
+			
 			// retrieve streams 
 			final ObjectOutputStream out = this.getClientConnection().getOutputStream();
 			final ObjectInputStream in = this.getClientConnection().getInputStream();

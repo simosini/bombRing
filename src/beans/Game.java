@@ -136,7 +136,12 @@ public class Game {
 	public synchronized int retrievePlayersNumber() {
 		return this.players.size();
 	}
-
+	
+	/**
+	 * check existence of a player in the map
+	 * @param the player to look for
+	 * @return true if the map contains the given player
+	 */
 	public boolean contains(Player p) {
 		return this.retrieveGamePlayers().contains(p);
 	}
@@ -156,9 +161,9 @@ public class Game {
 
 	private String buildPlayersList() {
 		return this.getPlayers().retrievePlayersList()
-						 .stream()
-				 		 .map(player -> player.getNickname())
-				 		 .collect(Collectors.joining(", "));
+						 		.stream()
+						 		.map(player -> player.getNickname())
+						 		.collect(Collectors.joining(", "));
 	}
 
 	

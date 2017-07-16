@@ -2,6 +2,7 @@ package threads;
 
 import java.io.BufferedReader;
 
+import beans.Player;
 import messages.BombTossedMessage;
 import messages.ExitMessage;
 import messages.Message;
@@ -56,6 +57,7 @@ public class UserInputHandlerThread implements Runnable {
 					
 					if (nextPacket != null) {
 						synchronized (outQueue) {
+							
 							/*
 							 * if i'm alone there is no token so create one player thread.
 							 * no need to put packet in the queue just pass it to the thread 
@@ -67,6 +69,7 @@ public class UserInputHandlerThread implements Runnable {
 								System.out.println("Done!");
 							}
 							else {
+								
 								// handler will wake me up when is done with my packet
 								outQueue.add(nextPacket);
 								outQueue.wait(); 
@@ -75,10 +78,9 @@ public class UserInputHandlerThread implements Runnable {
 						}
 					}
 				}
+				
 				// gets here only if the player is not playing anymore. So exit the thread 
-				else 
-						
-					break;
+				else break;
 					
 			} catch (InterruptedException e) {
 				System.out.println("The game is over. Goodbye!");
@@ -103,6 +105,7 @@ public class UserInputHandlerThread implements Runnable {
 			System.out.println("\n#################### GAME MENU ####################");
 			final Cell currentPos = peer.getCurrentPosition();
 			final String colorZone = this.computeZone(currentPos.getPosition());
+			final Player currentPlayer = peer.getCurrentPlayer();
 			System.out.println(colorZone + currentPos);
 			System.out.println("Your current score is: " + peer.getCurrentScore());
 			System.out.println(this.showBomb());
@@ -117,7 +120,7 @@ public class UserInputHandlerThread implements Runnable {
 						return null;
 					}
 					final int[] upPosition = currentPos.move(Cell.DIR.UP);
-					final Message upm = new PositionMessage(upPosition[0], upPosition[1]);
+					final Message upm = new PositionMessage(upPosition[0], upPosition[1], currentPlayer);
 					System.out.print("Waiting to move up...");
 					return new Packets(upm, null);
 	
@@ -127,7 +130,7 @@ public class UserInputHandlerThread implements Runnable {
 						return null;
 					}
 					final int[] downPosition = currentPos.move(Cell.DIR.DOWN);
-					final Message dpm = new PositionMessage(downPosition[0], downPosition[1]);
+					final Message dpm = new PositionMessage(downPosition[0], downPosition[1], currentPlayer);
 					System.out.print("Waiting to move down...");
 					return new Packets(dpm, null);
 	
@@ -137,7 +140,7 @@ public class UserInputHandlerThread implements Runnable {
 						return null;
 					}
 					final int[] leftPosition = currentPos.move(Cell.DIR.LEFT);
-					final Message lpm = new PositionMessage(leftPosition[0], leftPosition[1]);
+					final Message lpm = new PositionMessage(leftPosition[0], leftPosition[1], currentPlayer);
 					System.out.print("Waiting to move left...");
 					return new Packets(lpm, null);
 	
@@ -147,7 +150,7 @@ public class UserInputHandlerThread implements Runnable {
 						return null;
 					}
 					final int[] rightPosition = currentPos.move(Cell.DIR.RIGHT);
-					final Message rpm = new PositionMessage(rightPosition[0], rightPosition[1]);
+					final Message rpm = new PositionMessage(rightPosition[0], rightPosition[1], currentPlayer);
 					System.out.print("Waiting to move right...");
 					return new Packets(rpm, null);
 	

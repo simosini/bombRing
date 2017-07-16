@@ -81,6 +81,7 @@ public class Players implements Serializable {
 	 */
 	public Player getByName(String playerName) {
 		List<Player> usersCopy = this.retrievePlayersList();
+		
 		// the players of the copied map are also copies, no sync needed 
 		for (Player p : usersCopy)
 			if (p.getName().equalsIgnoreCase(playerName))

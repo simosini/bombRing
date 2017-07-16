@@ -80,20 +80,18 @@ public class IncomingMessageHandlerThread implements Runnable {
 			while(true){			
 				
 				message = (Message) reader.readObject();
-				//System.out.println("Received :" + message);
 				
-				//System.out.println("Creating packet!");
 				Packets packet = new Packets(message, this.getConnectionData());
 				inQueue.add(packet);
-				//System.out.println("Packet added correctly to inQueue");
-				//System.out.println("Notifying handler");
+				
+				// notify message handler thread
 				synchronized(inQueue){					
 					inQueue.notify();
-					//System.out.println("Notified");
 				}	
 				
 			}
 		} catch (IOException e){
+			
 			// when the connected player closes its client socket this socket can be closed as well 
 			System.out.print(this.getConnectedPlayer().getNickname() + " just left the game. Disconnecting socket...");
 		} catch (ClassNotFoundException e) {

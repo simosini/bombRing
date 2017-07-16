@@ -39,6 +39,7 @@ public class ExitProcedure {
 		final OutQueue outQueue = OutQueue.getInstance();
 		
 		try {
+			
 			// first  close the main server socket 
 			peer.closeServerSocket();
 			
@@ -88,6 +89,7 @@ public class ExitProcedure {
 			if (peer.getNumberOfPlayers() == 1){
 				final GameLock lock = GameLock.getInstance();
 				synchronized (lock) {
+					
 					// wake main thread up to gracefully close the game 
 					lock.notify();
 				}

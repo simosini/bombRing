@@ -85,6 +85,7 @@ public class AddPlayerMessage extends Message {
 			}
 			
 			else {
+				
 				// in case i'm dead send nack message with a copy of the updated map 
 				final Players players = peer.getCurrentGame().getPlayers();
 				players.addPlayer(this.getPlayerToAdd());

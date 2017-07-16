@@ -17,15 +17,16 @@ public class PositionMessage extends Message {
 
 	private static final long serialVersionUID = 6887926961459159988L;
 	private static final int POSITION_PRIORITY = 4;
+	private Player movingPlayer;
 	private int row;
 	private int col;
 	
 
-	public PositionMessage(int row, int col) {
+	public PositionMessage(int row, int col, Player movingPlayer) {
 		super(Type.POSITION, POSITION_PRIORITY);
 		this.setRow(row);
 		this.setCol(col);
-
+		this.setMovingPlayer(movingPlayer);
 	}
 	
 	/**
@@ -46,7 +47,14 @@ public class PositionMessage extends Message {
 	public void setCol(int col) {
 		this.col = col;
 	}
+	
+	public Player getMovingPlayer() {
+		return movingPlayer;
+	}
 
+	private void setMovingPlayer(final Player movingPlayer) {
+		this.movingPlayer = movingPlayer;
+	}
 	
 	/** 
 	 * send peer's new position in broadcast to all other players 
@@ -106,7 +114,7 @@ public class PositionMessage extends Message {
 				
 				// build killed message and call handler 
 				final Player myself = peer.getCurrentPlayer();
-				final KilledMessage km = new KilledMessage(myself);
+				final KilledMessage km = new KilledMessage(myself, this.getMovingPlayer(), false);
 				km.handleOutMessage(cd);
 				
 				// create dead message

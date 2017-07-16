@@ -188,6 +188,7 @@ public class Peer {
 	 * @return the next player in the ring
 	 */
 	public Player getNextPeer(Players players) {
+		
 		//it's a copy
 		final TreeMap<Integer, Player> gamePlayers = players.getUsersMap(); 
 		
@@ -195,7 +196,8 @@ public class Peer {
 			final Integer nextPlayerKey = findNextPlayerKey(this.getCurrentPlayer().getId(), gamePlayers);
 			return gamePlayers.get(nextPlayerKey);
 		} else {
-			// no more players, only me in the map
+			
+			// no next player, only me in the map
 			return null; 
 
 		}

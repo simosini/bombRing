@@ -23,7 +23,7 @@ public class BombExplodingThread implements Runnable {
 	@Override
 	public void run() {
 		try {
-			final Packets newPacket = new Packets(new BombExplodedMessage(colorZone), null);
+			final Packets newPacket = new Packets(new BombExplodedMessage(colorZone, Peer.getInstance().getCurrentPlayer()), null);
 			
 			// wait 5 seconds 
 			Thread.sleep(5000);

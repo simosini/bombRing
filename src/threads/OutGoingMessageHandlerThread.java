@@ -40,6 +40,7 @@ public class OutGoingMessageHandlerThread implements Runnable {
 		final Peer peer = Peer.getInstance();
 		
 		try {
+			
 			// get first message out the outQueue and handle it 
 			if (!outQueue.isEmpty()){
 					
@@ -61,7 +62,8 @@ public class OutGoingMessageHandlerThread implements Runnable {
 			if (!peer.isAlive()) {	
 				final GameLock lock = GameLock.getInstance();
 				synchronized (lock) {
-					// wake up main to end the game
+					
+					// wake up main thread to end the game
 					lock.notify();
 				}
 			}

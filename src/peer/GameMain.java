@@ -34,6 +34,7 @@ public class GameMain {
 
 	public static void main(String[] args) {
 		try {
+			
 			// initialize basic structures and socket for the game 
 			final ServerSocket srvSocket = new ServerSocket(DEFAULT_PORT);
 			Peer.getInstance().setServerSocket(srvSocket);
@@ -128,7 +129,7 @@ public class GameMain {
 				}
 				break;
 
-			case 2: // creates a new game and add it on the REST
+			case 2: // creates a new game and add it on the REST server
 				try {
 					Game currentGame = null;
 					final Peer peer = Peer.getInstance();
@@ -199,6 +200,7 @@ public class GameMain {
 					System.out.println("done!");
 				}
 				else {
+					
 					// ask REST server to delete me from the map 
 					service.deletePlayerFromGame(gameName, peer.getCurrentPlayer());
 				}
