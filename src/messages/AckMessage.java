@@ -28,7 +28,8 @@ public class AckMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			clientConnection.getOutputStream().writeObject(this);
+			
+			clientConnection.getOutputStream().writeBytes(createJsonMessage(this) + "\n");  
 		}
 		catch(Exception e){
 			System.err.println("Error sending out Ack");

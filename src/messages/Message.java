@@ -1,10 +1,14 @@
 package messages;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.Socket;
+
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import beans.Player;
 import peer.ConnectionData;
@@ -19,7 +23,7 @@ import singletons.Peer;
  * 2- handleOutMessage: this method is called to handle messages that need to be 
  * 	  sent out from one of the peer's client sockets
  */
-
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "class")
 public abstract class Message implements Serializable {
 
 	private static final long serialVersionUID = 4232448590544129467L;
@@ -27,8 +31,7 @@ public abstract class Message implements Serializable {
 	private Type codeMessage;
 	private int priority;
 
-	public Message() {
-	}
+	public Message() { }
 
 	public Message(Type type, int priority) {
 		this.setCodeMessage(type);
@@ -68,12 +71,14 @@ public abstract class Message implements Serializable {
 			final Socket s = new Socket(LOCALHOST, p.getPort());
 			
 			// initialize streams
-			final ObjectOutputStream out =  new ObjectOutputStream(s.getOutputStream());
+			final DataOutputStream out =  new DataOutputStream(s.getOutputStream());
 			out.flush();
-			ObjectInputStream in =  null;
-
-			// send current player 
-			out.writeObject(Peer.getInstance().getCurrentPlayer());
+			final BufferedReader in =  new BufferedReader(new InputStreamReader(s.getInputStream()));
+			
+			// send current player
+			final ObjectMapper mapper = new ObjectMapper();
+			final String Jsonplayer = mapper.writeValueAsString(Peer.getInstance().getCurrentPlayer());
+			out.writeBytes(Jsonplayer + "\n");
 			
 			return new ConnectionData(s, out, in);
 		} catch (IOException e){
@@ -82,6 +87,38 @@ public abstract class Message implements Serializable {
 			
 		}
 	}
+	
+	/**
+	 * Serialize a message into a JSON String
+	 * @param the message to serialize
+	 * @return the serialization of the Message
+	 */
+	public String createJsonMessage(Message message) {
+		final ObjectMapper mapper = new ObjectMapper();
+		try {
+			return mapper.writeValueAsString(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Deserialize a JSON string into a Message object
+	 * @param the string to deserialize
+	 * @return the deserialized message
+	 */
+	public Message readJsonMessage(String message) {
+		final ObjectMapper mapper = new ObjectMapper();
+		
+		try {
+			return mapper.readValue(message, Message.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 
 	/**
 	 * method to handle incoming messages

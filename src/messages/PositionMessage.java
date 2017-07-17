@@ -21,7 +21,8 @@ public class PositionMessage extends Message {
 	private int row;
 	private int col;
 	
-
+	public PositionMessage() { }
+	
 	public PositionMessage(int row, int col, Player movingPlayer) {
 		super(Type.POSITION, POSITION_PRIORITY);
 		this.setRow(row);
@@ -106,7 +107,7 @@ public class PositionMessage extends Message {
 		try {
 			final Peer peer = Peer.getInstance();
 			final OutQueue outQueue = OutQueue.getInstance();
-			final int[] otherPeerPosition = peer.getCurrentPosition().getPosition();
+			final int[] otherPeerPosition = peer.getCurrentPosition().getGridLocation();
 			final int[] myPosition = new int[]{this.getRow(),this.getCol()};
 			
 			// check position if alive 			

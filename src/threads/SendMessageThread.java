@@ -1,8 +1,10 @@
 package threads;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
+import org.codehaus.jackson.map.ObjectMapper;
 
 import messages.Message;
 import peer.ConnectionData;
@@ -46,20 +48,23 @@ public class SendMessageThread implements Runnable {
 		try  {
 			
 			// retrieve streams 
-			final ObjectOutputStream out = this.getClientConnection().getOutputStream();
-			final ObjectInputStream in = this.getClientConnection().getInputStream();
+			final DataOutputStream out = this.getClientConnection().getOutputStream();
+			final BufferedReader in = this.getClientConnection().getInputStream();
+			final ObjectMapper mapper = new ObjectMapper();
 						
 			// send message 
-			out.writeObject(this.getMsgToSend());;
+			final String msgToSend = mapper.writeValueAsString(this.getMsgToSend());
+			out.writeBytes(msgToSend + "\n");
 			
-			// wait for answer 
-			final Message response = (Message) in.readObject();
+			// wait for answer
+			final String msgReceived = in.readLine();
+			final Message response = mapper.readValue(msgReceived, Message.class);
 			
 			// handle incoming message 
 			response.handleInMessage(this.getClientConnection());
 			
 		}
-		catch (IOException | ClassNotFoundException e){
+		catch (IOException e){
 			e.printStackTrace();
 			System.err.println("Error communicating with other player's server sockets");
 		} 

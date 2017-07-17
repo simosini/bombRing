@@ -104,7 +104,7 @@ public class UserInputHandlerThread implements Runnable {
 			// print current position, score and bombs available 
 			System.out.println("\n#################### GAME MENU ####################");
 			final Cell currentPos = peer.getCurrentPosition();
-			final String colorZone = this.computeZone(currentPos.getPosition());
+			final String colorZone = this.computeZone(currentPos.getGridLocation());
 			final Player currentPlayer = peer.getCurrentPlayer();
 			System.out.println(colorZone + currentPos);
 			System.out.println("Your current score is: " + peer.getCurrentScore());

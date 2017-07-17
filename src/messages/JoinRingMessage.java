@@ -27,6 +27,7 @@ public class JoinRingMessage extends Message {
 	private static final int JOIN_PRIORITY = 5;
 	private Player player; // the player to add to the ring 
 
+	public JoinRingMessage(){ }
 	
 	public JoinRingMessage(Player p) {
 		super(Type.JOINRING, JOIN_PRIORITY);
@@ -145,6 +146,7 @@ public class JoinRingMessage extends Message {
 			
 			// communicate with next peer server socket
 			while(players.size() > 1) {
+				
 				nextPeer = peer.getNextPeer(players);
 				
 				// connect to it 
@@ -157,15 +159,15 @@ public class JoinRingMessage extends Message {
 				else {
 					
 					// create message and send it 
-					cd.getOutputStream().writeObject(new JoinRingMessage(peer.getCurrentPlayer()));
+					cd.getOutputStream().writeBytes(createJsonMessage(new JoinRingMessage(peer.getCurrentPlayer())) + "\n");
 					
 					// wait for the answer 
-					final Message m = (Message) cd.getInputStream().readObject();
+					final Message answer = readJsonMessage(cd.getInputStream().readLine());					
 					
 					// check answer: can only be mapUpdate or Nack 
-					if (m instanceof MapUpdateMessage){
-						m.handleInMessage(null);
-						TreeMap<Integer, Player> updatedMap = ((MapUpdateMessage) m).getUpdatedMap();
+					if (answer instanceof MapUpdateMessage){
+						answer.handleInMessage(null);
+						TreeMap<Integer, Player> updatedMap = ((MapUpdateMessage) answer).getUpdatedMap();
 						
 						// add cd to my connections 
 						peer.addConnectedSocket(nextPeer.getId(), cd);
@@ -182,7 +184,7 @@ public class JoinRingMessage extends Message {
 					}
 					
 					//in case of problems update current map and try next player 
-					players = ((NackMessage) m).getPlayers();
+					players = ((NackMessage) answer).getPlayers();
 					players.deletePlayer(nextPeer);
 				}
 				

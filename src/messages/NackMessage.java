@@ -17,6 +17,7 @@ public class NackMessage extends Message {
 	private static final int NACK_PRIORITY = 5;
 	private Players players; 
 	
+	public NackMessage() { }	
 
 	public NackMessage(Players players) {
 		super(Type.NACK, NACK_PRIORITY);
@@ -48,7 +49,7 @@ public class NackMessage extends Message {
 	@Override
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
-			clientConnection.getOutputStream().writeObject(this);
+			clientConnection.getOutputStream().writeBytes(createJsonMessage(this) + "\n");
 		} catch (IOException e){
 			System.err.println("Error sending nack message");
 			e.printStackTrace();

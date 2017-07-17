@@ -24,6 +24,8 @@ public class BombExplodedMessage extends Message {
 	private Player tosser;
 	private String color;
 
+	public BombExplodedMessage() { }
+	
 	public BombExplodedMessage(String color, Player tosser) {
 		super(Type.BOMB_EXPLODED, BOMB_EXPLODED_PRIORITY);
 		this.setColor(color);
@@ -79,6 +81,7 @@ public class BombExplodedMessage extends Message {
 				outQueue.add(packet);
 
 			} else { // just send ack
+				
 				final Emoji em = EmojiManager.getForAlias("v");
 				
 				// if another bomb killed me no need to print this message

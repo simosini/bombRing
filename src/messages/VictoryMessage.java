@@ -20,11 +20,22 @@ public class VictoryMessage extends Message {
 	private static final int VICTORY_PRIORITY = 1;
 	private Player winner;
 	
+	public VictoryMessage() { }
+	
 	public VictoryMessage(Player winner) {
 		super(Type.VICTORY, VICTORY_PRIORITY);
-		this.winner = winner;
+		this.setWinner(winner);
 	}
 	
+	private void setWinner(Player winner) {
+		this.winner = winner;
+		
+	}
+	
+	public Player getWinner() {
+		return this.winner;
+	}
+
 	/** 
 	 * When the server socket receives this message knows that the match is finished
 	 * so it just sends an AckMessage and starts the exit procedure. 
@@ -40,7 +51,7 @@ public class VictoryMessage extends Message {
 			new AckMessage().handleOutMessage(clientConnection);
 			
 			// print the winner 
-			System.out.println(this.winner.getNickname() + " won the match");
+			System.out.println(this.getWinner().getNickname() + " just won the match");
 			
 			// start exit procedure 
 			new ExitProcedure().startGameEndedProcedure();

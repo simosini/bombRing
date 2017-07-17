@@ -16,7 +16,8 @@ public class DeadMessage extends Message {
 	private static final long serialVersionUID = -1902910439389667349L;
 	private static final int DEAD_PRIORITY = 2;
 	Player deadPlayer;
-
+	
+	public DeadMessage(){ }
 
 	public DeadMessage(Player player) {
 		super(Type.DEAD, DEAD_PRIORITY);

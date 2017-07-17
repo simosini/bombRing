@@ -24,8 +24,7 @@ public class KilledMessage extends Message {
 	private Player killer;
 	private boolean killedByBomb;
 
-	public KilledMessage() {
-	}
+	public KilledMessage() { }
 
 	public KilledMessage(Player killed, Player killer, boolean killedByBomb) {
 		super(Type.KILLED, KILLED_PRIORITY);
@@ -123,7 +122,7 @@ public class KilledMessage extends Message {
 			Peer.getInstance().setAlive(false); // i'm dead
 
 			// send killed message
-			cd.getOutputStream().writeObject(this);
+			cd.getOutputStream().writeBytes(createJsonMessage(this) + "\n");
 
 		} catch (Exception e) {
 			System.err.println("Error handling killedMessage out");

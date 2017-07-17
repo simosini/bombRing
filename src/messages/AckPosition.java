@@ -18,6 +18,8 @@ public class AckPosition extends Message {
 	private static final int ACK_POS_PRIORITY = 5;
 	private Cell position;
 
+	public AckPosition() { }
+	
 	public AckPosition(Cell pos) {
 		super(Type.ACK, ACK_POS_PRIORITY);
 		this.setPosition(pos);
@@ -61,7 +63,7 @@ public class AckPosition extends Message {
 	public boolean handleOutMessage(ConnectionData clientConnection) {
 		try {
 			// send message to the player containing position 
-			clientConnection.getOutputStream().writeObject(this);
+			clientConnection.getOutputStream().writeBytes(createJsonMessage(this) + "\n");
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;

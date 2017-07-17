@@ -1,9 +1,12 @@
 package threads;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
 import java.net.Socket;
+
+import org.codehaus.jackson.map.ObjectMapper;
 
 import beans.Player;
 import messages.Message;
@@ -36,20 +39,19 @@ public class IncomingMessageHandlerThread implements Runnable {
 	 */
 	private void initStreams(Socket s) {
 		try {
-			final ObjectOutputStream outputStream = new ObjectOutputStream(s.getOutputStream());
+			final ObjectMapper mapper = new ObjectMapper();
+			final DataOutputStream outputStream = new DataOutputStream(s.getOutputStream());
 			outputStream.flush();
-			final ObjectInputStream inputStream = new ObjectInputStream(s.getInputStream());
+			final BufferedReader inputStream = new BufferedReader(new InputStreamReader(s.getInputStream()));
 			this.clientConnection = new ConnectionData(s, outputStream, inputStream);
-			final Player connectedPlayer = (Player) inputStream.readObject();
+			final String JsonPlayer = inputStream.readLine(); 
+			final Player connectedPlayer = mapper.readValue(JsonPlayer, Player.class);
 			this.setConnectedPlayer(connectedPlayer);
 			
 		} catch(IOException e){
 			System.err.println("IncomingMessageThread could not open streams");
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			System.err.println("Couldn't retrieve player!");
-			e.printStackTrace();
-		}
+		} 
 	}
 	
 	private Player getConnectedPlayer() {
@@ -72,32 +74,34 @@ public class IncomingMessageHandlerThread implements Runnable {
 	@Override
 	public void run() {
 		final InQueue inQueue = InQueue.getInstance();
+		final ObjectMapper mapper = new ObjectMapper();
 		Message message = null;
-		ObjectInputStream reader = null;
+		BufferedReader reader = null;
 
 		try {
 			reader = this.getConnectionData().getInputStream();
-			while(true){			
+			while(true){
 				
-				message = (Message) reader.readObject();
+				// read incoming message
+				String receivedMsg = reader.readLine();
+				if (receivedMsg != null) {
+					message = mapper.readValue(receivedMsg, Message.class);
 				
-				Packets packet = new Packets(message, this.getConnectionData());
-				inQueue.add(packet);
+					// add packet to the in Queue
+					Packets packet = new Packets(message, this.getConnectionData());
+					inQueue.add(packet);
 				
-				// notify message handler thread
-				synchronized(inQueue){					
-					inQueue.notify();
-				}	
+					// notify message handler thread
+					synchronized(inQueue){					
+						inQueue.notify();
+					}
+				}
 				
 			}
 		} catch (IOException e){
 			
 			// when the connected player closes its client socket this socket can be closed as well 
 			System.out.print(this.getConnectedPlayer().getNickname() + " just left the game. Disconnecting socket...");
-		} catch (ClassNotFoundException e) {
-			
-			System.err.println("Error reading message from socket!");
-			e.printStackTrace();
 		} finally {
 			Socket s = null;
 			try{

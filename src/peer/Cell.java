@@ -24,12 +24,12 @@ public class Cell implements Serializable{
 	public Cell() {}
 
 	public Cell(Cell currentCell) {
-		int[] location = currentCell.getPosition();
-		this.setPosition(location[0], location[1]);
+		int[] location = currentCell.getGridLocation();
+		this.updatePosition(location[0], location[1]);
 	}
 
 	public Cell(int row, int col) {
-		this.setPosition(row, col);
+		this.updatePosition(row, col);
 	}
 	
 	/**
@@ -44,12 +44,16 @@ public class Cell implements Serializable{
 		return this.colorZone;
 	}
 
-	public synchronized void setPosition(int i, int j) {
+	public synchronized void updatePosition(int i, int j) {
 		gridLocation[0] = i;
 		gridLocation[1] = j;
 	}
+	
+	public synchronized void setGridLocation(int[] location) { 
+		this.gridLocation = location;
+	}
 
-	public synchronized int[] getPosition() {
+	public synchronized int[] getGridLocation() {
 		return gridLocation;
 	}
 	
@@ -59,7 +63,7 @@ public class Cell implements Serializable{
 	 * @return the new position after the move.
 	 */
 	public int[] move(DIR d) {
-		final int[] currentPosition = this.getPosition();
+		final int[] currentPosition = this.getGridLocation();
 		if (d != null) {
 			int[] movement = this.vector(d);
 			final int newPosition[] = { currentPosition[0] + movement[0], currentPosition[1] + movement[1] };
@@ -90,7 +94,7 @@ public class Cell implements Serializable{
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Cell) {
-			return Arrays.equals(this.getPosition(), ((Cell) obj).getPosition());
+			return Arrays.equals(this.getGridLocation(), ((Cell) obj).getGridLocation());
 		}
 		return false;
 	}

@@ -110,7 +110,7 @@ public class Peer {
 	 */
 	public synchronized void setNewPosition(int row, int col) {
 	
-		this.currentPosition.setPosition(row, col);
+		this.currentPosition.updatePosition(row, col);
 		
 		
 	}

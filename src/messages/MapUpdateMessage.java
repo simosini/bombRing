@@ -21,7 +21,7 @@ public class MapUpdateMessage extends Message {
 	private TreeMap<Integer, Player> updatedMap;
 	private Cell updatedPosition;
 	
-	public MapUpdateMessage(){}
+	public MapUpdateMessage(){ }
 
 	public MapUpdateMessage(TreeMap<Integer, Player> map, Cell pos) {
 		super(Type.MAP_UPDATE, UPDATE_PRIORITY);
@@ -76,7 +76,7 @@ public class MapUpdateMessage extends Message {
 		
 		// send the new player the updated map and position 
 		try {
-			clientConnection.getOutputStream().writeObject(this);
+			clientConnection.getOutputStream().writeBytes(createJsonMessage(this) + "\n");
 		} catch (IOException e){
 			System.err.println("Error sending updated map to client");
 			e.printStackTrace();

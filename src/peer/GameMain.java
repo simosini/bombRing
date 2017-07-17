@@ -232,9 +232,6 @@ public class GameMain {
 	}
 	 
 	/**
-	 
-	 */
-	/**
 	 * This is the procedure to join the user selected game 
 	 * @return true if the operation has been handled correctly.
 	 */
@@ -248,6 +245,7 @@ public class GameMain {
 			
 			// needed to avoid Token message overlapping 
 			synchronized (outQueue) {
+
 				return joinRing.handleOutMessage(null);
 				
 			}
