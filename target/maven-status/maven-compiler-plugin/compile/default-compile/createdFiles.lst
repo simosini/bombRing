@@ -19,6 +19,7 @@ singletons/PositionList.class
 services/ServiceRequester.class
 messages/TokenMessage.class
 messages/VictoryMessage.class
+threads/BotThread.class
 messages/BombTossedMessage.class
 messages/Type.class
 peer/Cell$DIR.class

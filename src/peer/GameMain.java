@@ -20,10 +20,10 @@ import singletons.GameLock;
 import singletons.OutQueue;
 import singletons.Peer;
 import threads.AccelerometerSimulator;
+import threads.BotThread;
 import threads.MessageHandlerThread;
 import threads.SensorDataAnalyzer;
 import threads.ServerSocketHandler;
-import threads.UserInputHandlerThread;
 
 /** 
  * This is the main of the game: everything starts and ends here! 
@@ -57,9 +57,10 @@ public class GameMain {
 			handler.start();
 			
 			new Thread(new ServerSocketHandler(srvSocket)).start();
-
-			// the game is now started so start user input thread
-			new Thread(new UserInputHandlerThread(readInput)).start();
+			
+			
+			// start BOT
+			new Thread(new BotThread()).start();
 			
 			// start simulator for bombs 
 			final AccelerometerSimulator as = new AccelerometerSimulator(MeasureBuffer.getInstance()); 

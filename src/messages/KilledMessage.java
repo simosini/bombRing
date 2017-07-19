@@ -75,7 +75,7 @@ public class KilledMessage extends Message {
 				peer.incrementCurrentScore();
 
 				// check victory
-				if (peer.getCurrentScore() == targetScore) {
+				if (peer.getCurrentScore() >= targetScore) {
 					System.out.println(
 							emoji.getUnicode() + " Congratulations! You just won the game!! " + emoji.getUnicode());
 

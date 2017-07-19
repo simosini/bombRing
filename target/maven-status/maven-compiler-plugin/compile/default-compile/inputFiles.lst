@@ -1,5 +1,6 @@
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/beans/Games.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/threads/OutGoingMessageHandlerThread.java
+/home/simosini/Desktop/DisSys/Lab/restConverter/src/threads/BotThread.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/threads/SensorDataAnalyzer.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/messages/VictoryMessage.java
 /home/simosini/Desktop/DisSys/Lab/restConverter/src/exceptions/AppException.java
